@@ -90,3 +90,11 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 - **Paso 3 (M15).** "Un protagonista por pantalla": a 360 px la frase-problema entra en el primer viewport con el loop andando. Cuando M15 esté activa, el loop se pausa mientras la frase se enciende.
 - **Paso 4 (`<ClientRouter />`).** Los scripts de M04 y M05 tienen que correr en `astro:page-load` y liberar en `astro:before-swap`; si no, al volver a la home no hay loop ni hover en servicios.
 - **QA de cierre.** El CLS de carga se mide con el build de producción (`astro preview`): en dev, Vite inyecta estilos tarde y con el server cargado el wordmark baja unos px (en producción, 0 en 8 cargas en paralelo).
+
+## Fase 6 · motion (paso 3: M13–M17)
+
+- **Decisión de Franco · M14.** Implementado así: al abrir el menú, los links suben y aparecen con `--stagger-fast`, y solo el de la página actual respira de 112 a 125 (cumple "nunca más de un elemento respirando a la vez"). Si lo aprobás, conviene aclarar la fila M14 de `docs/motion.md`: "respira el link de la página actual; el resto sube y aparece".
+- **Decisión de Franco · loop en espera mientras se lee (M04 + M15).** Con la frase-problema a medio leer, el loop termina el formato y espera, pero el botón sigue en "Pausa": puede parecer trabado. Opciones: dejarlo así (y asentarlo en M04), o atenuar la escena mientras espera.
+- **Decisión de Franco · entradas con movimiento reducido (M16, M17).** `docs/motion.md` dice "Sin entrada"; con los tokens queda un fundido de 120 ms sin desplazamiento. Es el mismo caso que M05 (ver arriba): un token de duración que valga 0 en reducido lo resolvería en los tres.
+- **1.4.12 (espaciado de texto) en servicios a 360.** Los nombres son de una línea (`nowrap`, la respiración lo necesita). Con un espaciado de letras de 0,12 em el nombre activo desborda hacia la derecha sin cortarse ni taparse; verificar con el bookmarklet de espaciado de texto en la QA de cierre.
+

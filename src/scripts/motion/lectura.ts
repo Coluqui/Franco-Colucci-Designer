@@ -10,7 +10,7 @@
  * Sin JS se ve completa. Reducido: --reveal-dim vale 1, así que se ve completa desde el inicio.
  * No usa animation-timeline: view() porque no es monotónico.
  */
-import { ms, numero } from './base';
+import { alCambiarReducido, ms, numero } from './base';
 import { observar } from './observer';
 
 /** El centro de la frase llega a esta altura del viewport (desde arriba) y la frase está completa. */
@@ -27,6 +27,12 @@ const avisar = () => {
 export function lectura(el: HTMLElement) {
   const texto = el.textContent?.trim().replace(/\s+/g, ' ') ?? '';
   if (!texto || el.dataset['lectura'] !== undefined) return;
+  // Ya se ve completa (reducido: --reveal-dim 1; alto contraste; o el respaldo corrió porque el script
+  // llegó tarde): no se parte ni se vuelve a apagar. Queda el texto tal cual.
+  if (getComputedStyle(el).opacity === '1' || matchMedia('(forced-colors: active)').matches) {
+    el.dataset['lectura'] = '';
+    return;
+  }
 
   const palabras = texto.split(' ');
   const oculto = document.createElement('span');
@@ -68,14 +74,15 @@ export function lectura(el: HTMLElement) {
     return r.top + r.height / 2;
   };
 
-  const terminar = () => {
+  /** Se desconecta. `soltar`: deja de contar como lectura (el loop del hero puede volver). */
+  const terminar = (soltar = true) => {
     completa = true;
     window.clearTimeout(espera);
     cancelAnimationFrame(cuadro);
     removeEventListener('scroll', alScroll);
     dejar();
-    activas.delete(el);
-    avisar();
+    dejarReducido();
+    if (soltar && activas.delete(el)) avisar();
   };
 
   const pintar = () => {
@@ -99,20 +106,31 @@ export function lectura(el: HTMLElement) {
     if (nivel.every((n) => n >= 1)) terminar();
   };
 
-  /** El usuario frenó con la frase en pantalla: lo que falta se enciende al ritmo de lectura. */
+  /** El usuario frenó con la frase en pantalla (aunque sea su primera línea): lo que falta se enciende
+   *  al ritmo de lectura. Mientras se enciende, sigue contando como lectura (el loop espera). */
   const autocompletar = () => {
-    if (completa || !visibleAhora || centro() > innerHeight) return;
+    if (completa || !visibleAhora || el.getBoundingClientRect().top >= innerHeight) return;
     const porPalabra = ms('--stagger-words');
     const porLetra = ms('--reveal-per-char');
     let retraso = 0;
+    let ultima = 0;
     spans.forEach((s, k) => {
       if (nivel[k]! >= 1) return;
       s.style.transitionDelay = `${retraso}ms`;
       s.style.opacity = '1';
       nivel[k] = 1;
+      ultima = retraso;
       retraso += porPalabra + porLetra * palabras[k]!.length;
     });
-    terminar();
+    if (!activas.has(el)) {
+      activas.add(el);
+      avisar();
+    }
+    terminar(false);
+    // Un solo aviso cuando la última palabra terminó de encenderse.
+    window.setTimeout(() => {
+      if (activas.delete(el)) avisar();
+    }, ultima + ms('--duration-fast'));
   };
 
   const programarAutocompletado = () => {
@@ -136,6 +154,17 @@ export function lectura(el: HTMLElement) {
       window.clearTimeout(espera);
       if (activas.delete(el)) avisar();
     }
+  });
+
+  // Si el usuario pide movimiento reducido con la página abierta, la frase se completa ya.
+  const dejarReducido = alCambiarReducido((r) => {
+    if (!r || completa) return;
+    spans.forEach((s, k) => {
+      s.style.transitionDelay = '';
+      s.style.opacity = '1';
+      nivel[k] = 1;
+    });
+    terminar();
   });
 
   if (completa) terminar();

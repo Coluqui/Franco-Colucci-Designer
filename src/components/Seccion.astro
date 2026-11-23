@@ -49,8 +49,8 @@ const idTitulo = id && titulo ? `${id}-titulo` : undefined;
     const cabecera = caja?.querySelector<HTMLElement>(':scope > .seccion__cabecera');
     const titulo = cabecera?.querySelector('h2:not(.visually-hidden)') ? cabecera : null;
     const bloque = (cabecera ? cabecera.nextElementSibling : caja?.firstElementChild) as HTMLElement | null;
-    // Ni piezas ni filas (las filas tienen su propia entrada, M17).
-    const bloqueSirve = bloque && !bloque.querySelector('[data-fila], .tile');
+    // Ni piezas (tiles, vista previa de servicios) ni filas (las filas tienen su propia entrada, M17).
+    const bloqueSirve = bloque && !bloque.querySelector('[data-fila], .tile, [data-servicios]');
     const partes: Parte[] = [];
     if (titulo) partes.push({ el: titulo });
     if (bloqueSirve) partes.push({ el: bloque, retraso: titulo ? ms('--stagger') : 0 });

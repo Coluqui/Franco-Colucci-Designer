@@ -7,12 +7,12 @@
 import { ms, numero, resorte } from './base';
 
 /**
- * M14 · al abrir el menú, cada link sube --shift-md, aparece y respira (reposo → activo → su ancho),
- * con --stagger-fast entre uno y otro. Termina en lo que diga su CSS: el hover sigue funcionando.
+ * M14 · al abrir el menú, cada link sube --shift-md y aparece, con --stagger-fast entre uno y otro, y
+ * respira de --wdth-rest a su ancho final: el de la página actual (125) es el único que respira, así
+ * nunca hay más de uno a la vez (límite de §5). Termina en su CSS: el hover sigue funcionando.
  */
 export function respirarEntrada(links: HTMLElement[]) {
   const reposo = `${numero('--wdth-rest')}%`;
-  const activo = `${numero('--wdth-active')}%`;
   const desplazamiento = `translateY(${numero('--shift-md')}px)`;
   const paso = ms('--stagger-fast');
   const soft = resorte('soft');
@@ -23,7 +23,6 @@ export function respirarEntrada(links: HTMLElement[]) {
     el.animate(
       [
         { transform: desplazamiento, opacity: 0, fontStretch: reposo },
-        { fontStretch: activo, offset: 0.5 },
         { transform: 'none', opacity: 1, fontStretch: final },
       ],
       { ...soft, delay: k * paso, fill: 'backwards' },

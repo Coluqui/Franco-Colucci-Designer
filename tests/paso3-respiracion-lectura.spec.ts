@@ -29,6 +29,13 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       const alto = await summaries.nth(1).evaluate((el) => el.getBoundingClientRect().height);
       const altos = await summaries.evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
       expect(altos.every((h) => Math.abs(h - alto) < 1)).toBe(true);
+      // A 125 el nombre activo entra con su "+" (no empuja nada fuera de su caja).
+      for (const i of [0, 1]) {
+        await summaries.nth(i).click();
+        await expect
+          .poll(() => summaries.nth(i).evaluate((e) => e.scrollWidth <= e.clientWidth))
+          .toBe(true);
+      }
     });
 
     test('M14 · los links del menú entran y respiran, y después responden al hover', async ({ page }) => {
@@ -53,14 +60,17 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     test('M15 · la frase se lee al bajar, nunca se apaga y la leen completa los lectores', async ({ page }) => {
       await page.goto('/es/');
       const frase = page.locator('[data-frase]').first();
+      if (reducido) {
+        // Reducido: la frase no se parte; queda el texto tal cual, completo.
+        await expect(frase).toHaveAttribute('data-lectura', '');
+        await expect(frase.locator('.lectura__palabra')).toHaveCount(0);
+        await expect(frase).toHaveCSS('opacity', '1');
+        return;
+      }
       // Lectores de pantalla: el texto completo, una sola vez.
       const oculto = await frase.locator('.visually-hidden').textContent();
       expect(oculto!.split(' ').length).toBeGreaterThan(5);
       await expect(frase.locator('[aria-hidden="true"]')).toHaveCount(1);
-      if (reducido) {
-        expect((await opacidades(page)).every((o) => o === 1)).toBe(true);
-        return;
-      }
       const inicio = await opacidades(page);
       expect(Math.min(...inicio)).toBeLessThan(0.5);
       // Bajar hasta que el centro de la frase pase el 40 %: completa.
@@ -105,8 +115,22 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       const filas = page.locator('[data-fila]');
       for (const f of await filas.all()) await f.scrollIntoViewIfNeeded();
       await expect
-        .poll(() => filas.evaluateAll((els) => els.every((f) => [...f.querySelectorAll<HTMLElement>('.fila__texto, .fila__media')].every((e) => getComputedStyle(e).opacity === '1'))))
+        .poll(() => filas.evaluateAll((els) => els.every((f) => [...f.querySelectorAll<HTMLElement>('.fila, .fila__media')].every((e) => getComputedStyle(e).opacity === '1'))))
         .toBe(true);
+    });
+
+    test('M16 y M17 · nunca hay foco en algo invisible: lo que espera entra al recibir el foco', async ({ page }) => {
+      await page.goto('/es/');
+      const fila = page.locator('[data-fila]').last();
+      const panel = fila.locator('.fila');
+      if ((await panel.evaluate((e) => e.style.opacity)) !== '0') test.skip(true, 'la fila ya se ve al cargar');
+      await fila.locator('a').first().focus();
+      await expect.poll(() => panel.evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
+    });
+
+    test('M16 · la vista previa de servicios (trabajo) no hace entrada', async ({ page }) => {
+      await page.goto('/es/');
+      expect(await page.locator('[data-servicios]').evaluate((e) => e.closest<HTMLElement>('.servicios-caja')!.style.opacity)).toBe('');
     });
 
     test('M16 · el hero y la primera pantalla se ven en el primer cuadro', async ({ page }) => {

@@ -5,7 +5,7 @@
  * Sin JS no corre nada de esto y todo se ve.
  */
 
-import { animar, numero, resorte } from './base';
+import { alCambiarReducido, animar, numero, resorte } from './base';
 
 type Aviso = (entrada: IntersectionObserverEntry) => void;
 
@@ -60,6 +60,8 @@ export interface Parte {
   el: HTMLElement;
   /** Retraso en ms respecto del disparador (p. ej. --stagger). */
   retraso?: number;
+  /** Solo aparece, sin subir (p. ej. la media dentro de una fila que ya sube). */
+  soloOpacidad?: boolean;
 }
 
 /**
@@ -67,16 +69,31 @@ export interface Parte {
  * --shift-md y aparece con --spring-soft. Lo que ya se ve al cargar no se anima ("nada arranca
  * escondido"); lo que está fuera de pantalla se esconde recién acá, cuando nadie lo ve.
  * Termina en su CSS (sin estilos en línea): no pisa el hover de las filas (M27).
+ * Si algo de adentro recibe el foco antes de entrar (Tab, carga ya scrolleada), entra en ese momento:
+ * nunca hay foco en algo invisible. Con colores forzados (alto contraste) no hay entradas.
  */
 export function entrar(disparador: Element, partes: Parte[]) {
-  if (!partes.length || enPantalla(disparador)) return;
-  const oculto = { opacity: '0', transform: `translateY(${numero('--shift-md')}px)` };
-  partes.forEach(({ el }) => Object.assign(el.style, oculto));
-  alEntrar(disparador, () =>
-    partes.forEach(({ el, retraso = 0 }) => {
-      el.style.opacity = '';
-      el.style.transform = '';
-      animar(el, { opacity: '1', transform: 'none' }, { ...resorte('soft'), delay: retraso, desde: oculto, soltar: true });
-    }),
-  );
+  if (!partes.length || enPantalla(disparador) || matchMedia('(forced-colors: active)').matches) return;
+  const bajar = `translateY(${numero('--shift-md')}px)`;
+  const ocultoDe = (p: Parte) => (p.soloOpacidad ? { opacity: '0' } : { opacity: '0', transform: bajar });
+  partes.forEach((p) => Object.assign(p.el.style, ocultoDe(p)));
+
+  let hecho = false;
+  const revelar = () => {
+    if (hecho) return;
+    hecho = true;
+    dejar();
+    partes.forEach((p) => {
+      p.el.removeEventListener('focusin', revelar);
+      const desde = ocultoDe(p);
+      p.el.style.opacity = '';
+      p.el.style.transform = '';
+      const hasta = p.soloOpacidad ? { opacity: '1' } : { opacity: '1', transform: 'none' };
+      animar(p.el, hasta, { ...resorte('soft'), delay: p.retraso ?? 0, desde, soltar: true });
+    });
+  };
+  const dejar = alEntrar(disparador, revelar);
+  partes.forEach((p) => p.el.addEventListener('focusin', revelar));
+  // Si el usuario pide movimiento reducido con la página abierta, lo pendiente aparece ya.
+  alCambiarReducido((r) => r && revelar());
 }

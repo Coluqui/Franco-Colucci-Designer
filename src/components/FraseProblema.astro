@@ -49,6 +49,19 @@ const { texto, as: Tag = 'p', id } = Astro.props;
     transition: opacity var(--duration-fast) var(--ease-out);
   }
 
+  /* Al seleccionar y copiar, el texto sale una sola vez (el de la copia para lectores). */
+  .frase :global([aria-hidden='true']) {
+    user-select: none;
+  }
+
+  /* Alto contraste (colores forzados): nada atenuado. */
+  @media (forced-colors: active) {
+    .frase,
+    .frase :global(.lectura__palabra) {
+      opacity: 1 !important;
+    }
+  }
+
   @media (min-width: 80rem) {
     .frase {
       max-inline-size: calc((100% + var(--grid-gutter)) * 10 / 12 - var(--grid-gutter));

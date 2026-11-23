@@ -7,8 +7,9 @@
  * - Angosto: una columna, las métricas arriba de la imagen.
  * Hover: la media escala --scale-media-hover con --spring-soft y aparece "Ver caso →" (M27).
  * Foco: anillo en todo el panel y "Ver caso →" visible. En táctil, "Ver caso →" siempre visible.
- * M17: cada fila entra una vez al 15 % (sube --shift-md); la media 60 ms (--stagger) después del
- * texto. La fila que ya se ve al cargar no se anima.
+ * M17: cada fila entra una vez al 15 %: el panel entero sube --shift-md y aparece; la media aparece
+ * --stagger después (solo opacidad: ya sube con el panel). La fila que ya se ve al cargar no se anima.
+ * Se anima el <article> y no .fila__texto, que en angosto es display: contents (no tiene caja).
  * Fase 6, paso 4: la media se convierte en el hero del caso con View Transitions (M06, M07).
  */
 import { Image } from 'astro:assets';
@@ -91,9 +92,9 @@ const Titulo = nivel;
   import { entrar } from '../scripts/motion/observer';
 
   document.querySelectorAll<HTMLElement>('[data-fila]').forEach((fila) => {
-    const texto = fila.querySelector<HTMLElement>('.fila__texto');
+    const panel = fila.querySelector<HTMLElement>('.fila');
     const media = fila.querySelector<HTMLElement>('.fila__media');
-    if (texto && media) entrar(fila, [{ el: texto }, { el: media, retraso: ms('--stagger') }]);
+    if (panel && media) entrar(fila, [{ el: panel }, { el: media, retraso: ms('--stagger'), soloOpacidad: true }]);
   });
 </script>
 
