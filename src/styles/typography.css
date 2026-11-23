@@ -1,0 +1,94 @@
+/* Roles tipográficos · design system §4. Una clase por rol; todo sale de tokens.
+   El ancho de Archivo se controla con font-stretch (wdth → %). */
+
+.t-wordmark {
+  font-size: var(--text-wordmark);
+  font-stretch: calc(var(--wdth-wide) * 1%);
+  font-weight: var(--weight-heavy);
+  line-height: var(--leading-wordmark);
+  letter-spacing: var(--tracking-wordmark);
+  text-transform: uppercase;
+}
+
+.t-display {
+  font-size: var(--text-display);
+  font-stretch: calc(var(--wdth-semi) * 1%);
+  font-weight: var(--weight-black);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+}
+
+/* Acotado a su columna: el contenedor lleva container-type: inline-size (motion §5, M13). */
+.t-services {
+  font-size: min(var(--text-services), 7.6cqi);
+  font-stretch: calc(var(--wdth-rest) * 1%);
+  font-weight: var(--weight-black);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+}
+
+h1,
+.t-h1 {
+  font-size: var(--text-h1);
+  font-stretch: calc(var(--wdth-wide) * 1%);
+  font-weight: var(--weight-black);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-display);
+}
+
+h2,
+.t-h2 {
+  font-size: var(--text-h2);
+  font-stretch: calc(var(--wdth-semi) * 1%);
+  font-weight: var(--weight-title);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+}
+
+h3,
+.t-h3 {
+  font-size: var(--text-h3);
+  font-stretch: calc(var(--wdth-normal) * 1%);
+  font-weight: var(--weight-bold);
+  line-height: 1.15; /* PENDIENTE token: §4 pide 1.15 y no hay --leading-* (docs/pendientes.md) */
+  letter-spacing: -0.02em; /* PENDIENTE token: §4 pide −0.02em y no hay --tracking-* */
+}
+
+.t-metric {
+  font-size: var(--text-metric);
+  font-stretch: calc(var(--wdth-semi) * 1%);
+  font-weight: var(--weight-black);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  font-variant-numeric: tabular-nums;
+}
+
+.t-lead {
+  font-size: var(--text-lead);
+  font-stretch: calc(var(--wdth-normal) * 1%);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-lead);
+  letter-spacing: -0.01em; /* PENDIENTE token: §4 pide −0.01em y no hay --tracking-* */
+}
+
+.t-body {
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
+  max-width: var(--measure);
+}
+
+.t-ui {
+  font-size: var(--text-ui);
+  font-weight: var(--weight-ui);
+  line-height: var(--leading-ui);
+}
+
+.t-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  font-weight: var(--weight-medium);
+  line-height: 1.4; /* PENDIENTE token: §4 pide 1.4 y no hay --leading-* */
+  letter-spacing: var(--tracking-label);
+}

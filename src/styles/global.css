@@ -1,0 +1,149 @@
+/* Estilos globales · design system "Formato" v2.1
+   Los valores salen SOLO de design-system/tokens.css (no se copian acá). */
+@import "../../design-system/tokens.css";
+@import "./fonts.css";
+@import "./typography.css";
+
+/* ---- Base ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* El fondo va en html: el grano (body::after, z-index -1) queda entre el fondo y el contenido. */
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-stretch: calc(var(--wdth-normal) * 1%);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  hanging-punctuation: first last;
+}
+
+body {
+  margin: 0;
+  min-height: var(--viewport-full);
+  background: transparent;
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- Grano (design system §5): detrás del contenido, nunca sobre piezas ni texto ---- */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  /* PENDIENTE: reemplazar por /brand/grain.svg cuando Franco lo entregue (docs/pendientes.md). */
+  background-image: url("/dev/grain-provisorio.svg");
+  opacity: var(--grain-opacity);
+  mix-blend-mode: var(--grain-blend);
+}
+
+img,
+picture,
+video,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  overflow-wrap: break-word;
+}
+
+/* El español se corta solo donde lo marcamos (&shy;): riesgo "Archivo expandida en español", PRD §14. */
+h1,
+h2,
+h3 {
+  hyphens: manual;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+}
+
+/* ---- Foco: anillo cobalto en todo lo interactivo ---- */
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ---- Utilidades ---- */
+.visually-hidden:not(:focus):not(:active) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.container {
+  width: 100%;
+  max-width: calc(var(--container-max) + 2 * var(--grid-margin));
+  margin-inline: auto;
+  padding-inline: var(--grid-margin);
+}
+
+/* Enlace para saltar al contenido: visible solo con foco de teclado. */
+.skip-link {
+  position: fixed;
+  inset-block-start: calc(var(--safe-top) + var(--space-2));
+  inset-inline-start: var(--space-2);
+  z-index: calc(var(--z-viewer) + 1);
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-height);
+  padding-inline: var(--control-pad-x);
+  border-radius: var(--radius-xs);
+  background: var(--color-text-primary);
+  color: var(--color-bg);
+  font-size: var(--text-ui);
+  font-weight: var(--weight-ui);
+  text-decoration: none;
+  transform: translateY(calc(-100% - var(--space-4)));
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
