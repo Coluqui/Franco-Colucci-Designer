@@ -1,0 +1,51 @@
+---
+/**
+ * "Lo que hice" · PRD §5: pasos en orden. Lista ordenada con el número en label (01, 02…).
+ */
+import { dosDigitos } from '../i18n';
+
+interface Props {
+  pasos: string[];
+}
+
+const { pasos } = Astro.props;
+---
+
+<ol class="pasos" role="list">
+  {
+    pasos.map((p, i) => (
+      <li class="pasos__item">
+        <span class="t-label pasos__numero" aria-hidden="true">{dosDigitos(i + 1)}</span>
+        <p class="t-body">{p}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .pasos {
+    display: grid;
+    gap: var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-inline-size: var(--measure);
+  }
+
+  .pasos__item {
+    display: grid;
+    grid-template-columns: var(--space-8) minmax(0, 1fr);
+    gap: var(--space-4);
+    padding-block-start: var(--space-4);
+    border-block-start: var(--border-hairline);
+  }
+
+  .pasos__numero {
+    color: var(--color-text-secondary);
+    line-height: var(--leading-body);
+  }
+
+  .pasos__item p {
+    margin: 0;
+  }
+</style>

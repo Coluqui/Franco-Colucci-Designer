@@ -252,5 +252,17 @@
     "text": "The link may be wrong or the page may have moved.",
     "work": "See work",
     "talk": "Let’s talk"
+  },
+  "formats": {
+    "post": "Post",
+    "carrusel": "Carousel",
+    "story": "Story",
+    "reel": "Reel",
+    "ad": "Ad",
+    "mail": "Email",
+    "web": "Web",
+    "ebook": "Ebook",
+    "branding": "Branding",
+    "impreso": "Print"
   }
 }

@@ -1,0 +1,72 @@
+---
+/**
+ * "Siguiente caso" · PRD §5 · design system §3 (sección invertida).
+ * Etiqueta + título del caso siguiente a todo lo ancho, como un solo link grande.
+ */
+import Icono from './Icono.astro';
+import { t, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  href: string;
+  titulo: string;
+  frase: string;
+}
+
+const { lang, href, titulo, frase } = Astro.props;
+---
+
+<section class="seccion-invertida siguiente" aria-labelledby="siguiente-titulo">
+  <div class="container">
+    <a class="siguiente__link" href={href}>
+      <span class="t-label siguiente__etiqueta">{t(lang, 'caseDetail.next')}</span>
+      <span class="t-h1 siguiente__titulo" id="siguiente-titulo">
+        {titulo}
+        <Icono nombre="flecha-der" size="0.6em" />
+      </span>
+      <span class="t-body siguiente__frase">{frase}</span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .siguiente {
+    padding-block: var(--space-section);
+  }
+
+  .siguiente__link {
+    display: grid;
+    gap: var(--space-4);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+  }
+
+  .siguiente__link:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+
+  .siguiente__etiqueta,
+  .siguiente__frase {
+    color: var(--color-text-secondary);
+  }
+
+  .siguiente__frase {
+    max-inline-size: var(--measure);
+  }
+
+  .siguiente__titulo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .siguiente__link:hover .siguiente__titulo {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 0.12em;
+    }
+  }
+</style>
