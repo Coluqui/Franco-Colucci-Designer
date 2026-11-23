@@ -41,7 +41,7 @@ Ratio: ancho / alto. "Agrupación" es una **propuesta** a validar por Franco (re
 | 17 | 900 × 1600 | 9:16 | 138 KB | Story testimonio de cliente |
 | 18 | 1080 × 1351 | 4:5 | 135 KB | Post "Validaciones que tardan días…" |
 
-Propuesta: **12 piezas** (2 carruseles + 10 sueltas).
+Propuesta: **10 piezas** (2 carruseles + 8 sueltas). *(Corregido en la Fase 5: decía 12.)*
 
 ### iscamen (19)
 
@@ -63,7 +63,7 @@ Propuesta: entre **5 piezas** (si 08–12 y 15–19 son carruseles) y **14** (si
 | 06 | 835 × 451 | ≈ 1,85:1 | 70 KB | Banner de oferta de lanzamiento (resolución baja) |
 | 11 | 1337 × 1600 | 0,836 | 276 KB | Mockup del producto (ebook + pantallas) |
 
-Propuesta: **3 piezas** (serie de módulos como una pieza + banner + mockup).
+Propuesta: **3 piezas** (serie de módulos como una pieza + banner + mockup). *Fase 5: el banner 06 queda afuera porque no llena un visor de tamaño uniforme; se carga si llega un original apaisado de mayor resolución.*
 
 ### condimento (4)
 
