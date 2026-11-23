@@ -3,6 +3,8 @@
  * Sección de página · design system §6 y §8.
  * Separación vertical --space-section; título h2 opcional (con slot "accion" a la derecha);
  * `invertida` aplica el remapeo de tokens de .seccion-invertida (clientes, cierre, siguiente caso).
+ * M16: cuando el título entra un 15 %, una vez, el H2 y el primer bloque suben y aparecen. Una entrada
+ * por sección; nunca piezas, y si el bloque son filas de caso, las filas entran solas (M17).
  */
 interface Props {
   id?: string;
@@ -19,6 +21,7 @@ const idTitulo = id && titulo ? `${id}-titulo` : undefined;
 
 <section
   id={id}
+  data-seccion
   class:list={['seccion', { 'seccion-invertida': invertida }, className]}
   aria-labelledby={idTitulo}
 >
@@ -36,6 +39,25 @@ const idTitulo = id && titulo ? `${id}-titulo` : undefined;
     <slot />
   </div>
 </section>
+
+<script>
+  import { ms } from '../scripts/motion/base';
+  import { entrar, type Parte } from '../scripts/motion/observer';
+
+  document.querySelectorAll<HTMLElement>('[data-seccion]').forEach((seccion) => {
+    const caja = seccion.querySelector<HTMLElement>('.seccion__caja');
+    const cabecera = caja?.querySelector<HTMLElement>(':scope > .seccion__cabecera');
+    const titulo = cabecera?.querySelector('h2:not(.visually-hidden)') ? cabecera : null;
+    const bloque = (cabecera ? cabecera.nextElementSibling : caja?.firstElementChild) as HTMLElement | null;
+    // Ni piezas ni filas (las filas tienen su propia entrada, M17).
+    const bloqueSirve = bloque && !bloque.querySelector('[data-fila], .tile');
+    const partes: Parte[] = [];
+    if (titulo) partes.push({ el: titulo });
+    if (bloqueSirve) partes.push({ el: bloque, retraso: titulo ? ms('--stagger') : 0 });
+    const disparador = titulo ?? (bloqueSirve ? bloque : null);
+    if (disparador) entrar(disparador, partes);
+  });
+</script>
 
 <style>
   .seccion {

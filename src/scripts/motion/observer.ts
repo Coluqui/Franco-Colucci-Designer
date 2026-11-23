@@ -5,6 +5,8 @@
  * Sin JS no corre nada de esto y todo se ve.
  */
 
+import { animar, numero, resorte } from './base';
+
 type Aviso = (entrada: IntersectionObserverEntry) => void;
 
 /** Umbral de las entradas por scroll: 15 % del elemento en pantalla. */
@@ -53,3 +55,28 @@ export const enPantalla = (el: Element) => {
   const r = el.getBoundingClientRect();
   return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
 };
+
+export interface Parte {
+  el: HTMLElement;
+  /** Retraso en ms respecto del disparador (p. ej. --stagger). */
+  retraso?: number;
+}
+
+/**
+ * Entradas por scroll (M16, M17): cuando `disparador` entra un 15 %, una sola vez, cada parte sube
+ * --shift-md y aparece con --spring-soft. Lo que ya se ve al cargar no se anima ("nada arranca
+ * escondido"); lo que está fuera de pantalla se esconde recién acá, cuando nadie lo ve.
+ * Termina en su CSS (sin estilos en línea): no pisa el hover de las filas (M27).
+ */
+export function entrar(disparador: Element, partes: Parte[]) {
+  if (!partes.length || enPantalla(disparador)) return;
+  const oculto = { opacity: '0', transform: `translateY(${numero('--shift-md')}px)` };
+  partes.forEach(({ el }) => Object.assign(el.style, oculto));
+  alEntrar(disparador, () =>
+    partes.forEach(({ el, retraso = 0 }) => {
+      el.style.opacity = '';
+      el.style.transform = '';
+      animar(el, { opacity: '1', transform: 'none' }, { ...resorte('soft'), delay: retraso, desde: oculto, soltar: true });
+    }),
+  );
+}

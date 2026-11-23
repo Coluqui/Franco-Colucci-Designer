@@ -7,7 +7,9 @@
  * - Angosto: una columna, las métricas arriba de la imagen.
  * Hover: la media escala --scale-media-hover con --spring-soft y aparece "Ver caso →" (M27).
  * Foco: anillo en todo el panel y "Ver caso →" visible. En táctil, "Ver caso →" siempre visible.
- * Fase 6: la media se convierte en el hero del caso con View Transitions (M06, M07).
+ * M17: cada fila entra una vez al 15 % (sube --shift-md); la media 60 ms (--stagger) después del
+ * texto. La fila que ya se ve al cargar no se anima.
+ * Fase 6, paso 4: la media se convierte en el hero del caso con View Transitions (M06, M07).
  */
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
@@ -38,7 +40,7 @@ const { lang, href, titulo, tipo, metricas = [], descripcion, servicios, imagen,
 const Titulo = nivel;
 ---
 
-<div class="fila-caja">
+<div class="fila-caja" data-fila>
   <article class="fila">
     <div class="fila__media">
       {
@@ -83,6 +85,17 @@ const Titulo = nivel;
     </div>
   </article>
 </div>
+
+<script>
+  import { ms } from '../scripts/motion/base';
+  import { entrar } from '../scripts/motion/observer';
+
+  document.querySelectorAll<HTMLElement>('[data-fila]').forEach((fila) => {
+    const texto = fila.querySelector<HTMLElement>('.fila__texto');
+    const media = fila.querySelector<HTMLElement>('.fila__media');
+    if (texto && media) entrar(fila, [{ el: texto }, { el: media, retraso: ms('--stagger') }]);
+  });
+</script>
 
 <style>
   .fila-caja {

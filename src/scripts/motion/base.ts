@@ -49,6 +49,9 @@ const aKebab = (p: string) => p.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
 export interface OpcionesAnimar extends KeyframeAnimationOptions {
   /** Estado inicial. Si ya había una animación en curso se ignora: se sigue desde donde estaba. */
   desde?: Keyframe;
+  /** Al terminar, el elemento vuelve a lo que diga su CSS (sin estilos en línea): para animar
+   *  hacia el estado de reposo sin pisar :hover ni :focus (p. ej. font-stretch del menú). */
+  soltar?: boolean;
 }
 
 /**
@@ -57,7 +60,7 @@ export interface OpcionesAnimar extends KeyframeAnimationOptions {
  * Al terminar, el estado final queda como estilo en línea y la animación se libera.
  * `will-change` solo mientras dura.
  */
-export function animar(el: HTMLElement, hasta: Keyframe, { desde, ...opciones }: OpcionesAnimar): Animation {
+export function animar(el: HTMLElement, hasta: Keyframe, { desde, soltar = false, ...opciones }: OpcionesAnimar): Animation {
   const previa = enCurso.get(el);
   const interrumpe = previa?.playState === 'running';
   if (previa) {
@@ -67,11 +70,11 @@ export function animar(el: HTMLElement, hasta: Keyframe, { desde, ...opciones }:
   const props = Object.keys(hasta).filter((k) => k !== 'offset' && k !== 'easing' && k !== 'composite');
   el.style.willChange = props.map(aKebab).join(', ');
   const frames = desde && !interrumpe ? [desde, hasta] : [hasta];
-  const anim = el.animate(frames, { fill: 'forwards', ...opciones });
+  const anim = el.animate(frames, { fill: soltar ? 'backwards' : 'forwards', ...opciones });
   enCurso.set(el, anim);
   anim.finished
     .then(() => {
-      anim.commitStyles();
+      if (!soltar) anim.commitStyles();
       anim.cancel();
     })
     .catch(() => {
