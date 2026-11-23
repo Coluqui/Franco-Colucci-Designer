@@ -11,9 +11,9 @@ import Campo from '../components/Campo.astro';
 import ChipMetrica from '../components/ChipMetrica.astro';
 import FilaCaso from '../components/FilaCaso.astro';
 import ListaServicios from '../components/ListaServicios.astro';
+import DevComponentesB from './DevComponentesB.astro';
 import moondesk01 from './fixtures/moondesk-01.jpg';
 import moondesk02 from './fixtures/moondesk-02.jpg';
-import moondesk03 from './fixtures/moondesk-03.jpg';
 import condimento01 from './fixtures/condimento-01.jpg';
 import iscamen13 from './fixtures/iscamen-13.jpg';
 import type { Lang } from '../i18n';
@@ -149,7 +149,7 @@ const base = `/${lang}/dev/componentes`;
       servicios={[
         { slug: 'ads', nombre: 'Ads', descripcion: 'PENDIENTE: descripción del servicio.', ratio: 'square', imagen: condimento01, alt: 'PENDIENTE: alt' },
         { slug: 'redes', nombre: 'Redes', descripcion: 'PENDIENTE: descripción del servicio.', ratio: 'carousel', imagen: moondesk01, alt: 'PENDIENTE: alt' },
-        { slug: 'reels', nombre: 'Reels', descripcion: 'PENDIENTE: descripción del servicio.', ratio: 'reel', imagen: moondesk03, alt: 'PENDIENTE: alt' },
+        { slug: 'reels', nombre: 'Reels', descripcion: 'PENDIENTE: descripción del servicio.', ratio: 'reel', imagen: iscamen13, alt: 'PENDIENTE: alt' },
         { slug: 'mail', nombre: 'Mail', descripcion: 'PENDIENTE: descripción del servicio.', ratio: 'mail-header' },
         { slug: 'web', nombre: 'Web', descripcion: 'PENDIENTE: descripción del servicio.', ratio: 'web' },
         { slug: 'branding', nombre: 'Branding', descripcion: 'PENDIENTE: descripción del servicio.', ratio: 'carousel' },
@@ -157,10 +157,12 @@ const base = `/${lang}/dev/componentes`;
     />
   </section>
 
+  <DevComponentesB lang={lang} />
+
   <section aria-labelledby="c-campos">
     <h2 id="c-campos">15 · Campos</h2>
     <form class="grilla-campos" onsubmit="return false" novalidate>
-      <Campo id="demo-nombre" name="demo-nombre" label="Nombre" autocomplete="off" />
+      <Campo id="demo-nombre" name="demo-nombre" label="Nombre" autocomplete="off" required textoObligatorio="(obligatorio)" />
       <Campo id="demo-email" name="demo-email" tipo="email" label="Email" value="franco@" error="Revisá el formato del email." />
       <Campo id="demo-ok" name="demo-ok" label="Nombre (válido)" value="PENDIENTE" exito />
       <Campo id="demo-off" name="demo-off" label="Deshabilitado" value="PENDIENTE" disabled />

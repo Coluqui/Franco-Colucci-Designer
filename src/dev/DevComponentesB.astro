@@ -1,0 +1,136 @@
+---
+/**
+ * Segunda mitad de /[lang]/dev/componentes: componentes 8 a 14 del design system §7
+ * (la barra mobile y el footer se ven en el layout, porque la página usa `chrome`).
+ * Contenido de ejemplo marcado PENDIENTE: nunca se inventan clientes, testimonios ni respuestas.
+ */
+import GrillaClientes from '../components/GrillaClientes.astro';
+import Testimonios from '../components/Testimonios.astro';
+import Faq from '../components/Faq.astro';
+import Filtros from '../components/Filtros.astro';
+import TilePieza from '../components/TilePieza.astro';
+import Visor from '../components/Visor.astro';
+import type { PiezaVista } from '../components/tipos';
+import { t, type Lang } from '../i18n';
+import moondesk01 from './fixtures/moondesk-01.jpg';
+import moondesk02 from './fixtures/moondesk-02.jpg';
+import moondesk03 from './fixtures/moondesk-03.jpg';
+import moondesk04 from './fixtures/moondesk-04.jpg';
+import moondesk05 from './fixtures/moondesk-05.jpg';
+import condimento01 from './fixtures/condimento-01.jpg';
+import iscamen13 from './fixtures/iscamen-13.jpg';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const alt = 'PENDIENTE: alt de la pieza';
+
+const piezas: Array<PiezaVista & { filtro: string }> = [
+  {
+    slug: 'demo-carrusel',
+    cliente: 'PENDIENTE',
+    formato: t(lang, 'tile.carousel'),
+    ratio: '4:5',
+    filtro: 'redes',
+    slides: [moondesk01, moondesk02, moondesk03, moondesk04, moondesk05].map((src, i) => ({ src, alt: `${alt} (${i + 1})` })),
+  },
+  { slug: 'demo-post', cliente: 'PENDIENTE', formato: 'Post', ratio: '1:1', filtro: 'ads', slides: [{ src: condimento01, alt }] },
+  { slug: 'demo-story', cliente: 'PENDIENTE', formato: 'Story', ratio: '9:16', filtro: 'redes', slides: [{ src: iscamen13, alt }] },
+];
+
+const contar = (f: string) => piezas.filter((p) => p.filtro.split(' ').includes(f)).length;
+---
+
+<section aria-labelledby="c-clientes">
+  <h2 id="c-clientes">8 · Grilla de clientes y 9 · Testimonios</h2>
+  <p class="t-body">Juntos en la sección invertida. Sin logos ni testimonios reales todavía (PENDIENTE).</p>
+  <div class="seccion-invertida caja-invertida pila">
+    <GrillaClientes
+      etiqueta={t(lang, 'clients.title')}
+      clientes={Array.from({ length: 6 }, (_, i) => ({ nombre: `PENDIENTE ${i + 1}` }))}
+    />
+    <Testimonios
+      lang={lang}
+      testimonios={[1, 2, 3].map((n) => ({
+        cita: `PENDIENTE: testimonio ${n}, una o dos frases de un cliente real.`,
+        autor: 'PENDIENTE: nombre',
+        rol: 'PENDIENTE: cargo, empresa',
+      }))}
+    />
+  </div>
+</section>
+
+<section aria-labelledby="c-faq">
+  <h2 id="c-faq">10 · FAQ</h2>
+  <Faq
+    preguntas={[1, 2, 3].map((n) => ({
+      pregunta: `PENDIENTE: pregunta frecuente ${n}`,
+      respuesta: 'PENDIENTE: respuesta de Franco.',
+    }))}
+  />
+</section>
+
+<section aria-labelledby="c-piezas">
+  <h2 id="c-piezas">11 · Filtros, 12 · Tile de pieza y 13 · Visor</h2>
+  <p class="t-body">
+    Un carrusel cuenta 1. Clic en un tile: visor con ← →, Re Pág / Av Pág, ESC y swipe; la URL guarda ?pieza=&amp;slide=.
+  </p>
+  <Filtros
+    lang={lang}
+    etiqueta={t(lang, 'filters.byService')}
+    objetivo="demo-piezas"
+    param="servicio"
+    total={piezas.length}
+    opciones={[
+      { valor: 'redes', nombre: 'Redes', cantidad: contar('redes') },
+      { valor: 'ads', nombre: 'Ads', cantidad: contar('ads') },
+    ]}
+  />
+  <div class="grilla-piezas" id="demo-piezas">
+    {piezas.map((p) => <TilePieza lang={lang} pieza={p} filtro={p.filtro} />)}
+  </div>
+  <Visor lang={lang} piezas={piezas} />
+</section>
+
+<section aria-labelledby="c-barra">
+  <h2 id="c-barra">16 · Barra mobile y 17 · Footer</h2>
+  <p class="t-body">En el layout: la barra aparece abajo a menos de 768 px; el footer cierra la página.</p>
+</section>
+
+<style>
+  section {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .caja-invertida {
+    padding: var(--space-5);
+    border-radius: var(--radius-sm);
+  }
+
+  .pila {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .grilla-piezas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--grid-gutter);
+    align-items: start;
+  }
+
+  @media (min-width: 48rem) {
+    .grilla-piezas {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 80rem) {
+    .grilla-piezas {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>
