@@ -30,6 +30,14 @@ export function t(lang: Lang, key: UiKey): string {
   return node;
 }
 
+/** Igual que t(), con variables: tf('es', 'tile.slides', { n: 7 }) → "7 slides". */
+export function tf(lang: Lang, key: UiKey, vars: Record<string, string | number>): string {
+  return t(lang, key).replace(/\{(\w+)\}/g, (_, name: string) => String(vars[name] ?? `{${name}}`));
+}
+
+/** Número con dos dígitos, para contadores tipo "03 / 12". */
+export const dosDigitos = (n: number) => String(n).padStart(2, '0');
+
 /** Idioma a partir de la URL (/es/…, /en/…). */
 export function langFromUrl(url: URL): Lang {
   const [, first] = url.pathname.split('/');

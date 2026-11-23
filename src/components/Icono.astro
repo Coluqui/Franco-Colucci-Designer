@@ -1,0 +1,78 @@
+---
+/**
+ * Íconos de interfaz: trazo de 1,5 px en currentColor, caja de 16 × 16.
+ * Reemplazan a → ↗ ← ↓ ⧉ ✓ + − × porque no están en el subset de Archivo
+ * y con la fuente del sistema se verían distintos en cada dispositivo.
+ * Decorativos (aria-hidden): el texto accesible va en el control.
+ */
+export type NombreIcono =
+  | 'flecha-der'
+  | 'flecha-izq'
+  | 'flecha-diag'
+  | 'flecha-abajo'
+  | 'carrusel'
+  | 'check'
+  | 'mas'
+  | 'cerrar'
+  | 'error';
+
+interface Props {
+  nombre: NombreIcono;
+  size?: string;
+  class?: string;
+}
+
+const { nombre, size = 'var(--icon-size)', class: className } = Astro.props;
+
+const trazos: Record<NombreIcono, string> = {
+  'flecha-der': 'M2.5 8h11M9 3.5 13.5 8 9 12.5',
+  'flecha-izq': 'M13.5 8h-11M7 3.5 2.5 8 7 12.5',
+  'flecha-diag': 'M4 12 12 4M5.5 4H12v6.5',
+  'flecha-abajo': 'M8 2.5v11M3.5 9 8 13.5 12.5 9',
+  carrusel: 'M5.5 2.5h8v8M2.5 5.5h8v8h-8z',
+  check: 'M2.5 8.5 6 12l7.5-8',
+  mas: 'M2.5 8h11M8 2.5v11',
+  cerrar: 'M3.5 3.5l9 9M12.5 3.5l-9 9',
+  error: 'M8 1.75 14.75 14H1.25zM8 6.5v3.5M8 11.75v.5',
+};
+---
+
+<svg
+  class:list={['icono', className]}
+  viewBox="0 0 16 16"
+  width="16"
+  height="16"
+  style={`inline-size: ${size}; block-size: ${size}`}
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="square"
+  aria-hidden="true"
+  focusable="false"
+  data-icono={nombre}
+>
+  {
+    nombre === 'mas' ? (
+      <>
+        <path d="M2.5 8h11" />
+        <path class="icono__vertical" d="M8 2.5v11" />
+      </>
+    ) : (
+      <path d={trazos[nombre]} />
+    )
+  }
+</svg>
+
+<style>
+  .icono {
+    display: inline-block;
+    flex: none;
+    vertical-align: -0.125em;
+  }
+
+  /* La barra vertical del + se puede esconder para mostrar − (FAQ, servicios en mobile). */
+  .icono__vertical {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+</style>

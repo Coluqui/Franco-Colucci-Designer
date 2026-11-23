@@ -10,12 +10,109 @@
     "en": "English",
     "switchTo": "English"
   },
+  "theme": {
+    "label": "Modo",
+    "light": "Claro",
+    "dark": "Oscuro"
+  },
   "redirect": {
     "title": "Franco Colucci",
     "choose": "Elegí un idioma"
   },
   "a11y": {
-    "skipToContent": "Saltar al contenido"
+    "skipToContent": "Saltar al contenido",
+    "newTab": "(se abre en otra pestaña)",
+    "pending": "(pendiente)"
+  },
+  "nav": {
+    "label": "Navegación principal",
+    "home": "Inicio",
+    "work": "Trabajos",
+    "about": "Sobre mí",
+    "homeLink": "Franco Colucci, inicio",
+    "menu": "Menú",
+    "close": "Cerrar",
+    "closeMenu": "Cerrar menú",
+    "talk": "Hablemos",
+    "contact": "Contacto",
+    "quickActions": "Acciones rápidas"
+  },
+  "contact": {
+    "email": "Mail",
+    "copyEmail": "Copiar mail",
+    "copied": "Copiado",
+    "linkedin": "LinkedIn",
+    "whatsapp": "WhatsApp",
+    "cv": "CV",
+    "downloadCv": "Descargar CV",
+    "downloading": "Descargando",
+    "direct": "O escribime directo"
+  },
+  "form": {
+    "title": "Hablemos",
+    "intro": "PENDIENTE: bajada del panel Hablemos.",
+    "name": "Nombre",
+    "email": "Email",
+    "message": "Mensaje",
+    "send": "Enviar",
+    "sending": "Enviando",
+    "success": "Gracias, recibí tu mensaje. Te respondo pronto.",
+    "error": "No se pudo enviar. Probá de nuevo o escribime directo; lo que escribiste sigue acá.",
+    "retry": "Reintentar",
+    "required": "Completá este campo.",
+    "invalidEmail": "Revisá el email: parece que falta algo.",
+    "closePanel": "Cerrar panel"
+  },
+  "case": {
+    "view": "Ver caso",
+    "services": "Servicios",
+    "metrics": "Métricas"
+  },
+  "services": {
+    "title": "Qué hago",
+    "preview": "Vista previa"
+  },
+  "clients": {
+    "title": "Clientes"
+  },
+  "testimonials": {
+    "title": "Testimonios",
+    "label": "Testimonios",
+    "carousel": "carrusel",
+    "prev": "Testimonio anterior",
+    "next": "Testimonio siguiente",
+    "position": "Testimonio {actual} de {total}"
+  },
+  "faq": {
+    "title": "Preguntas frecuentes"
+  },
+  "filters": {
+    "byService": "Filtrar por servicio",
+    "byFormat": "Filtrar por formato",
+    "all": "Todos",
+    "results": "{n} piezas",
+    "resultsOne": "1 pieza"
+  },
+  "tile": {
+    "view": "Ver pieza",
+    "carousel": "Carrusel",
+    "slides": "{n} slides"
+  },
+  "viewer": {
+    "label": "Visor de piezas",
+    "carousel": "carrusel",
+    "close": "Cerrar visor",
+    "prevSlide": "Slide anterior",
+    "nextSlide": "Slide siguiente",
+    "prevPiece": "Pieza anterior",
+    "nextPiece": "Pieza siguiente",
+    "piece": "Pieza",
+    "slide": "Slide",
+    "slidePosition": "Slide {actual} de {total}",
+    "piecePosition": "Pieza {actual} de {total}"
+  },
+  "footer": {
+    "signature": "{nombre}, {anio}"
   },
   "placeholder": {
     "pending": "PENDIENTE",

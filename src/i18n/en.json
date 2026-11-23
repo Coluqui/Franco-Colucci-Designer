@@ -10,12 +10,109 @@
     "en": "English",
     "switchTo": "Español"
   },
+  "theme": {
+    "label": "Mode",
+    "light": "Light",
+    "dark": "Dark"
+  },
   "redirect": {
     "title": "Franco Colucci",
     "choose": "Choose a language"
   },
   "a11y": {
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "newTab": "(opens in a new tab)",
+    "pending": "(pending)"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "home": "Home",
+    "work": "Work",
+    "about": "About",
+    "homeLink": "Franco Colucci, home",
+    "menu": "Menu",
+    "close": "Close",
+    "closeMenu": "Close menu",
+    "talk": "Let's talk",
+    "contact": "Contact",
+    "quickActions": "Quick actions"
+  },
+  "contact": {
+    "email": "Email",
+    "copyEmail": "Copy email",
+    "copied": "Copied",
+    "linkedin": "LinkedIn",
+    "whatsapp": "WhatsApp",
+    "cv": "CV",
+    "downloadCv": "Download CV",
+    "downloading": "Downloading",
+    "direct": "Or reach me directly"
+  },
+  "form": {
+    "title": "Let's talk",
+    "intro": "PENDING: intro for the Let's talk panel.",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send",
+    "sending": "Sending",
+    "success": "Thanks, I got your message. I'll reply soon.",
+    "error": "It couldn't be sent. Try again or reach me directly; what you wrote is still here.",
+    "retry": "Try again",
+    "required": "Please fill in this field.",
+    "invalidEmail": "Check the email: something seems to be missing.",
+    "closePanel": "Close panel"
+  },
+  "case": {
+    "view": "View case",
+    "services": "Services",
+    "metrics": "Metrics"
+  },
+  "services": {
+    "title": "What I do",
+    "preview": "Preview"
+  },
+  "clients": {
+    "title": "Clients"
+  },
+  "testimonials": {
+    "title": "Testimonials",
+    "label": "Testimonials",
+    "carousel": "carousel",
+    "prev": "Previous testimonial",
+    "next": "Next testimonial",
+    "position": "Testimonial {actual} of {total}"
+  },
+  "faq": {
+    "title": "Frequently asked questions"
+  },
+  "filters": {
+    "byService": "Filter by service",
+    "byFormat": "Filter by format",
+    "all": "All",
+    "results": "{n} pieces",
+    "resultsOne": "1 piece"
+  },
+  "tile": {
+    "view": "View piece",
+    "carousel": "Carousel",
+    "slides": "{n} slides"
+  },
+  "viewer": {
+    "label": "Piece viewer",
+    "carousel": "carousel",
+    "close": "Close viewer",
+    "prevSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "prevPiece": "Previous piece",
+    "nextPiece": "Next piece",
+    "piece": "Piece",
+    "slide": "Slide",
+    "slidePosition": "Slide {actual} of {total}",
+    "piecePosition": "Piece {actual} of {total}"
+  },
+  "footer": {
+    "signature": "{nombre}, {anio}"
   },
   "placeholder": {
     "pending": "PENDING",
