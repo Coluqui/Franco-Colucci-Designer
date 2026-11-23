@@ -1,0 +1,52 @@
+---
+/**
+ * Retrato en duotono · design system §5. Solo fotos propias (nunca piezas de clientes).
+ * Técnica simple del §5: imagen en gris con mix-blend-mode multiply sobre --duotone-highlight
+ * y una capa --duotone-shadow en screen. Los colores cambian solos con el modo.
+ */
+import { Image } from 'astro:assets';
+import retrato from '../assets/sobre-mi/retrato.png';
+
+interface Props {
+  alt: string;
+  sizes?: string;
+  /** "eager" cuando el retrato está en el primer viewport (Sobre mí). */
+  loading?: 'eager' | 'lazy';
+  class?: string;
+}
+
+const { alt, sizes = '(min-width: 80rem) 30rem, (min-width: 48rem) 40vw, 90vw', loading = 'lazy', class: className } = Astro.props;
+---
+
+<div class:list={['retrato', className]}>
+  <Image src={retrato} alt={alt} widths={[360, 600]} sizes={sizes} loading={loading} />
+</div>
+
+<style>
+  .retrato {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    aspect-ratio: 2 / 3;
+    border-radius: var(--radius-sm);
+    background: var(--duotone-highlight);
+  }
+
+  .retrato :global(img) {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    filter: grayscale(1);
+    mix-blend-mode: multiply;
+  }
+
+  .retrato::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--duotone-shadow);
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+</style>

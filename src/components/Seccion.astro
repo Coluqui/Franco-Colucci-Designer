@@ -1,0 +1,65 @@
+---
+/**
+ * Sección de página · design system §6 y §8.
+ * Separación vertical --space-section; título h2 opcional (con slot "accion" a la derecha);
+ * `invertida` aplica el remapeo de tokens de .seccion-invertida (clientes, cierre, siguiente caso).
+ */
+interface Props {
+  id?: string;
+  titulo?: string;
+  /** Título solo para lectores de pantalla (cuando el diseño no lo muestra). */
+  tituloOculto?: boolean;
+  invertida?: boolean;
+  class?: string;
+}
+
+const { id, titulo, tituloOculto = false, invertida = false, class: className } = Astro.props;
+const idTitulo = id && titulo ? `${id}-titulo` : undefined;
+---
+
+<section
+  id={id}
+  class:list={['seccion', { 'seccion-invertida': invertida }, className]}
+  aria-labelledby={idTitulo}
+>
+  <div class="container seccion__caja">
+    {
+      titulo && (
+        <div class:list={['seccion__cabecera', { 'visually-hidden': tituloOculto }]}>
+          <h2 id={idTitulo}>{titulo}</h2>
+          {Astro.slots.has('accion') && <slot name="accion" />}
+        </div>
+      )
+    }
+    <slot />
+  </div>
+</section>
+
+<style>
+  .seccion {
+    padding-block: var(--space-section);
+  }
+
+  /* Dos secciones de fondo igual seguidas no duplican el espacio. */
+  .seccion:not(.seccion-invertida) + .seccion:not(.seccion-invertida) {
+    padding-block-start: 0;
+  }
+
+  .seccion__caja {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .seccion__cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .seccion__cabecera h2 {
+    margin: 0;
+    text-wrap: balance;
+  }
+</style>

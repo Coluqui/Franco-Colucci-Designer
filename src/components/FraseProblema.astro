@@ -1,0 +1,31 @@
+---
+/**
+ * Frase-problema (y cierre) · PRD §3 · design system §4 y §8.
+ * --text-display; ≥ 1280 hasta 10 columnas. La lectura palabra por palabra ligada al scroll (M15)
+ * llega en la Fase 6: el texto ya está completo y visible sin JS.
+ */
+interface Props {
+  texto: string;
+  /** "p" para la frase-problema; "h2" cuando la frase es el título del bloque (cierre). */
+  as?: 'p' | 'h2';
+  id?: string;
+}
+
+const { texto, as: Tag = 'p', id } = Astro.props;
+---
+
+<Tag id={id} class="t-display frase" data-frase>{texto}</Tag>
+
+<style>
+  .frase {
+    margin: 0;
+    color: var(--color-text-primary);
+    text-wrap: balance;
+  }
+
+  @media (min-width: 80rem) {
+    .frase {
+      max-inline-size: calc((100% + var(--grid-gutter)) * 10 / 12 - var(--grid-gutter));
+    }
+  }
+</style>

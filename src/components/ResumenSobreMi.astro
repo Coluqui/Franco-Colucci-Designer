@@ -1,0 +1,54 @@
+---
+/**
+ * Sobre mí (resumen) en la home · PRD §5.
+ * Retrato en duotono + bio corta (PENDIENTE) + link a /[lang]/sobre-mi/.
+ */
+import Retrato from './Retrato.astro';
+import Link from './Link.astro';
+import { t, localizePath, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<div class="resumen">
+  <Retrato alt={t(lang, 'about.portraitAlt')} class="resumen__retrato" sizes="(min-width: 48rem) 16rem, 50vw" />
+  <div class="resumen__texto">
+    <p class="t-lead">{t(lang, 'home.aboutText')}</p>
+    <p class="t-ui">
+      <Link href={localizePath(lang, 'sobre-mi/')} lang={lang}>{t(lang, 'home.aboutLink')}</Link>
+    </p>
+  </div>
+</div>
+
+<style>
+  .resumen {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .resumen :global(.resumen__retrato) {
+    inline-size: min(100%, 16rem);
+  }
+
+  .resumen__texto {
+    display: grid;
+    align-content: start;
+    gap: var(--space-5);
+    max-inline-size: var(--measure);
+  }
+
+  .resumen__texto p {
+    margin: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .resumen {
+      grid-template-columns: 16rem minmax(0, 1fr);
+      gap: var(--space-8);
+    }
+  }
+</style>

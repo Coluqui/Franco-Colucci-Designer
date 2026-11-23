@@ -1,0 +1,37 @@
+---
+/**
+ * Cierre de la home · PRD §3 y §5 · design system §3 (sección invertida).
+ * La frase-problema vuelve como cierre + "▣ Hablemos" (abre el panel; sin JS, /[lang]/hablemos/).
+ * El glifo enorme vive en el Footer, que viene justo después.
+ */
+import Boton from './Boton.astro';
+import FraseProblema from './FraseProblema.astro';
+import { t, localizePath, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<section class="seccion-invertida cierre" aria-labelledby="cierre-titulo">
+  <div class="container cierre__caja">
+    <FraseProblema texto={t(lang, 'closing.text')} as="h2" id="cierre-titulo" />
+    <Boton glifo href={localizePath(lang, 'hablemos/')} data-abre-panel aria-haspopup="dialog">
+      {t(lang, 'nav.talk')}
+    </Boton>
+  </div>
+</section>
+
+<style>
+  .cierre {
+    padding-block: var(--space-section);
+  }
+
+  .cierre__caja {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-8);
+  }
+</style>

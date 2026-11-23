@@ -1,0 +1,146 @@
+---
+/**
+ * Hero de la home · PRD §5 · design system §2, §4 y §8.
+ * Wordmark "FRANC▣ / COLUCCI" a todo el ancho (H1 real: "Franco Colucci") + bajada + tira de formatos.
+ * La tira es la versión estática del loop (M04, Fase 6): la misma campaña en 1:1, 4:5, 9:16, 3:1 y 16:10.
+ * Mientras Franco no elija la campaña, cada marco es un placeholder PENDIENTE.
+ * Nada arranca escondido: todo se ve en el primer frame.
+ */
+import Glifo from './Glifo.astro';
+import { t, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+/** Formatos del loop (PRD §8): token --ratio-* y su etiqueta. */
+const formatos = [
+  { ratio: 'square', etiqueta: '1:1' },
+  { ratio: 'carousel', etiqueta: '4:5' },
+  { ratio: 'reel', etiqueta: '9:16' },
+  { ratio: 'mail-header', etiqueta: '3:1' },
+  { ratio: 'web', etiqueta: '16:10' },
+] as const;
+---
+
+<section class="hero">
+  <div class="container hero__caja">
+    <h1 class="hero__titulo">
+      <span class="visually-hidden">Franco Colucci</span>
+      <span class="t-wordmark hero__wordmark" aria-hidden="true">
+        <span class="hero__linea">Franc<Glifo class="hero__glifo" /></span>
+        <span class="hero__linea">Colucci</span>
+      </span>
+    </h1>
+    <p class="t-lead hero__bajada">{t(lang, 'hero.tagline')}</p>
+  </div>
+
+  <div class="container">
+    <ul class="hero__formatos" role="list" aria-label={t(lang, 'hero.formatsLabel')}>
+      {
+        formatos.map((f) => (
+          <li class="hero__formato" style={`--aspecto: var(--ratio-${f.ratio})`}>
+            <span class="hero__marco">
+              <span class="t-label">{f.etiqueta}</span>
+              <span class="visually-hidden">· {t(lang, 'hero.formatPending')}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    gap: var(--space-8);
+    padding-block: calc(var(--header-height) + var(--safe-top) + var(--space-6)) var(--space-section);
+  }
+
+  /* El wordmark se mide contra este contenedor (t-wordmark usa cqi). */
+  .hero__caja {
+    container-type: inline-size;
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .hero__titulo {
+    margin: 0;
+    font: inherit;
+  }
+
+  .hero__wordmark {
+    display: grid;
+    color: var(--color-text-primary);
+  }
+
+  .hero__linea {
+    display: block;
+    white-space: nowrap;
+  }
+
+  /* El glifo ocupa el lugar de la O: alto de mayúscula (0,72 em), apoyado en la línea de base. */
+  .hero__wordmark :global(.hero__glifo) {
+    margin-inline-start: 0.04em;
+    vertical-align: baseline;
+  }
+
+  .hero__bajada {
+    max-inline-size: var(--measure);
+    color: var(--color-text-secondary);
+    text-wrap: balance;
+  }
+
+  /* Tira de formatos: flex-grow proporcional al ancho de cada formato + base 0 →
+     todos los marcos de una fila quedan a la misma altura sin calcular nada. */
+  .hero__formatos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--grid-gutter);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hero__formato {
+    flex: calc(var(--aspecto)) 1 0;
+    min-inline-size: 0;
+  }
+
+  /* Angosto: dos filas (1:1 · 4:5 · 9:16 arriba; 3:1 · 16:10 abajo). */
+  .hero__formato:nth-child(4) {
+    flex-basis: 100%;
+  }
+
+  .hero__formato:nth-child(4) ~ .hero__formato {
+    flex-basis: 100%;
+  }
+
+  .hero__marco {
+    display: grid;
+    place-items: center;
+    aspect-ratio: var(--aspecto);
+    border-radius: var(--radius-sm);
+    background: var(--color-stage);
+    color: var(--color-text-secondary);
+  }
+
+  @media (min-width: 48rem) {
+    .hero__formato:nth-child(4),
+    .hero__formato:nth-child(4) ~ .hero__formato {
+      flex-basis: 0;
+    }
+  }
+
+  /* ≥ 1280: el loop a 7 columnas, centrado (design system §8). */
+  @media (min-width: 80rem) {
+    .hero__formatos {
+      max-inline-size: calc((100% + var(--grid-gutter)) * 7 / 12 - var(--grid-gutter));
+      margin-inline: auto;
+    }
+  }
+</style>
