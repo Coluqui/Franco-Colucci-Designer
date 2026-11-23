@@ -310,6 +310,8 @@ const { lang, piezas } = Astro.props;
   .visor[open] {
     display: grid;
     grid-template-rows: auto minmax(0, 1fr) auto;
+    /* La columna nunca crece más que la pantalla (a 360 px los botones de pieza la empujaban). */
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-3);
   }
 
@@ -419,7 +421,8 @@ const { lang, piezas } = Astro.props;
     }
   }
 
-  /* Flechas de slide: solo con puntero fino y en carruseles; en táctil manda el swipe. */
+  /* Flechas de slide: solo con puntero fino; en táctil manda el swipe. En piezas de un slide
+     no se ven pero conservan su lugar: el escenario mide lo mismo para todas las piezas. */
   .visor__lado {
     display: none;
     grid-row: 1;
@@ -434,9 +437,13 @@ const { lang, piezas } = Astro.props;
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .visor:not([data-un-slide]) .visor__lado {
+    .visor__lado {
       display: inline-flex;
       margin-inline: var(--space-3);
+    }
+
+    .visor[data-un-slide] .visor__lado {
+      visibility: hidden;
     }
   }
 
@@ -446,7 +453,9 @@ const { lang, piezas } = Astro.props;
     padding-inline: var(--grid-margin);
   }
 
+  /* Alto reservado aunque la pieza tenga un solo slide (sin segmentos): escenario constante. */
   .visor__segmentos {
+    min-block-size: var(--control-height);
     display: flex;
     gap: var(--space-1);
     justify-content: center;
@@ -486,5 +495,13 @@ const { lang, piezas } = Astro.props;
     display: flex;
     justify-content: space-between;
     gap: var(--space-3);
+  }
+
+  /* Angosto: los dos botones se reparten el ancho y el texto puede pasar a dos líneas. */
+  .visor__piezas .visor__boton--texto {
+    flex: 0 1 auto;
+    min-inline-size: 0;
+    white-space: normal;
+    text-align: start;
   }
 </style>
