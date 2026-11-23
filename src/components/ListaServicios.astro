@@ -8,7 +8,10 @@
  *   formato de la pieza de ese servicio (--ratio-*). Hover con intención (--hover-intent) o foco
  *   abre el ítem; un clic no lo cierra (siempre hay uno activo).
  * Activo: --color-text-primary y wdth 125; inactivos: --color-text-secondary y wdth 112.
- * Fase 6: la respiración 112 → 125 (M13) y el encastre del marco (M05).
+ * M05 (encastre): con JS, el marco es el recorte (clip-path) de una capa del tamaño del escenario;
+ * al cambiar de servicio el recorte pasa del formato anterior al nuevo con --spring-snap, la pieza
+ * anterior se va con fundido y la nueva entra cuando el marco llegó al 70 %. Sin JS, el marco es
+ * una caja de su proporción (como antes). Fase 6, paso 3: la respiración 112 → 125 (M13).
  */
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
@@ -49,13 +52,15 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
             </summary>
             <div class="servicio__panel">
               <div class="servicio__escenario">
-                <figure class="servicio__marco">
-                  {s.imagen ? (
-                    <Image src={s.imagen} alt={s.alt ?? ''} widths={[400, 720]} sizes="(min-width: 80rem) 32rem, 90vw" loading="lazy" />
-                  ) : (
-                    <figcaption class="t-label servicio__pendiente">{t(lang, 'services.pendingPreview')}</figcaption>
-                  )}
-                </figure>
+                <div class="servicio__capa" data-servicio-capa>
+                  <figure class="servicio__marco" data-servicio-marco>
+                    {s.imagen ? (
+                      <Image src={s.imagen} alt={s.alt ?? ''} widths={[400, 720]} sizes="(min-width: 80rem) 32rem, 90vw" loading="lazy" />
+                    ) : (
+                      <figcaption class="t-label servicio__pendiente">{t(lang, 'services.pendingPreview')}</figcaption>
+                    )}
+                  </figure>
+                </div>
               </div>
               <p class="t-body servicio__descripcion">{s.descripcion}</p>
               <a class="link t-ui servicio__link" href={localizePath(lang, `trabajos/?servicio=${s.slug}`)}>
@@ -71,29 +76,106 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
 </div>
 
 <script>
+  import { animar, curva, detener, ms, resorte } from '../scripts/motion/base';
+  import { encastrar, medida, recorte, type Medida } from '../scripts/motion/encastre';
+  import { alEntrar } from '../scripts/motion/observer';
+
   /* Solo en el modo ancho: hover con intención o foco abren el ítem; el clic no lo cierra. */
   document.querySelectorAll<HTMLElement>('[data-servicios]').forEach((lista) => {
     const ancho = () => getComputedStyle(lista).getPropertyValue('--servicios-fijo').trim() === '1';
-    const intencion = () =>
-      parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hover-intent')) || 0;
+    const intencion = () => ms('--hover-intent');
     let espera: number | undefined;
+
+    const capaDe = (d: HTMLDetailsElement) => d.querySelector<HTMLElement>('[data-servicio-capa]')!;
+    const marcoDe = (d: HTMLDetailsElement) => d.querySelector<HTMLElement>('[data-servicio-marco]')!;
+    /** Tamaño del marco de cada ítem la última vez que se vio (cerrado mide 0). */
+    const marcos = new WeakMap<HTMLDetailsElement, Medida>();
+    let activo: HTMLDetailsElement | null = null;
+
+    /** Recorte fijo, sin animar: carga, acordeón angosto y cambios de tamaño. */
+    const fijar = (d: HTMLDetailsElement) => {
+      const capa = capaDe(d);
+      const marco = medida(marcoDe(d));
+      detener(capa);
+      capa.style.clipPath = recorte(medida(capa), marco);
+      marcos.set(d, marco);
+    };
+
+    /** M05: el marco pasa del formato del servicio anterior al del nuevo. */
+    const activar = (d: HTMLDetailsElement) => {
+      if (!d.open || d === activo) return;
+      const anterior = activo;
+      activo = d;
+      if (!anterior || !ancho()) return fijar(d);
+
+      const capa = capaDe(d);
+      const caja = medida(capa);
+      const nuevo = medida(marcoDe(d));
+      const viejo = marcos.get(anterior) ?? nuevo;
+      marcos.set(d, nuevo);
+      // Si el anterior seguía encastrando, se arranca desde su forma de este instante (sin saltos).
+      const capaAnterior = capaDe(anterior);
+      const enCurso = capaAnterior.getAnimations().some((a) => a.playState === 'running');
+      const desde = enCurso ? getComputedStyle(capaAnterior).clipPath : recorte(caja, viejo);
+      detener(capaAnterior);
+      detener(capa);
+      encastrar(capa, recorte(caja, nuevo), { desde: { clipPath: desde } });
+
+      // La pieza nueva entra cuando el marco llegó al 70 %.
+      const pieza = marcoDe(d).firstElementChild as HTMLElement | null;
+      if (pieza) {
+        detener(pieza);
+        animar(pieza, { opacity: 1 }, { ...curva('out', 'fast'), delay: resorte('snap').duration * 0.7, fill: 'both', desde: { opacity: 0 } });
+      }
+
+      // La anterior se va con fundido, recortada por el marco que cambia (una copia en su tamaño).
+      capa.querySelector('[data-servicio-salida]')?.remove();
+      const imagen = marcoDe(anterior).querySelector('img');
+      if (imagen) {
+        const salida = imagen.cloneNode() as HTMLImageElement;
+        salida.removeAttribute('loading');
+        salida.alt = '';
+        salida.dataset['servicioSalida'] = '';
+        salida.className = 'servicio__salida';
+        Object.assign(salida.style, { inlineSize: `${viejo.w}px`, blockSize: `${viejo.h}px` });
+        capa.append(salida);
+        animar(salida, { opacity: 0 }, curva('in', 'fast')).finished.then(() => salida.remove(), () => salida.remove());
+      }
+    };
 
     lista.querySelectorAll<HTMLDetailsElement>('[data-servicio]').forEach((d) => {
       const summary = d.querySelector('summary');
       if (!summary) return;
+      // El clic nativo cambia el estado después: el encastre sale del evento toggle.
+      d.addEventListener('toggle', () => activar(d));
       summary.addEventListener('click', (e) => {
         if (ancho() && d.open) e.preventDefault();
       });
       summary.addEventListener('focus', () => {
-        if (ancho()) d.open = true;
+        if (!ancho()) return;
+        d.open = true;
+        activar(d);
       });
       summary.addEventListener('pointerenter', (e) => {
         if (!ancho() || e.pointerType !== 'mouse') return;
         window.clearTimeout(espera);
-        espera = window.setTimeout(() => (d.open = true), intencion());
+        espera = window.setTimeout(() => {
+          d.open = true;
+          activar(d);
+        }, intencion());
       });
       summary.addEventListener('pointerleave', () => window.clearTimeout(espera));
     });
+
+    // Con JS, el marco pasa a ser el recorte de la capa.
+    activo = lista.querySelector<HTMLDetailsElement>('[data-servicio][open]');
+    if (activo) fijar(activo);
+    lista.dataset['encastre'] = '';
+    // Las piezas de los ítems cerrados se piden al llegar a la lista: el fundido no espera la red.
+    alEntrar(lista, () => lista.querySelectorAll('img').forEach((i) => (i.loading = 'eager')));
+    new ResizeObserver(() => {
+      if (activo?.open) fijar(activo);
+    }).observe(lista);
   });
 </script>
 
@@ -181,6 +263,15 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
     container-type: size;
   }
 
+  /* La capa ocupa todo el escenario (tamaño fijo): con JS, su recorte es el marco. */
+  .servicio__capa {
+    position: relative;
+    display: grid;
+    place-items: center;
+    inline-size: 100cqi;
+    block-size: 100cqb;
+  }
+
   .servicio__marco {
     display: grid;
     place-items: center;
@@ -190,6 +281,25 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
     overflow: hidden;
     border-radius: var(--radius-xs);
     background: var(--color-surface);
+  }
+
+  /* Hasta que el script fija el recorte, la capa no se ve (nunca un cuadro lleno de un frame). */
+  .servicios[data-encastre] .servicio__capa {
+    clip-path: inset(50%);
+    background: var(--color-surface);
+  }
+
+  .servicios[data-encastre] .servicio__marco {
+    background: none;
+  }
+
+  /* La pieza que se va: centrada en su tamaño; se desvanece antes de que entre la nueva. */
+  .servicio__capa :global(.servicio__salida) {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    object-fit: cover;
+    pointer-events: none;
   }
 
   .servicio__marco :global(img) {
