@@ -79,11 +79,13 @@ h4 {
   overflow-wrap: break-word;
 }
 
-/* El español se corta solo donde lo marcamos (&shy;): riesgo "Archivo expandida en español", PRD §14. */
+/* El español se corta solo donde lo marcamos (&shy;): riesgo "Archivo expandida en español", PRD §14.
+   overflow-wrap: anywhere solo actúa si una palabra no entra (texto al 200 %, WCAG 1.4.4). */
 h1,
 h2,
 h3 {
   hyphens: manual;
+  overflow-wrap: anywhere;
   text-wrap: balance;
 }
 
@@ -103,6 +105,20 @@ a {
 
 :focus:not(:focus-visible) {
   outline: none;
+}
+
+/* main recibe el foco del enlace de salto (tabindex -1) pero no es interactivo: sin anillo. */
+main:focus {
+  outline: none;
+}
+
+/* Secciones invertidas (clientes + testimonios, cierre, siguiente caso, visor):
+   el cobalto normal no llega a 3:1 sobre inverse-bg; el anillo usa --color-inverse-accent
+   (6,9:1 en claro, 5,8:1 en oscuro). WCAG 1.4.11 y 2.4.7. */
+.seccion-invertida {
+  --focus-ring: 2px solid var(--color-inverse-accent);
+  background: var(--color-inverse-bg);
+  color: var(--color-inverse-text);
 }
 
 /* ---- Utilidades ---- */

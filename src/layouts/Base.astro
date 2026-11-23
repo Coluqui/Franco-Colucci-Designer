@@ -4,7 +4,7 @@
  * El header, el menú y el footer se suman en la Fase 3.
  */
 import '../styles/global.css';
-import { t, switchLangPath, locales, type Lang } from '../i18n';
+import { t, switchLangPath, locales, defaultLang, type Lang } from '../i18n';
 
 /** Solo se precarga Archivo (subset latin): es el LCP (wordmark) y cubre todo el español. */
 const archivoLatin = '/fonts/archivo-latin.woff2';
@@ -45,7 +45,9 @@ const { lang, title, description, noindex = false, alternates = true } = Astro.p
 
     <link rel="preload" href={archivoLatin} as="font" type="font/woff2" crossorigin />
 
+    {/* Rutas relativas hasta tener dominio (`site`, Fase 8): ahí pasan a absolutas. */}
     {alternates && locales.map((l) => <link rel="alternate" hreflang={l} href={switchLangPath(Astro.url, l)} />)}
+    {alternates && <link rel="alternate" hreflang="x-default" href={switchLangPath(Astro.url, defaultLang)} />}
 
     <slot name="head" />
   </head>

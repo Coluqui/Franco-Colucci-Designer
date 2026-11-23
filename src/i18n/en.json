@@ -19,6 +19,6 @@
   },
   "placeholder": {
     "pending": "PENDING",
-    "underConstruction": "Site under construction (Phase 1). Pages arrive in Phase 4."
+    "underConstruction": "Site under construction. PENDING: the real home page."
   }
 }

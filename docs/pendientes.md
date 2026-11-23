@@ -24,6 +24,8 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 | h3 · interletrado | −0.02em | `--tracking-title: -0.02em` |
 | lead · interletrado | −0.01em | `--tracking-lead: -0.01em` |
 | label · interlineado | 1.4 | `--leading-label: 1.4` |
+| Borde de control en secciones invertidas | `--color-inverse-border` da 1,5:1 (claro) y 1,2:1 (oscuro); un control necesita 3:1 (WCAG 1.4.11) | `--color-inverse-border-strong` de ≥ 3:1, para las flechas de testimonios y los inputs del cierre (Fase 3) |
+| `--duration-instant` en movimiento reducido | Hoy queda en 100 ms; motion §3.6 pide 120 ms o 0 | Sumar `--duration-instant: 0ms` al bloque `prefers-reduced-motion` |
 
 ## Contradicciones entre documentos (las decide Franco)
 
