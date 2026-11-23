@@ -1,0 +1,45 @@
+---
+/**
+ * Link de texto · design system §7: cobalto, subrayado 1 px separado 4 px;
+ * hover --color-accent-hover y subrayado 2 px (M26).
+ * `href` null = dato pendiente: se muestra el texto sin link (nunca un link roto).
+ * `externo` abre en otra pestaña y lo avisa a lectores de pantalla.
+ */
+import type { HTMLAttributes } from 'astro/types';
+import Icono from './Icono.astro';
+import { t, type Lang } from '../i18n';
+
+type Props = {
+  href: string | null;
+  lang: Lang;
+  externo?: boolean;
+  class?: string;
+} & Omit<HTMLAttributes<'a'>, 'href'>;
+
+const { href, lang, externo = false, class: className, ...rest } = Astro.props;
+---
+
+{
+  href ? (
+    <a
+      class:list={['link', className]}
+      href={href}
+      target={externo ? '_blank' : undefined}
+      rel={externo ? 'noopener noreferrer' : undefined}
+      {...rest}
+    >
+      <slot />
+      {externo && (
+        <>
+          <Icono nombre="flecha-diag" size="0.875em" />
+          <span class="visually-hidden">{t(lang, 'a11y.newTab')}</span>
+        </>
+      )}
+    </a>
+  ) : (
+    <span class:list={['link', 'link--pendiente', className]}>
+      <slot />
+      <span class="visually-hidden">{t(lang, 'a11y.pending')}</span>
+    </span>
+  )
+}

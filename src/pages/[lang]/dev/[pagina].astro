@@ -1,0 +1,39 @@
+---
+/**
+ * Páginas internas de desarrollo (/[lang]/dev/*). Solo existen con `npm run dev`:
+ * en el build de producción getStaticPaths no devuelve rutas.
+ * Herramientas internas con noindex. /es/dev/tokens y /es/dev/colores solo en español;
+ * /es/dev/componentes y /en/dev/componentes en los dos idiomas (los componentes leen i18n).
+ * ?tema=light|dark fuerza el modo antes de pintar (para revisar los dos modos).
+ */
+import type { GetStaticPaths } from 'astro';
+import Base from '../../../layouts/Base.astro';
+import DevTokens from '../../../dev/DevTokens.astro';
+import DevColores from '../../../dev/DevColores.astro';
+import DevComponentes from '../../../dev/DevComponentes.astro';
+import type { Lang } from '../../../i18n';
+
+// getStaticPaths corre aislado del resto del frontmatter: la lista va acá adentro.
+export const getStaticPaths = (() =>
+  import.meta.env.PROD
+    ? []
+    : [
+        { params: { lang: 'es', pagina: 'tokens' } },
+        { params: { lang: 'es', pagina: 'colores' } },
+        { params: { lang: 'es', pagina: 'componentes' } },
+        { params: { lang: 'en', pagina: 'componentes' } },
+      ]) satisfies GetStaticPaths;
+
+const lang = Astro.params.lang as Lang;
+const pagina = Astro.params.pagina as 'tokens' | 'colores' | 'componentes';
+const titulo = `Dev · ${pagina}`;
+const temaPorUrl =
+  "try { var t = new URLSearchParams(location.search).get('tema'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}";
+---
+
+<Base lang={lang} title={titulo} description={titulo} noindex alternates={pagina === 'componentes'} chrome={pagina === 'componentes'}>
+  <script slot="head" is:inline set:html={temaPorUrl} />
+  {pagina === 'tokens' && <DevTokens />}
+  {pagina === 'colores' && <DevColores />}
+  {pagina === 'componentes' && <DevComponentes lang={lang} />}
+</Base>

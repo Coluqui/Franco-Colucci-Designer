@@ -17,9 +17,11 @@ interface Props {
   noindex?: boolean;
   /** hreflang a la misma ruta en cada idioma. false en páginas que existen en un solo idioma (/es/dev/*). */
   alternates?: boolean;
+  /** Header, menú, panel Hablemos, barra mobile y footer. Las páginas reales lo activan en la Fase 4. */
+  chrome?: boolean;
 }
 
-const { lang, title, description, noindex = false, alternates = true } = Astro.props;
+const { lang, title, description, noindex = false, alternates = true, chrome = false } = Astro.props;
 ---
 
 <!doctype html>

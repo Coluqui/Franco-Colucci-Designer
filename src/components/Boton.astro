@@ -1,0 +1,180 @@
+---
+/**
+ * Botón · design system §7 (primario y secundario).
+ * - Con `href` es un <a>; sin `href`, un <button>.
+ * - Alto visual 36 px (--control-height-sm) en `size="sm"` (header) con área táctil de 44 px; 44 px por defecto.
+ * - Primario: tinta → cobalto en hover (M25: el desencastre del glifo llega en la Fase 6).
+ * - Press: scale(--scale-press) y vuelve con --spring-press.
+ * - Loading: texto de carga + barra en la base (estática hasta la Fase 6, M32).
+ */
+import type { HTMLAttributes } from 'astro/types';
+import Glifo from './Glifo.astro';
+import Icono, { type NombreIcono } from './Icono.astro';
+
+type Props = {
+  variante?: 'primario' | 'secundario';
+  size?: 'md' | 'sm';
+  href?: string | null;
+  glifo?: boolean;
+  icono?: NombreIcono;
+  disabled?: boolean;
+  loading?: boolean;
+  /** Texto que reemplaza al label mientras carga ("Enviando"). */
+  textoCarga?: string;
+  class?: string;
+} & Omit<HTMLAttributes<'button'>, 'disabled'> &
+  Omit<HTMLAttributes<'a'>, 'href'>;
+
+const {
+  variante = 'primario',
+  size = 'md',
+  href,
+  glifo = false,
+  icono,
+  disabled = false,
+  loading = false,
+  textoCarga,
+  class: className,
+  type = 'button',
+  ...rest
+} = Astro.props;
+
+const inactivo = disabled || loading;
+const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
+---
+
+{
+  href !== undefined ? (
+    <a
+      class:list={clases}
+      href={inactivo || href === null ? undefined : href}
+      aria-disabled={inactivo || href === null ? 'true' : undefined}
+      aria-busy={loading ? 'true' : undefined}
+      {...rest}
+    >
+      {glifo && <Glifo size="0.875rem" class="boton__glifo" />}
+      <span class="boton__texto">{loading && textoCarga ? textoCarga : <slot />}</span>
+      {icono && <Icono nombre={icono} class="boton__icono" />}
+      {loading && <span class="boton__carga" aria-hidden="true" />}
+    </a>
+  ) : (
+    <button class:list={clases} type={type} disabled={inactivo} aria-busy={loading ? 'true' : undefined} {...rest}>
+      {glifo && <Glifo size="0.875rem" class="boton__glifo" />}
+      <span class="boton__texto">{loading && textoCarga ? textoCarga : <slot />}</span>
+      {icono && <Icono nombre={icono} class="boton__icono" />}
+      {loading && <span class="boton__carga" aria-hidden="true" />}
+    </button>
+  )
+}
+
+<style>
+  .boton {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-block-size: var(--control-height);
+    padding-inline: var(--control-pad-x);
+    border: 1px solid transparent;
+    border-radius: var(--radius-xs);
+    font-size: var(--text-ui);
+    font-weight: var(--weight-ui);
+    font-stretch: calc(var(--wdth-normal) * 1%);
+    line-height: var(--leading-ui);
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      transform var(--spring-press-duration) var(--spring-press);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Alto visual 36 px con área táctil de 44 px (design system §7, header). */
+  .boton--sm {
+    min-block-size: var(--control-height-sm);
+    overflow: visible;
+  }
+
+  .boton--sm::before {
+    content: "";
+    position: absolute;
+    inset-block: calc((var(--control-height-sm) - var(--control-height)) / 2);
+    inset-inline: 0;
+  }
+
+  /* ---- Primario ---- */
+  .boton--primario {
+    background: var(--color-text-primary);
+    color: var(--color-bg);
+  }
+
+  /* ---- Secundario ---- */
+  .boton--secundario {
+    border: var(--border-control);
+    background: transparent;
+    color: var(--color-text-primary);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .boton--primario:not([aria-disabled="true"], :disabled):hover {
+      background: var(--color-accent);
+      color: var(--color-on-accent);
+    }
+
+    .boton--secundario:not([aria-disabled="true"], :disabled):hover {
+      background: var(--color-surface);
+    }
+  }
+
+  .boton:not([aria-disabled="true"], :disabled):active {
+    transform: scale(var(--scale-press));
+  }
+
+  /* ---- Deshabilitado ---- */
+  .boton:disabled,
+  .boton[aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  .boton--primario:disabled,
+  .boton--primario[aria-disabled="true"] {
+    background: var(--color-surface);
+    color: var(--color-text-disabled);
+  }
+
+  .boton--secundario:disabled,
+  .boton--secundario[aria-disabled="true"] {
+    border-color: var(--color-text-disabled);
+    color: var(--color-text-disabled);
+  }
+
+  /* ---- Cargando: el botón se ve activo (no gris) y muestra la barra en la base ---- */
+  .boton[aria-busy="true"] {
+    cursor: progress;
+  }
+
+  .boton--primario[aria-busy="true"] {
+    background: var(--color-text-primary);
+    color: var(--color-bg);
+  }
+
+  .boton__carga {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    block-size: 2px;
+    background: currentColor;
+    opacity: 0.6;
+    transform-origin: left;
+    transform: scaleX(0.4);
+  }
+
+  .boton__texto {
+    display: inline-block;
+  }
+</style>

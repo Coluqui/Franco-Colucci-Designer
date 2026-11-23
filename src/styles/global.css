@@ -97,6 +97,36 @@ a {
   color: inherit;
 }
 
+/* ---- Link de texto (design system §7, M26) ---- */
+.link {
+  color: var(--color-accent);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.link .icono {
+  margin-inline-start: 0.2em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.link:hover {
+    color: var(--color-accent-hover);
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* Dato pendiente: no es link; se ve como texto secundario con subrayado punteado. */
+.link--pendiente {
+  color: var(--color-text-secondary);
+  text-decoration-style: dotted;
+}
+
+.seccion-invertida .link {
+  color: var(--color-inverse-accent);
+}
+
 /* ---- Foco: anillo cobalto en todo lo interactivo ---- */
 :focus-visible {
   outline: var(--focus-ring);

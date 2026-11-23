@@ -1,0 +1,79 @@
+---
+/**
+ * /[lang]/dev/componentes — todos los componentes del design system §7 con sus estados.
+ * Contenido de ejemplo marcado PENDIENTE (nunca contenido real inventado).
+ * Modo: ?tema=light | ?tema=dark, o el toggle del menú/footer.
+ */
+import Boton from '../components/Boton.astro';
+import Link from '../components/Link.astro';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const base = `/${lang}/dev/componentes`;
+---
+
+<div class="dev container">
+  <header class="dev-cabecera">
+    <p class="t-label">Dev · componentes · design system §7</p>
+    <h1>Componentes</h1>
+    <p class="t-body">
+      Modo: <a class="link" href={`${base}?tema=light`}>claro</a> · <a class="link" href={`${base}?tema=dark`}>oscuro</a> ·
+      <a class="link" href={base}>sistema</a>
+    </p>
+  </header>
+
+  <section aria-labelledby="c-botones">
+    <h2 id="c-botones">2 · Botones y links</h2>
+    <div class="fila-demo">
+      <Boton glifo>Hablemos</Boton>
+      <Boton size="sm" glifo>Hablemos (sm)</Boton>
+      <Boton variante="secundario">Menú</Boton>
+      <Boton variante="secundario" size="sm">Menú (sm)</Boton>
+      <Boton variante="secundario" icono="flecha-abajo">CV</Boton>
+    </div>
+    <div class="fila-demo">
+      <Boton disabled>Primario disabled</Boton>
+      <Boton variante="secundario" disabled>Secundario disabled</Boton>
+      <Boton loading textoCarga="Enviando">Enviar</Boton>
+      <Boton href={null}>Link pendiente</Boton>
+    </div>
+    <p class="t-body">
+      Texto con <Link href="#c-botones" lang={lang}>un link interno</Link>, <Link href="https://example.com" lang={lang} externo
+        >un link externo</Link
+      > y <Link href={null} lang={lang}>un dato pendiente</Link>.
+    </p>
+    <div class="seccion-invertida caja-invertida">
+      <p class="t-body">Sobre sección invertida: <Link href="#c-botones" lang={lang}>link</Link></p>
+    </div>
+  </section>
+</div>
+
+<style>
+  .dev {
+    display: grid;
+    gap: var(--space-9);
+    padding-block: var(--space-8) var(--space-section);
+  }
+
+  .dev-cabecera,
+  section {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .fila-demo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  .caja-invertida {
+    padding: var(--space-5);
+    border-radius: var(--radius-sm);
+  }
+</style>
