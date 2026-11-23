@@ -1,0 +1,56 @@
+---
+/**
+ * Layout base: idioma, metadatos, fuentes, tema sin parpadeo, grano y salto al contenido.
+ * El header, el menú y el footer se suman en la Fase 3.
+ */
+import '../styles/global.css';
+import { t, switchLangPath, locales, type Lang } from '../i18n';
+
+/** Solo se precarga Archivo (subset latin): es el LCP (wordmark) y cubre todo el español. */
+const archivoLatin = '/fonts/archivo-latin.woff2';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** Previews, páginas internas y 404: no se indexan. */
+  noindex?: boolean;
+}
+
+const { lang, title, description, noindex = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <!--
+      Tema sin parpadeo: corre antes de pintar. Con una elección guardada aplica data-theme;
+      sin elección, no pone nada y los tokens siguen al sistema (prefers-color-scheme).
+    -->
+    <script is:inline>
+      try {
+        var tema = localStorage.getItem('tema');
+        if (tema === 'light' || tema === 'dark') document.documentElement.dataset.theme = tema;
+      } catch (e) {}
+    </script>
+
+    <link rel="preload" href={archivoLatin} as="font" type="font/woff2" crossorigin />
+
+    {locales.map((l) => <link rel="alternate" hreflang={l} href={switchLangPath(Astro.url, l)} />)}
+
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">{t(lang, 'a11y.skipToContent')}</a>
+    <main id="contenido" tabindex="-1">
+      <slot />
+    </main>
+  </body>
+</html>

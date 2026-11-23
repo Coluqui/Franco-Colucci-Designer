@@ -1,9 +1,10 @@
 ---
 /**
- * Home provisoria (Fase 1): solo verifica rutas /es/ y /en/ y el diccionario.
+ * Home provisoria: verifica rutas, layout, fuentes, tema y grano.
  * La home real (PRD §5) se construye en la Fase 4.
  */
 import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
 import { locales, t, switchLangPath, type Lang } from '../../i18n';
 
 export const getStaticPaths = (() => locales.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
@@ -12,20 +13,22 @@ const lang = Astro.params.lang as Lang;
 const other: Lang = lang === 'es' ? 'en' : 'es';
 ---
 
-<!doctype html>
-<html lang={lang}>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex" />
-    <title>{t(lang, 'meta.siteTitle')}</title>
-    <meta name="description" content={t(lang, 'meta.siteDescription')} />
-  </head>
-  <body>
-    <main>
-      <h1>{t(lang, 'meta.siteTitle')}</h1>
-      <p>{t(lang, 'placeholder.underConstruction')}</p>
-      <p><a href={switchLangPath(Astro.url, other)} hreflang={other} lang={other}>{t(lang, 'lang.switchTo')}</a></p>
-    </main>
-  </body>
-</html>
+<Base lang={lang} title={t(lang, 'meta.siteTitle')} description={t(lang, 'meta.siteDescription')} noindex>
+  <div class="container provisoria">
+    <h1>{t(lang, 'meta.siteTitle')}</h1>
+    <p class="t-lead">{t(lang, 'placeholder.underConstruction')}</p>
+    <p><a href={switchLangPath(Astro.url, other)} hreflang={other} lang={other}>{t(lang, 'lang.switchTo')}</a></p>
+  </div>
+</Base>
+
+<style>
+  .provisoria {
+    display: grid;
+    gap: var(--space-5);
+    padding-block: var(--space-section);
+  }
+
+  a {
+    color: var(--color-accent);
+  }
+</style>
