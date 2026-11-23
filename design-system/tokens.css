@@ -1,6 +1,7 @@
 /* ==========================================================================
    Portfolio Franco Colucci — Design tokens · "Formato"
    v2.1 · 2026-11-23 · Motion "Formato vivo" (Etapa 6). Reemplaza a "Ficha de producción" (v1.x)
+   Ajustes aprobados (23 nov, Fase 2): --z-grain detrás del contenido; --weight-bold 700 y --weight-black 800.
    Modo: <html data-theme="light|dark">. Sin atributo, sigue al sistema.
    Fuentes: Archivo (variable: wght 100–900, wdth 62–125) + Geist Mono 500.
    Leer junto con docs/design-system.md y docs/motion.md.
@@ -93,8 +94,10 @@
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-ui: 600;
-  --weight-title: 750;
-  --weight-heavy: 850;
+  --weight-bold: 700;      /* h3, preguntas */
+  --weight-title: 750;     /* h2 */
+  --weight-black: 800;     /* display, servicios, h1, métricas */
+  --weight-heavy: 850;     /* wordmark */
 
   --leading-wordmark: 0.86;
   --leading-display: 1;
@@ -154,7 +157,9 @@
   --icon-size: 1rem;
 
   /* ---- Capas ---- */
-  --z-header: 100; --z-bottom-bar: 100; --z-menu: 200; --z-drawer: 300; --z-viewer: 400; --z-grain: 500;
+  /* El grano va DETRÁS del contenido (sobre el fondo de la página): nunca tapa piezas,
+     texto, menú, panel ni visor. Ver design-system.md §5. */
+  --z-grain: -1; --z-header: 100; --z-bottom-bar: 100; --z-menu: 200; --z-drawer: 300; --z-viewer: 400;
 
   /* ---- Motion · "Formato vivo" (docs/motion.md v2.0) ----
      Duraciones y curvas fijas: entradas, salidas, fundidos.

@@ -75,6 +75,8 @@ Usá siempre los tokens semánticos (`--color-*`). La paleta base (`--cloud-*`, 
 | ui | `--text-ui` (16) | 100 | 600 | 1.2 | 0 | Botones, menú, chips, links de nav |
 | label | `--text-label` (12) | Geist Mono | 500 | 1.4 | 0.02em | Solo metadatos: `ISCAMEN · 4:5`, `03 / 12` |
 
+Pesos por token: 400 `--weight-regular`, 600 `--weight-ui`, 700 `--weight-bold`, 750 `--weight-title`, 800 `--weight-black`, 850 `--weight-heavy`.
+
 Mayúsculas solo en el wordmark. Todo lo demás en frase normal. El español es hasta 30 % más largo: los títulos se prueban en español a 360 px.
 
 ## 5. Textura: grano y duotono
@@ -82,8 +84,10 @@ Mayúsculas solo en el wordmark. Todo lo demás en frase normal. El español es 
 **Grano** (en todo el sitio):
 
 ```css
+html { background: var(--color-bg); }
+body { background: transparent; }
 body::after {
-  content: ""; position: fixed; inset: 0; z-index: var(--z-grain);
+  content: ""; position: fixed; inset: 0; z-index: var(--z-grain); /* -1: detrás del contenido */
   pointer-events: none;
   background-image: url("/brand/grain.svg");
   opacity: var(--grain-opacity);
@@ -91,7 +95,7 @@ body::after {
 }
 ```
 
-Las piezas, el visor y los inputs llevan `isolation: isolate` y van por encima del grano (`z-index` mayor), así nunca quedan tapadas. Con `prefers-reduced-transparency: reduce`, el grano se apaga (ya está en los tokens).
+El grano vive **detrás del contenido**, sobre el fondo de la página (`--z-grain: -1`; ajuste del 23 nov). Así nunca queda encima de piezas, texto, menú, panel ni visor, y no compite con sus `z-index`. Las superficies con fondo propio (paneles, secciones invertidas, inputs) lo tapan; las piezas van sobre `--color-stage`, sin grano. Con `prefers-reduced-transparency: reduce`, el grano se apaga (ya está en los tokens).
 
 **Duotono** (solo fotos propias): SVG filter con `feColorMatrix` (escala de grises) + `feComponentTransfer` que mapea sombras a `--duotone-shadow` y luces a `--duotone-highlight`. Alternativa simple: imagen en gris con `mix-blend-mode: multiply` sobre un fondo `--duotone-highlight` y una capa `--duotone-shadow` en `screen`. Las piezas de clientes no pasan por acá.
 
