@@ -91,6 +91,14 @@ h3,
   line-height: var(--leading-ui);
 }
 
+/* Rótulo de un dato (Cliente, Rol, Base…): el mismo estilo que la etiqueta de Campo (§7). */
+.t-dato {
+  font-size: var(--text-small);
+  font-weight: var(--weight-ui);
+  line-height: var(--leading-ui);
+  color: var(--color-text-secondary);
+}
+
 .t-label {
   font-family: var(--font-mono);
   font-size: var(--text-label);

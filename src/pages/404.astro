@@ -14,7 +14,7 @@ const lang = 'es';
 
 <Base lang={lang} title={`${t(lang, 'pages.notFound.title')} · Franco Colucci`} description={t(lang, 'pages.notFound.description')} noindex alternates={false} chrome>
   <div class="container no-encontrada">
-    <p class="t-label">404</p>
+    <p class="t-dato">404</p>
     <h1>{t(lang, 'notFound.title')}</h1>
     <p class="t-lead">{t(lang, 'notFound.text')}</p>
     <div class="no-encontrada__acciones">
@@ -34,7 +34,7 @@ const lang = 'es';
     display: grid;
     justify-items: start;
     gap: var(--space-6);
-    padding-block: var(--space-section);
+    padding-block: var(--space-6) var(--space-section);
   }
 
   .no-encontrada > * {

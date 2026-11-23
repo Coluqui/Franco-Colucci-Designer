@@ -114,8 +114,9 @@ const formatos = [
     min-inline-size: 0;
   }
 
-  /* Angosto: dos filas (1:1 · 4:5 · 9:16 arriba; 3:1 · 16:10 abajo). El corte es un ítem
-     vacío de ancho completo, oculto para lectores de pantalla. */
+  /* Dos filas a todos los anchos (1:1 · 4:5 · 9:16 arriba; 3:1 · 16:10 abajo): en una sola fila
+     los marcos quedaban de ~85 px de alto. El corte es un ítem vacío de ancho completo, oculto
+     para lectores de pantalla. */
   .hero__corte {
     flex-basis: 100%;
     block-size: 0;
@@ -137,16 +138,6 @@ const formatos = [
     border-radius: var(--radius-sm);
     background: var(--color-stage);
     color: var(--color-text-secondary);
-  }
-
-  @media (min-width: 48rem) {
-    .hero__corte {
-      display: none;
-    }
-
-    .hero__corte ~ .hero__formato {
-      margin-block-start: 0;
-    }
   }
 
   /* ≥ 1280: el loop a 7 columnas, centrado (design system §8). */

@@ -39,7 +39,10 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 | Links del menú | El §4 aplica a "services" la fórmula con tope `cqi`, que en el menú daba 24–55 px (revisión ux-ui). El §7 pide `--text-services` | `--text-services` sin tope en `.menu__link` (36 → 85). Aclarar en el §4 que el tope `cqi` es solo de la lista de servicios |
 | Alto del botón | El §7 dice "alto 36 px (área táctil 44)" para el primario; `tokens.css` limita `--control-height-sm` (36) al header | 36 en el header, 44 en el resto. Aclarar el §7 |
 
+- **Frase-problema a 360 px**: ocupa 8 líneas (el design system §8 pide 4–6 a 40 px). Misma decisión que la de abajo.
 - **Frase-problema a ≥ 1280 px**: el design system §8 pide "hasta 3 líneas, 10 columnas", pero con `--text-display` (84 px) en 10 columnas el borrador del PRD §3 ocupa 5 líneas. Opciones: aceptar 4–5 líneas, acortar la frase o bajar el tope de `--text-display`. Actualizar `docs/design-system.md` §8 según lo que se decida.
+
+- **Tokens nuevos sugeridos en la Fase 4**: `--ratio-portrait` (2 / 3, retrato de Sobre mí) y el grosor/offset del subrayado en hover (hoy 2px / 0.12em, repetidos en `.link` y "Siguiente caso").
 
 ## Decisiones abiertas
 

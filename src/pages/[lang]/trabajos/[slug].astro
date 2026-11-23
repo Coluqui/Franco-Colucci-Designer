@@ -72,7 +72,7 @@ const datos = [
         {
           datos.map((d) => (
             <div>
-              <dt class="t-label">{d.etiqueta}</dt>
+              <dt class="t-dato">{d.etiqueta}</dt>
               <dd class="t-body">{d.valor}</dd>
             </div>
           ))
@@ -180,13 +180,19 @@ const datos = [
 <style>
   .caso {
     display: grid;
-    gap: var(--space-section);
+    gap: var(--space-10);
     padding-block: var(--space-6) var(--space-section);
   }
 
   .caso__cabecera {
     display: grid;
     gap: var(--space-6);
+  }
+
+  .caso__volver {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--control-height);
   }
 
   .caso__volver,
@@ -220,10 +226,6 @@ const datos = [
     display: grid;
     gap: var(--space-1);
     align-content: start;
-  }
-
-  .caso__datos dt {
-    color: var(--color-text-secondary);
   }
 
   .caso__datos dd {

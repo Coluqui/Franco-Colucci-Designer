@@ -34,7 +34,7 @@ const datos = [
           {
             datos.map((d) => (
               <div>
-                <dt class="t-label">{d.etiqueta}</dt>
+                <dt class="t-dato">{d.etiqueta}</dt>
                 <dd class="t-body">{d.valor}</dd>
               </div>
             ))
@@ -61,7 +61,7 @@ const datos = [
 <style>
   .sobre {
     display: grid;
-    gap: var(--space-section);
+    gap: var(--space-10);
     padding-block: var(--space-6) var(--space-section);
   }
 
@@ -70,8 +70,10 @@ const datos = [
     gap: var(--space-8);
   }
 
+  /* Angosto: el h1 y la bio primero; el retrato debajo y más chico. */
   .sobre :global(.sobre__retrato) {
-    inline-size: min(100%, 24rem);
+    order: 1;
+    inline-size: min(100%, 16rem);
   }
 
   .sobre__intro {
@@ -105,10 +107,6 @@ const datos = [
     border-block-start: var(--border-hairline);
   }
 
-  .sobre__datos dt {
-    color: var(--color-text-secondary);
-  }
-
   .sobre__datos dd {
     margin: 0;
   }
@@ -120,6 +118,7 @@ const datos = [
     }
 
     .sobre :global(.sobre__retrato) {
+      order: 0;
       inline-size: 100%;
     }
   }

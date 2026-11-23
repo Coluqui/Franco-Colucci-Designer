@@ -18,7 +18,7 @@ const { lang } = Astro.props;
   <Retrato alt={t(lang, 'about.portraitAlt')} class="resumen__retrato" sizes="(min-width: 48rem) 16rem, 50vw" />
   <div class="resumen__texto">
     <p class="t-lead">{t(lang, 'home.aboutText')}</p>
-    <p class="t-ui">
+    <p class="t-ui resumen__link">
       <Link href={localizePath(lang, 'sobre-mi/')} lang={lang}>{t(lang, 'home.aboutLink')}</Link>
     </p>
   </div>
@@ -43,6 +43,12 @@ const { lang } = Astro.props;
 
   .resumen__texto p {
     margin: 0;
+  }
+
+  .resumen__link {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--control-height);
   }
 
   @media (min-width: 48rem) {

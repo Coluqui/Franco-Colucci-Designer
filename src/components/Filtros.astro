@@ -39,13 +39,14 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
 <div
   class="filtros"
   role="group"
-  aria-label={etiqueta}
+  aria-labelledby={`filtros-${objetivo}`}
   data-filtros
   data-objetivo={objetivo}
   data-param={param}
   data-texto-uno={t(lang, claveUno)}
   data-texto-varios={t(lang, claveVarios)}
 >
+  <p class="filtros__etiqueta t-dato" id={`filtros-${objetivo}`}>{etiqueta}</p>
   <ul role="list">
     {
       [todas, ...opciones].map((o) => (
@@ -101,6 +102,15 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
 <style>
   .filtros:not([data-listo]) {
     display: none;
+  }
+
+  .filtros {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .filtros__etiqueta {
+    margin: 0;
   }
 
   .filtros ul {

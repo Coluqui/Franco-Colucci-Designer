@@ -19,7 +19,7 @@ const { lang, href, titulo, frase } = Astro.props;
 <section class="seccion-invertida siguiente" aria-labelledby="siguiente-titulo">
   <div class="container">
     <a class="siguiente__link" href={href}>
-      <span class="t-label siguiente__etiqueta">{t(lang, 'caseDetail.next')}</span>
+      <span class="t-dato siguiente__etiqueta">{t(lang, 'caseDetail.next')}</span>
       <span class="t-h1 siguiente__titulo" id="siguiente-titulo">
         {titulo}
         <Icono nombre="flecha-der" size="0.6em" />
@@ -65,6 +65,7 @@ const { lang, href, titulo, frase } = Astro.props;
   @media (hover: hover) and (pointer: fine) {
     .siguiente__link:hover .siguiente__titulo {
       text-decoration: underline;
+      /* Mismos valores que .link en hover (global.css); PENDIENTE token (docs/pendientes.md). */
       text-decoration-thickness: 2px;
       text-underline-offset: 0.12em;
     }
