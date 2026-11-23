@@ -194,6 +194,7 @@
   --stagger-words: 35ms;       /* mínimo por palabra */
   --reveal-per-char: 7ms;      /* se suma por cada letra de la palabra anterior */
   --reveal-dim: 0.15;          /* opacidad inicial de cada palabra */
+  --reveal-idle: 1200ms;       /* M15: sin scroll este tiempo, la frase se completa sola */
 
   /* Distancias y escalas */
   --shift-sm: 8px;

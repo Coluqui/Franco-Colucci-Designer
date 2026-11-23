@@ -112,15 +112,29 @@ const formatos = [
     /** El reloj del hold es una animación sin efecto: se pausa y se retoma igual que el resto. */
     let reloj: Animation | null = null;
 
-    const corre = () => activo && visible && !pausadoPorUsuario && !document.hidden;
+    /** "Un protagonista por pantalla": mientras se lee la frase-problema (M15), el loop espera. */
+    const leyendo = () => document.documentElement.hasAttribute('data-leyendo');
+    const corre = () => activo && visible && !pausadoPorUsuario && !document.hidden && !leyendo();
 
     /** Pausa o retoma TODO lo del loop donde está (reloj, marco, piezas, etiqueta). */
+    const todas = () => [...(reloj ? [reloj] : []), ...loop.getAnimations({ subtree: true })];
+    const terminarTransiciones = () =>
+      loop.getAnimations({ subtree: true }).forEach((a) => a.playState === 'running' && a.finish());
+
     const sincronizar = () => {
       const si = corre();
       if (si && !montada) return montar();
-      [...(reloj ? [reloj] : []), ...loop.getAnimations({ subtree: true })].forEach((a) => {
-        if (si && a.playState === 'paused') a.play();
-        if (!si && a.playState === 'running') a.pause();
+      if (si) return todas().forEach((a) => a.playState === 'paused' && a.play());
+      const pausar = () => todas().forEach((a) => a.playState === 'running' && a.pause());
+      if (!visible || document.hidden) return pausar();
+      // A la vista, nunca se congela a mitad (etiqueta a media opacidad, dos piezas superpuestas):
+      // termina el formato en curso y recién ahí se detiene. La entrada de la etiqueta nueva arranca
+      // al terminar la salida, así que se termina también en el cuadro siguiente.
+      terminarTransiciones();
+      requestAnimationFrame(() => {
+        if (corre()) return;
+        terminarTransiciones();
+        pausar();
       });
     };
 
@@ -188,27 +202,17 @@ const formatos = [
       delete loop.dataset['activo'];
     };
 
-    /** La pausa del usuario nunca congela a mitad de una transición (etiqueta a media opacidad,
-     *  dos piezas superpuestas): termina el formato en curso y recién ahí se detiene. */
-    const terminarTransiciones = () =>
-      loop.getAnimations({ subtree: true }).forEach((a) => a.playState === 'running' && a.finish());
-
     pausa.addEventListener('click', () => {
       pausadoPorUsuario = !pausadoPorUsuario;
       pausa.setAttribute('aria-pressed', String(pausadoPorUsuario));
-      if (!pausadoPorUsuario) return sincronizar();
-      terminarTransiciones();
-      // La entrada de la etiqueta nueva arranca al terminar la salida: se termina en el cuadro siguiente.
-      requestAnimationFrame(() => {
-        terminarTransiciones();
-        sincronizar();
-      });
+      sincronizar();
     });
     observar(loop, (e) => {
       visible = e.isIntersecting;
       sincronizar();
     });
     document.addEventListener('visibilitychange', sincronizar);
+    document.addEventListener('motion:lectura', sincronizar);
     // Si cambia el tamaño, el marco se reacomoda al formato actual sin animar.
     new ResizeObserver(() => {
       if (!montada) return;

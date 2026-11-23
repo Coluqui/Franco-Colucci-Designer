@@ -42,8 +42,10 @@ const { lang, title, description, noindex = false, alternates = true, chrome = f
     <!--
       Tema sin parpadeo: corre antes de pintar. Con una elección guardada aplica data-theme;
       sin elección, no pone nada y los tokens siguen al sistema (prefers-color-scheme).
+      data-js: hay JS (la frase de M15 arranca atenuada desde el primer cuadro, sin parpadeo).
     -->
     <script is:inline>
+      document.documentElement.dataset.js = '';
       try {
         var tema = localStorage.getItem('tema');
         if (tema === 'light' || tema === 'dark') document.documentElement.dataset.theme = tema;

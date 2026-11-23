@@ -1,8 +1,10 @@
 ---
 /**
  * Frase-problema (y cierre) · PRD §3 · design system §4 y §8.
- * --text-display; ≥ 1280 hasta 10 columnas. La lectura palabra por palabra ligada al scroll (M15)
- * llega en la Fase 6: el texto ya está completo y visible sin JS.
+ * --text-display; ≥ 1280 hasta 10 columnas.
+ * M15 · lectura ligada al scroll (src/scripts/motion/lectura.ts). Sin JS, completa y visible.
+ * Con JS, atenuada desde el primer cuadro (CSS con html[data-js]) hasta que el script la parte en
+ * palabras; si el script no corre, una animación de respaldo la deja completa a los --reveal-idle.
  */
 interface Props {
   texto: string;
@@ -16,11 +18,35 @@ const { texto, as: Tag = 'p', id } = Astro.props;
 
 <Tag id={id} class="t-display frase" data-frase>{texto}</Tag>
 
+<script>
+  import { lectura } from '../scripts/motion/lectura';
+
+  document.querySelectorAll<HTMLElement>('[data-frase]').forEach(lectura);
+</script>
+
 <style>
   .frase {
     margin: 0;
     color: var(--color-text-primary);
     text-wrap: balance;
+  }
+
+  /* Antes de partirse en palabras: atenuada (sin parpadeo de completa a atenuada). Respaldo: si el
+     script no llega, a los --reveal-idle vuelve a 1. Reducido: --reveal-dim vale 1. */
+  :global(html[data-js]) .frase:not([data-lectura]) {
+    opacity: var(--reveal-dim);
+    animation: frase-respaldo 0s var(--reveal-idle) forwards;
+  }
+
+  @keyframes frase-respaldo {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Cada palabra: el scroll fija su opacidad y la transición la suaviza (200 · out). */
+  .frase :global(.lectura__palabra) {
+    transition: opacity var(--duration-fast) var(--ease-out);
   }
 
   @media (min-width: 80rem) {
