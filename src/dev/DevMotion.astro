@@ -1,0 +1,271 @@
+---
+/**
+ * /es/dev/motion — banco de pruebas del motion "Formato vivo" (docs/motion.md).
+ * Arriba, las utilidades base (resortes con interrupción, FLIP, observer, movimiento reducido).
+ * Abajo, un renglón por ID M01–M32: cada ID suma su botón de prueba cuando se implementa.
+ * Página interna (solo `npm run dev`), en español.
+ */
+const ids: Array<[string, string, string]> = [
+  ['M01', 'Glifo al cargar', 'Paso 2'],
+  ['M02', 'Glifo: desencastre en hover', 'Paso 2'],
+  ['M03', 'Glifo como confirmación', 'Paso 2 · se conecta en Fase 7'],
+  ['M04', 'Loop de formatos del hero', 'Paso 2'],
+  ['M05', 'Vista previa de servicios', 'Paso 2'],
+  ['M06', 'Fila de caso → caso', 'Paso 4'],
+  ['M07', 'Caso → atrás / siguiente caso', 'Paso 4'],
+  ['M08', 'Tile → visor', 'Paso 4'],
+  ['M09', 'Cerrar el visor', 'Paso 4'],
+  ['M10', 'Slides del carrusel', 'Paso 4'],
+  ['M11', 'Pieza siguiente en el visor', 'Paso 4'],
+  ['M12', 'Filtros', 'Paso 4'],
+  ['M13', 'Servicio activo (respiración)', 'Paso 3'],
+  ['M14', 'Links del menú (respiración)', 'Paso 3'],
+  ['M15', 'Frase-problema y cierre (lectura)', 'Paso 3'],
+  ['M16', 'Entrada de sección', 'Paso 3'],
+  ['M17', 'Filas de caso', 'Paso 3'],
+  ['M18', 'Métricas (sin animación)', '—'],
+  ['M19', 'Header al scrollear', 'Paso 4'],
+  ['M20', 'Menú que crece desde el botón', 'Paso 4'],
+  ['M21', 'Panel Hablemos', 'Paso 4'],
+  ['M22', 'Barra inferior mobile', 'Paso 4'],
+  ['M23', 'Cambio de modo', 'Paso 4'],
+  ['M24', 'Cambio de idioma', 'Paso 4'],
+  ['M25', 'Botón primario', 'Paso 5'],
+  ['M26', 'Botón secundario y link', 'Paso 5'],
+  ['M27', 'Fila de caso: hover', 'Paso 5'],
+  ['M28', 'Testimonios', 'Paso 5'],
+  ['M29', 'FAQ', 'Paso 5'],
+  ['M30', 'Copiar mail', 'Paso 5'],
+  ['M31', 'Descargar CV', 'Paso 5'],
+  ['M32', 'Formulario', 'Paso 5 · se conecta en Fase 7'],
+];
+const resortes = ['snap', 'soft', 'press'] as const;
+---
+
+<div class="container dev">
+  <header class="dev-cabecera">
+    <p class="t-label">Dev · motion v2.0 "Formato vivo"</p>
+    <h1>Motion</h1>
+    <p class="t-body nota">
+      Movimiento reducido: <strong data-estado-reducido>—</strong>. Para probar la versión reducida, activala en el sistema
+      o con Playwright (<code>page.emulateMedia(&#123; reducedMotion: 'reduce' &#125;)</code>).
+    </p>
+  </header>
+
+  <section aria-labelledby="s-resortes">
+    <h2 id="s-resortes">Resortes · animar()</h2>
+    <p class="t-body nota">
+      Cada botón lleva el marco al otro lado con el resorte del token. Hacé clic dos veces seguidas: la animación se
+      interrumpe y vuelve desde donde estaba, sin saltos.
+    </p>
+    <ul class="pistas" role="list">
+      {
+        resortes.map((r) => (
+          <li class="pista">
+            <span class="marco" data-marco={r} />
+            <button class="dev-boton" type="button" data-resorte={r}>
+              --spring-{r}
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section aria-labelledby="s-flip">
+    <h2 id="s-flip">FLIP · flip()</h2>
+    <p class="t-body nota">Mezcla los marcos: viajan a su lugar nuevo con escala uniforme (nunca se deforman). Reducido: salto instantáneo.</p>
+    <ul class="flip" role="list" data-flip>
+      {['1:1', '4:5', '9:16', '3:1', '16:10'].map((r) => (
+        <li class="flip__item t-label" style={`aspect-ratio: ${r.replace(':', ' / ')}`}>{r}</li>
+      ))}
+    </ul>
+    <button class="dev-boton" type="button" data-mezclar>Mezclar</button>
+  </section>
+
+  <section aria-labelledby="s-observer">
+    <h2 id="s-observer">Observer compartido · alEntrar()</h2>
+    <p class="t-body nota">Scrolleá: cada bloque se marca una sola vez al entrar un 15 % (M16 y M17 usan esto).</p>
+    <ol class="entradas" role="list">
+      {[1, 2, 3, 4].map((n) => (
+        <li class="entrada t-label" data-entrada>
+          Bloque {n} · <span data-entrada-estado>esperando</span>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section aria-labelledby="s-ids">
+    <h2 id="s-ids">Interacciones M01–M32</h2>
+    <table class="ids">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Interacción</th>
+          <th scope="col">Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          ids.map(([id, nombre, estado]) => (
+            <tr data-id={id}>
+              <th scope="row" class="t-label">{id}</th>
+              <td>{nombre}</td>
+              <td class="t-label nota">{estado}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<script>
+  import { animar, resorte, reducido, alCambiarReducido, type Resorte } from '../scripts/motion/base';
+  import { flip, medir } from '../scripts/motion/flip';
+  import { alEntrar } from '../scripts/motion/observer';
+
+  const estado = document.querySelector('[data-estado-reducido]');
+  const pintar = (r: boolean) => estado && (estado.textContent = r ? 'activo' : 'no');
+  pintar(reducido());
+  alCambiarReducido(pintar);
+
+  // Resortes: ida y vuelta con interrupción.
+  document.querySelectorAll<HTMLButtonElement>('[data-resorte]').forEach((b) => {
+    let ida = true;
+    b.addEventListener('click', () => {
+      const r = b.dataset['resorte'] as Resorte;
+      const marco = document.querySelector<HTMLElement>(`[data-marco="${r}"]`);
+      const pista = marco?.parentElement;
+      if (!marco || !pista) return;
+      const x = ida ? pista.clientWidth - marco.offsetWidth : 0;
+      animar(marco, { transform: `translateX(${x}px)` }, resorte(r));
+      ida = !ida;
+    });
+  });
+
+  // FLIP: medir, reordenar, invertir y soltar con el resorte de la grilla.
+  const lista = document.querySelector<HTMLElement>('[data-flip]');
+  document.querySelector('[data-mezclar]')?.addEventListener('click', () => {
+    if (!lista) return;
+    const items = [...lista.children] as HTMLElement[];
+    const antes = new Map(items.map((el) => [el, medir(el)]));
+    items
+      .map((el) => ({ el, k: Math.random() }))
+      .sort((a, b) => a.k - b.k)
+      .forEach(({ el }) => lista.append(el));
+    items.forEach((el) => flip(el, antes.get(el)!, resorte('soft')));
+  });
+
+  // Observer: una vez por bloque.
+  document.querySelectorAll<HTMLElement>('[data-entrada]').forEach((el) =>
+    alEntrar(el, () => {
+      el.dataset['dentro'] = '';
+      const s = el.querySelector('[data-entrada-estado]');
+      if (s) s.textContent = 'entró (una vez)';
+    }),
+  );
+</script>
+
+<style>
+  .dev {
+    display: grid;
+    gap: var(--space-9);
+    padding-block: var(--space-8) var(--space-section);
+  }
+
+  .dev-cabecera,
+  section {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .nota {
+    color: var(--color-text-secondary);
+  }
+
+  .dev-boton {
+    justify-self: start;
+    min-block-size: var(--control-height);
+    padding-inline: var(--control-pad-x);
+    border: var(--border-control);
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--color-text-primary);
+    font: inherit;
+    font-weight: var(--weight-ui);
+    cursor: pointer;
+  }
+
+  .dev-boton:focus-visible {
+    outline: var(--focus-ring);
+  }
+
+  .pistas,
+  .flip,
+  .entradas {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pistas {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .pista {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .marco {
+    display: block;
+    inline-size: var(--space-8);
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-xs);
+    background: var(--color-accent);
+  }
+
+  .flip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-4);
+  }
+
+  .flip__item {
+    display: grid;
+    place-items: center;
+    inline-size: var(--space-10);
+    border-radius: var(--radius-xs);
+    background: var(--color-stage);
+  }
+
+  .entradas {
+    display: grid;
+    gap: var(--space-section);
+  }
+
+  .entrada {
+    padding: var(--space-5);
+    border: var(--border-hairline);
+    border-radius: var(--radius-sm);
+  }
+
+  .entrada[data-dentro] {
+    border: var(--border-control);
+  }
+
+  .ids {
+    border-collapse: collapse;
+    inline-size: 100%;
+  }
+
+  .ids th,
+  .ids td {
+    padding: var(--space-2) var(--space-3);
+    border-block-end: var(--border-hairline);
+    text-align: start;
+  }
+</style>
