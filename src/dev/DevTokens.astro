@@ -287,10 +287,6 @@ const resortes = [
     min-inline-size: 0;
   }
 
-  .t-wordmark {
-    overflow-wrap: anywhere;
-  }
-
   .respira-demo {
     display: grid;
     justify-items: start;
@@ -304,9 +300,8 @@ const resortes = [
     color: var(--color-text-secondary);
     text-align: start;
     cursor: pointer;
-    transition:
-      font-stretch var(--duration-breathe) var(--spring-soft),
-      color var(--duration-fast) var(--ease-out);
+    /* Solo font-stretch se anima (excepción M13); el color cambia sin transición. */
+    transition: font-stretch var(--duration-breathe) var(--spring-soft);
   }
 
   .respira:focus-visible {
@@ -343,7 +338,7 @@ const resortes = [
     display: block;
     block-size: var(--space-3);
     max-inline-size: 100%;
-    background: var(--color-accent);
+    background: var(--color-text-secondary);
     border-radius: var(--radius-xs);
   }
 
@@ -398,7 +393,7 @@ const resortes = [
     display: block;
     inline-size: var(--space-8);
     aspect-ratio: var(--ratio-carousel);
-    border: 2px solid var(--color-accent);
+    border: var(--border-rule);
     border-radius: var(--radius-xs);
   }
 </style>

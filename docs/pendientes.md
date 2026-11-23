@@ -25,6 +25,13 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 | lead · interletrado | −0.01em | `--tracking-lead: -0.01em` |
 | label · interlineado | 1.4 | `--leading-label: 1.4` |
 
+## Contradicciones entre documentos (las decide Franco)
+
+| Tema | Qué choca | Hoy en el código |
+| --- | --- | --- |
+| Tamaño del wordmark | El §4 dice "64 → 246". Para que "COLUCCI" entre a 360 px tiene que medir 57 px. Además, `tokens.css:81` da 73,6 px a 360 (el comentario dice 64) | `min(var(--text-wordmark), 17.8cqi)`: llena el contenedor y nunca lo desborda (57 px a 360, 231 px a 1440). Hay que corregir el rango en el §4 y el comentario del token |
+| Tamaño de servicios | El §4 dice "36 → 85", pero `min(--text-services, 7.6cqi)` (motion §5) da 24 px en una columna de 320 px (mobile, acordeón) | La fórmula del motion §5. Hay que decidir un mínimo para mobile; ¿36 px con "Ads de performance" partido en dos líneas?, ¿otro valor de cqi en mobile? |
+
 ## Decisiones abiertas
 
 - Agrupación de carruseles dudosos (ISCAMEN 08–12 y 15–19, serie Carpa, ads de Condimento): `docs/inventario.md`.

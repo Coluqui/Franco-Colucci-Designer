@@ -1,8 +1,11 @@
 /* Roles tipográficos · design system §4. Una clase por rol; todo sale de tokens.
    El ancho de Archivo se controla con font-stretch (wdth → %). */
 
+/* "COLUCCI" ocupa el ancho del contenedor (§4) y nunca lo desborda (PRD §11):
+   la palabra mide 5,61 em a wdth 125 / 850 / −0.045em → 100 / 5,61 ≈ 17.8cqi.
+   Requiere un ancestro con container-type: inline-size. */
 .t-wordmark {
-  font-size: var(--text-wordmark);
+  font-size: min(var(--text-wordmark), 17.8cqi);
   font-stretch: calc(var(--wdth-wide) * 1%);
   font-weight: var(--weight-heavy);
   line-height: var(--leading-wordmark);
@@ -73,6 +76,7 @@ h3,
 
 .t-body {
   font-size: var(--text-body);
+  font-stretch: calc(var(--wdth-normal) * 1%);
   font-weight: var(--weight-regular);
   line-height: var(--leading-body);
   letter-spacing: var(--tracking-body);
@@ -81,6 +85,8 @@ h3,
 
 .t-ui {
   font-size: var(--text-ui);
+  font-stretch: calc(var(--wdth-normal) * 1%);
+  letter-spacing: var(--tracking-body);
   font-weight: var(--weight-ui);
   line-height: var(--leading-ui);
 }
