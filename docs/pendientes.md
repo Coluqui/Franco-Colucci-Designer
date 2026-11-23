@@ -55,3 +55,9 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 ## Contenido
 
 - `meta.siteDescription` (ES y EN) en `src/i18n/*.json`.
+- **Casos** (`src/content/casos/*.json`, Fase 4): frase, tipo, descripción corta, rol, año, herramientas, problema, pasos, resultado, 2–4 métricas reales, testimonio y hero 16:8 de MoonDesk, ISCAMEN, Condimento y Carpa. Hoy dicen `PENDIENTE`.
+- **Servicios por caso**: los puse a partir del inventario (MoonDesk, ISCAMEN y Carpa → Redes; Condimento → Ads y Branding). Confirmar o corregir.
+- **Descripciones de los 6 servicios** (`serviceItems.*.description`) y la pieza de vista previa de cada uno.
+- **Textos de páginas en PENDIENTE**: bajada de Trabajos, bio corta y bio de Sobre mí, datos (base, idiomas, modalidad), experiencia con fechas, cómo uso la IA, herramientas e IA de la home.
+- **6 preguntas frecuentes** con respuesta (los borradores de los wireframes v4 no están en el repo).
+- **Títulos y descripciones SEO** por página: borradores en `pages.*` de `src/i18n/*.json`; revisarlos.

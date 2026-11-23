@@ -1,0 +1,52 @@
+{
+  "slug": "iscamen",
+  "orden": 2,
+  "cliente": "ISCAMEN",
+  "titulo": {
+    "es": "ISCAMEN",
+    "en": "ISCAMEN"
+  },
+  "frase": {
+    "es": "PENDIENTE: frase del caso (qué se resolvió, en una línea).",
+    "en": "PENDING: case sentence (what was solved, in one line)."
+  },
+  "tipo": {
+    "es": "PENDIENTE: tipo de trabajo",
+    "en": "PENDING: type of work"
+  },
+  "descripcion": {
+    "es": "PENDIENTE: descripción corta del caso para la fila.",
+    "en": "PENDING: short case description for the row."
+  },
+  "rol": {
+    "es": "PENDIENTE: rol",
+    "en": "PENDING: role"
+  },
+  "servicios": [
+    "redes"
+  ],
+  "herramientas": [],
+  "problema": {
+    "es": "PENDIENTE: el problema del caso.",
+    "en": "PENDING: the case problem."
+  },
+  "pasos": [
+    {
+      "es": "PENDIENTE: paso 1 de lo que hice.",
+      "en": "PENDING: step 1 of what I did."
+    },
+    {
+      "es": "PENDIENTE: paso 2.",
+      "en": "PENDING: step 2."
+    },
+    {
+      "es": "PENDIENTE: paso 3.",
+      "en": "PENDING: step 3."
+    }
+  ],
+  "resultado": {
+    "es": "PENDIENTE: resultado del caso.",
+    "en": "PENDING: case result."
+  },
+  "metricas": []
+}

@@ -125,5 +125,130 @@
   "placeholder": {
     "pending": "PENDIENTE",
     "underConstruction": "Sitio en construcción. PENDIENTE: la home real."
+  },
+  "pages": {
+    "home": {
+      "title": "Diseñador gráfico y digital",
+      "description": "Portfolio de Franco Colucci: piezas de redes, ads de performance, mails, ebooks y webs que se entienden en un segundo y se pueden medir."
+    },
+    "work": {
+      "title": "Trabajos",
+      "description": "Casos de Franco Colucci, filtrables por servicio: ads, redes, reels, mail, web y branding."
+    },
+    "about": {
+      "title": "Sobre mí",
+      "description": "Quién es Franco Colucci, diseñador gráfico y digital: experiencia, forma de trabajo y uso de IA."
+    },
+    "talk": {
+      "title": "Hablemos",
+      "description": "Escribile a Franco Colucci: formulario, mail, LinkedIn, WhatsApp y CV."
+    },
+    "notFound": {
+      "title": "Página no encontrada",
+      "description": "Esta página no existe."
+    }
+  },
+  "hero": {
+    "tagline": "Diseño piezas que tu equipo puede publicar hoy y medir mañana.",
+    "formatsLabel": "Una campaña en cinco formatos",
+    "formatPending": "Pieza PENDIENTE"
+  },
+  "problem": {
+    "text": "Una campaña puede tener la mejor oferta y perder clics porque la pieza no se entiende en un segundo."
+  },
+  "closing": {
+    "text": "Si tu equipo necesita piezas que se entiendan en un segundo, hablemos."
+  },
+  "home": {
+    "featured": "Trabajos destacados",
+    "allWork": "Ver todos los trabajos",
+    "whatIDo": "Qué hago",
+    "tools": "Herramientas e IA",
+    "toolsText": "PENDIENTE: herramientas y cómo uso la IA en el proceso.",
+    "aboutTitle": "Sobre mí",
+    "aboutText": "PENDIENTE: bio corta.",
+    "aboutLink": "Más sobre mí",
+    "clientsEmpty": "PENDIENTE: logos de clientes en SVG monocromo.",
+    "testimonialsEmpty": "PENDIENTE: testimonios de clientes.",
+    "faqPending": "PENDIENTE: pregunta frecuente {n}.",
+    "faqAnswerPending": "PENDIENTE: respuesta."
+  },
+  "serviceItems": {
+    "ads": {
+      "name": "Ads de performance",
+      "short": "Ads",
+      "description": "PENDIENTE: descripción del servicio."
+    },
+    "redes": {
+      "name": "Redes",
+      "short": "Redes",
+      "description": "PENDIENTE: descripción del servicio."
+    },
+    "reels": {
+      "name": "Reels",
+      "short": "Reels",
+      "description": "PENDIENTE: descripción del servicio."
+    },
+    "mail": {
+      "name": "Mail",
+      "short": "Mail",
+      "description": "PENDIENTE: descripción del servicio."
+    },
+    "web": {
+      "name": "Web",
+      "short": "Web",
+      "description": "PENDIENTE: descripción del servicio."
+    },
+    "branding": {
+      "name": "Branding",
+      "short": "Branding",
+      "description": "PENDIENTE: descripción del servicio."
+    }
+  },
+  "work": {
+    "title": "Trabajos",
+    "intro": "PENDIENTE: bajada de la página de trabajos.",
+    "empty": "No hay casos con este servicio."
+  },
+  "caseDetail": {
+    "client": "Cliente",
+    "role": "Rol",
+    "year": "Año",
+    "services": "Servicios",
+    "tools": "Herramientas",
+    "heroPending": "Hero del caso PENDIENTE (16:8)",
+    "metrics": "Resultados",
+    "problem": "El problema",
+    "whatIDid": "Lo que hice",
+    "pieces": "Piezas",
+    "piecesEmpty": "Piezas PENDIENTE: se cargan en la Fase 5.",
+    "result": "Resultado",
+    "testimonial": "Testimonio",
+    "next": "Siguiente caso",
+    "back": "Todos los trabajos"
+  },
+  "about": {
+    "title": "Sobre mí",
+    "portraitAlt": "Retrato de Franco Colucci",
+    "bio": "PENDIENTE: bio de Sobre mí.",
+    "data": "Datos",
+    "base": "Base",
+    "languages": "Idiomas",
+    "workMode": "Modalidad",
+    "experience": "Experiencia",
+    "experiencePending": "PENDIENTE: experiencia con fechas.",
+    "ai": "Cómo uso la IA",
+    "aiPending": "PENDIENTE: cómo uso la IA en el proceso.",
+    "cv": "CV"
+  },
+  "talk": {
+    "title": "Hablemos",
+    "formPending": "El formulario se conecta en la Fase 7. Mientras tanto, escribime por cualquiera de estos medios."
+  },
+  "notFound": {
+    "title": "Esta página no existe",
+    "text": "Puede que el link esté mal o que la página se haya movido.",
+    "work": "Ver trabajos",
+    "talk": "Hablemos"
   }
 }

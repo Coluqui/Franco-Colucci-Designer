@@ -125,5 +125,130 @@
   "placeholder": {
     "pending": "PENDING",
     "underConstruction": "Site under construction. PENDING: the real home page."
+  },
+  "pages": {
+    "home": {
+      "title": "Graphic & Digital Designer",
+      "description": "Franco Colucci’s portfolio: social, performance ads, emails, ebooks and websites that read in a second and can be measured."
+    },
+    "work": {
+      "title": "Work",
+      "description": "Franco Colucci’s case studies, filterable by service: ads, social, reels, email, web and branding."
+    },
+    "about": {
+      "title": "About",
+      "description": "Who Franco Colucci is, graphic and digital designer: experience, way of working and use of AI."
+    },
+    "talk": {
+      "title": "Let’s talk",
+      "description": "Get in touch with Franco Colucci: form, email, LinkedIn, WhatsApp and CV."
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "This page doesn’t exist."
+    }
+  },
+  "hero": {
+    "tagline": "I design pieces your team can publish today and measure tomorrow.",
+    "formatsLabel": "One campaign in five formats",
+    "formatPending": "Piece PENDING"
+  },
+  "problem": {
+    "text": "A campaign can have the best offer and still lose clicks because the piece doesn’t read in a second."
+  },
+  "closing": {
+    "text": "If your team needs pieces that read in a second, let’s talk."
+  },
+  "home": {
+    "featured": "Featured work",
+    "allWork": "See all work",
+    "whatIDo": "What I do",
+    "tools": "Tools and AI",
+    "toolsText": "PENDING: tools and how I use AI in the process.",
+    "aboutTitle": "About",
+    "aboutText": "PENDING: short bio.",
+    "aboutLink": "More about me",
+    "clientsEmpty": "PENDING: client logos as monochrome SVG.",
+    "testimonialsEmpty": "PENDING: client testimonials.",
+    "faqPending": "PENDING: frequently asked question {n}.",
+    "faqAnswerPending": "PENDING: answer."
+  },
+  "serviceItems": {
+    "ads": {
+      "name": "Performance ads",
+      "short": "Ads",
+      "description": "PENDING: service description."
+    },
+    "redes": {
+      "name": "Social",
+      "short": "Social",
+      "description": "PENDING: service description."
+    },
+    "reels": {
+      "name": "Reels",
+      "short": "Reels",
+      "description": "PENDING: service description."
+    },
+    "mail": {
+      "name": "Email",
+      "short": "Email",
+      "description": "PENDING: service description."
+    },
+    "web": {
+      "name": "Web",
+      "short": "Web",
+      "description": "PENDING: service description."
+    },
+    "branding": {
+      "name": "Branding",
+      "short": "Branding",
+      "description": "PENDING: service description."
+    }
+  },
+  "work": {
+    "title": "Work",
+    "intro": "PENDING: work page intro.",
+    "empty": "No case studies with this service."
+  },
+  "caseDetail": {
+    "client": "Client",
+    "role": "Role",
+    "year": "Year",
+    "services": "Services",
+    "tools": "Tools",
+    "heroPending": "Case hero PENDING (16:8)",
+    "metrics": "Results",
+    "problem": "The problem",
+    "whatIDid": "What I did",
+    "pieces": "Pieces",
+    "piecesEmpty": "Pieces PENDING: loaded in Phase 5.",
+    "result": "Result",
+    "testimonial": "Testimonial",
+    "next": "Next case",
+    "back": "All work"
+  },
+  "about": {
+    "title": "About",
+    "portraitAlt": "Portrait of Franco Colucci",
+    "bio": "PENDING: About bio.",
+    "data": "Details",
+    "base": "Based in",
+    "languages": "Languages",
+    "workMode": "Work mode",
+    "experience": "Experience",
+    "experiencePending": "PENDING: experience with dates.",
+    "ai": "How I use AI",
+    "aiPending": "PENDING: how I use AI in the process.",
+    "cv": "CV"
+  },
+  "talk": {
+    "title": "Let’s talk",
+    "formPending": "The form is connected in Phase 7. Meanwhile, reach me through any of these."
+  },
+  "notFound": {
+    "title": "This page doesn’t exist",
+    "text": "The link may be wrong or the page may have moved.",
+    "work": "See work",
+    "talk": "Let’s talk"
   }
 }
