@@ -1,0 +1,237 @@
+---
+/**
+ * Menú a pantalla completa · design system §7 · PRD §5.
+ * <dialog> modal: foco atrapado e inerte el resto (nativo), ESC cierra, el foco vuelve a "Menú".
+ * Links en --text-services: wdth 112 en reposo, 125 en hover/foco y en la página actual.
+ * A la derecha: mail, LinkedIn, WhatsApp, CV y toggles ES/EN y modo.
+ * En la Fase 6: crece desde el botón "Menú" (M20) y los links respiran al entrar (M14).
+ */
+import Glifo from './Glifo.astro';
+import Link from './Link.astro';
+import Toggle from './Toggle.astro';
+import { t, localizePath, type Lang, type UiKey } from '../i18n';
+import { site, mailHref, linkedinHref, whatsappHref, cvHref } from '../config/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const actual = Astro.url.pathname;
+
+const links: Array<{ clave: UiKey; href: string }> = [
+  { clave: 'nav.home', href: localizePath(lang) },
+  { clave: 'nav.work', href: localizePath(lang, 'trabajos/') },
+  { clave: 'nav.about', href: localizePath(lang, 'sobre-mi/') },
+];
+---
+
+<dialog id="menu" class="menu" aria-label={t(lang, 'nav.menu')} data-menu>
+  <div class="menu__barra container">
+    <a class="menu__logo" href={localizePath(lang)} aria-label={t(lang, 'nav.homeLink')}>
+      <Glifo size="1.625rem" />
+    </a>
+    <button class="menu__cerrar" type="button" data-cierra-menu autofocus>
+      {t(lang, 'nav.close')}
+    </button>
+  </div>
+
+  <div class="menu__cuerpo container">
+    <nav class="menu__nav" aria-label={t(lang, 'nav.label')}>
+      <ul role="list">
+        {
+          links.map(({ clave, href }) => (
+            <li>
+              <a class="menu__link t-services" href={href} aria-current={actual === href ? 'page' : undefined}>
+                {t(lang, clave)}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="menu__lateral">
+      <section aria-label={t(lang, 'nav.contact')}>
+        <ul class="menu__contacto" role="list">
+          <li><Link href={mailHref()} lang={lang}>{site.mail ?? t(lang, 'contact.email')}</Link></li>
+          <li><Link href={linkedinHref()} lang={lang} externo>{t(lang, 'contact.linkedin')}</Link></li>
+          <li><Link href={whatsappHref()} lang={lang} externo>{t(lang, 'contact.whatsapp')}</Link></li>
+          <li><Link href={cvHref(lang)} lang={lang} download>{t(lang, 'contact.downloadCv')}</Link></li>
+        </ul>
+      </section>
+      <div class="menu__toggles">
+        <Toggle lang={lang} tipo="idioma" />
+        <Toggle lang={lang} tipo="modo" />
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const menu = document.querySelector<HTMLDialogElement>('[data-menu]');
+  const abridores = document.querySelectorAll<HTMLElement>('[data-abre-menu]');
+  if (menu) {
+    const marcar = (abierto: boolean) => abridores.forEach((b) => b.setAttribute('aria-expanded', String(abierto)));
+    abridores.forEach((b) =>
+      b.addEventListener('click', () => {
+        menu.showModal();
+        marcar(true);
+      }),
+    );
+    menu.querySelector('[data-cierra-menu]')?.addEventListener('click', () => menu.close());
+    // ESC (nativo) y close(): el navegador devuelve el foco al botón que lo abrió.
+    menu.addEventListener('close', () => marcar(false));
+  }
+</script>
+
+<style>
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-menu);
+    inline-size: 100%;
+    max-inline-size: none;
+    block-size: var(--viewport-full);
+    max-block-size: none;
+    margin: 0;
+    padding: var(--safe-top) 0 var(--safe-bottom);
+    border: 0;
+    background: var(--color-raised);
+    color: var(--color-text-primary);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .menu:not([open]) {
+    display: none;
+  }
+
+  .menu[open] {
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+
+  .menu::backdrop {
+    background: transparent;
+  }
+
+  .menu__barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-block-size: var(--header-height);
+  }
+
+  .menu__logo {
+    display: inline-grid;
+    place-items: center;
+    min-inline-size: var(--control-height);
+    min-block-size: var(--control-height);
+    margin-inline-start: calc((var(--control-height) - 1.625rem) / -2);
+    border-radius: var(--radius-xs);
+  }
+
+  /* Mismo lugar y medida que "Menú" (botón secundario sm), para que el cierre esté donde se abrió. */
+  .menu__cerrar {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--control-height-sm);
+    padding-inline: var(--control-pad-x);
+    border: var(--border-control);
+    border-radius: var(--radius-xs);
+    background: transparent;
+    font-size: var(--text-ui);
+    font-weight: var(--weight-ui);
+    line-height: var(--leading-ui);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .menu__cerrar::before {
+    content: "";
+    position: absolute;
+    inset-block: calc((var(--control-height-sm) - var(--control-height)) / 2);
+    inset-inline: 0;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .menu__cerrar:hover {
+      background: var(--color-surface);
+    }
+  }
+
+  .menu__cuerpo {
+    display: grid;
+    align-content: space-between;
+    gap: var(--space-8);
+    padding-block: var(--space-7) var(--space-6);
+    container-type: inline-size;
+  }
+
+  @media (min-width: 48rem) {
+    .menu__cuerpo {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-content: end;
+      align-items: end;
+    }
+  }
+
+  .menu__nav ul,
+  .menu__contacto {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .menu__nav ul {
+    gap: var(--space-2);
+    container-type: inline-size;
+  }
+
+  .menu__link {
+    display: block;
+    min-block-size: var(--control-height);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .menu__link[aria-current="page"],
+  .menu__link:focus-visible {
+    color: var(--color-text-primary);
+    font-stretch: calc(var(--wdth-active) * 1%);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .menu__link:hover {
+      color: var(--color-text-primary);
+      font-stretch: calc(var(--wdth-active) * 1%);
+    }
+  }
+
+  .menu__lateral {
+    display: grid;
+    gap: var(--space-6);
+    justify-items: start;
+  }
+
+  .menu__contacto {
+    gap: var(--space-1);
+    font-size: var(--text-lead);
+  }
+
+  .menu__contacto li {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--control-height);
+  }
+
+  .menu__toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

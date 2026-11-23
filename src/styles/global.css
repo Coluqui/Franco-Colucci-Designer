@@ -20,6 +20,13 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   hanging-punctuation: first last;
+  /* Reserva el lugar de la barra de scroll: abrir un modal no corre el layout (CLS = 0). */
+  scrollbar-gutter: stable;
+}
+
+/* Con menú, panel o visor abiertos, la página de atrás no scrollea. */
+html:has(dialog[open]) {
+  overflow: hidden;
 }
 
 body {

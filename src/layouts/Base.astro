@@ -5,6 +5,7 @@
  */
 import '../styles/global.css';
 import Header from '../components/Header.astro';
+import Menu from '../components/Menu.astro';
 import { t,switchLangPath, locales, defaultLang, type Lang } from '../i18n';
 
 /** Solo se precarga Archivo (subset latin): es el LCP (wordmark) y cubre todo el español. */
@@ -60,5 +61,6 @@ const { lang, title, description, noindex = false, alternates = true, chrome = f
     <main id="contenido" tabindex="-1">
       <slot />
     </main>
+    {chrome && <Menu lang={lang} />}
   </body>
 </html>
