@@ -143,9 +143,12 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
     font-stretch: calc(var(--wdth-active) * 1%);
   }
 
+  /* Solo en acordeón: en ancho el color lo decide el ítem abierto (después de --hover-intent). */
   @media (hover: hover) and (pointer: fine) {
-    .servicio__nombre:hover {
-      color: var(--color-text-primary);
+    @container servicios (max-width: 59.999rem) {
+      .servicio__nombre:hover {
+        color: var(--color-text-primary);
+      }
     }
   }
 
@@ -215,8 +218,10 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
 
   /* ---- Ancho: lista en 7 columnas + vista previa fija en 5 ---- */
   @container servicios (min-width: 60rem) {
+    /* La lista reserva el alto del panel: escenario cuadrado de 5 col + descripción y link. */
     .servicios {
       --servicios-fijo: 1;
+      min-block-size: calc((100cqi - var(--grid-gutter)) * 5 / 12 + var(--space-10) + var(--space-6));
       grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
       column-gap: var(--grid-gutter);
     }
@@ -232,16 +237,10 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
     /* El panel del ítem abierto se ubica en la columna derecha, a lo alto de toda la lista. */
     .servicio__panel {
       position: absolute;
-      inset-block: 0;
+      inset-block-start: 0;
       inset-inline-end: 0;
       inline-size: calc((100% - var(--grid-gutter)) * 5 / 12);
-      grid-template-rows: minmax(0, 1fr) auto auto;
       padding: 0;
-    }
-
-    .servicio__escenario {
-      aspect-ratio: auto;
-      min-block-size: 0;
     }
   }
 </style>

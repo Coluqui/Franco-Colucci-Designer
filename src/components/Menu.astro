@@ -6,6 +6,7 @@
  * A la derecha: mail, LinkedIn, WhatsApp, CV y toggles ES/EN y modo.
  * En la Fase 6: crece desde el botón "Menú" (M20) y los links respiran al entrar (M14).
  */
+import Boton from './Boton.astro';
 import Glifo from './Glifo.astro';
 import Link from './Link.astro';
 import Toggle from './Toggle.astro';
@@ -31,9 +32,7 @@ const links: Array<{ clave: UiKey; href: string }> = [
     <a class="menu__logo" href={localizePath(lang)} aria-label={t(lang, 'nav.homeLink')}>
       <Glifo size="1.625rem" />
     </a>
-    <button class="menu__cerrar" type="button" data-cierra-menu autofocus>
-      {t(lang, 'nav.close')}
-    </button>
+    <Boton variante="secundario" size="sm" data-cierra-menu autofocus>{t(lang, 'nav.close')}</Boton>
   </div>
 
   <div class="menu__cuerpo container">
@@ -132,36 +131,6 @@ const links: Array<{ clave: UiKey; href: string }> = [
     border-radius: var(--radius-xs);
   }
 
-  /* Mismo lugar y medida que "Menú" (botón secundario sm), para que el cierre esté donde se abrió. */
-  .menu__cerrar {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    min-block-size: var(--control-height-sm);
-    padding-inline: var(--control-pad-x);
-    border: var(--border-control);
-    border-radius: var(--radius-xs);
-    background: transparent;
-    font-size: var(--text-ui);
-    font-weight: var(--weight-ui);
-    line-height: var(--leading-ui);
-    cursor: pointer;
-    transition: background-color var(--duration-fast) var(--ease-out);
-  }
-
-  .menu__cerrar::before {
-    content: "";
-    position: absolute;
-    inset-block: calc((var(--control-height-sm) - var(--control-height)) / 2);
-    inset-inline: 0;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .menu__cerrar:hover {
-      background: var(--color-surface);
-    }
-  }
-
   .menu__cuerpo {
     display: grid;
     align-content: space-between;
@@ -188,11 +157,14 @@ const links: Array<{ clave: UiKey; href: string }> = [
 
   .menu__nav ul {
     gap: var(--space-2);
-    container-type: inline-size;
+    justify-items: start;
   }
 
+  /* --text-services entero (36 → 85): el tope 7.6cqi es de la lista de servicios, no del menú.
+     inline-block: el anillo de foco abraza la palabra. */
   .menu__link {
-    display: block;
+    display: inline-block;
+    font-size: var(--text-services);
     min-block-size: var(--control-height);
     color: var(--color-text-secondary);
     text-decoration: none;

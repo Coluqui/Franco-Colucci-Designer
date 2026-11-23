@@ -40,7 +40,7 @@ const { lang } = Astro.props;
     </form>
 
     <section class="panel__directo" aria-labelledby="panel-hablemos-directo">
-      <h3 id="panel-hablemos-directo" class="t-label">{t(lang, 'contact.direct')}</h3>
+      <h3 id="panel-hablemos-directo" class="panel__subtitulo">{t(lang, 'contact.direct')}</h3>
       <ul role="list">
         <li>
           <button
@@ -131,7 +131,7 @@ const { lang } = Astro.props;
   .panel__interior {
     display: grid;
     align-content: start;
-    gap: var(--space-6);
+    gap: var(--space-5);
     block-size: 100%;
     padding: calc(var(--safe-top) + var(--space-4)) var(--grid-margin) calc(var(--safe-bottom) + var(--space-6));
     background: var(--color-raised);
@@ -184,7 +184,7 @@ const { lang } = Astro.props;
 
   .panel__form {
     display: grid;
-    gap: var(--space-5);
+    gap: var(--space-4);
   }
 
   .panel__form :global(.panel__enviar) {
@@ -198,8 +198,12 @@ const { lang } = Astro.props;
     border-block-start: var(--border-hairline);
   }
 
-  .panel__directo h3 {
+  /* Geist Mono es solo para metadatos de formato (design system §4): el subtítulo va en Archivo. */
+  .panel__subtitulo {
     color: var(--color-text-secondary);
+    font-size: var(--text-small);
+    font-weight: var(--weight-ui);
+    line-height: var(--leading-ui);
   }
 
   .panel__directo ul {

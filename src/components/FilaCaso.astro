@@ -52,7 +52,7 @@ const Titulo = nivel;
 
     <div class="fila__texto">
       <Titulo class="t-h3 fila__titulo"><a class="fila__link" href={href}>{titulo}</a></Titulo>
-      <p class="t-label fila__tipo">{tipo}</p>
+      <p class="fila__tipo">{tipo}</p>
       {
         metricas.length > 0 && (
           <ul class="fila__metricas" role="list" aria-label={t(lang, 'case.metrics')}>
@@ -97,8 +97,18 @@ const Titulo = nivel;
     display: contents;
   }
 
+  /* Angosto: solo la métrica principal sube arriba de la imagen (design system §8). */
   .fila__metricas {
+    display: contents;
+  }
+
+  .fila__metricas li:first-child {
     order: -2;
+    justify-self: start;
+  }
+
+  .fila__metricas li {
+    justify-self: start;
   }
 
   .fila__media {
@@ -130,7 +140,11 @@ const Titulo = nivel;
       padding-block: var(--space-2);
     }
 
-    .fila__metricas,
+    .fila__metricas {
+      display: flex;
+    }
+
+    .fila__metricas li:first-child,
     .fila__media {
       order: 0;
     }
@@ -171,8 +185,14 @@ const Titulo = nivel;
     color: var(--color-text-secondary);
   }
 
+  /* Geist Mono es solo para metadatos de formato (design system §4). */
+  .fila__tipo {
+    font-size: var(--text-small);
+    font-weight: var(--weight-ui);
+    line-height: var(--leading-ui);
+  }
+
   .fila__metricas {
-    display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
     margin: 0;

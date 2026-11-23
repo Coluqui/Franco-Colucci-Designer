@@ -84,7 +84,7 @@ const estado = error ? 'error' : exito ? 'exito' : undefined;
   .campo__input {
     display: block;
     inline-size: 100%;
-    min-block-size: 3rem; /* 48 px (design system §7): --space-7 */
+    min-block-size: var(--space-7); /* 48 px (design system §7) */
     padding: var(--space-3) var(--space-4);
     border: var(--border-control);
     border-radius: var(--radius-xs);
@@ -96,7 +96,7 @@ const estado = error ? 'error' : exito ? 'exito' : undefined;
   }
 
   .campo__input--area {
-    min-block-size: calc(var(--space-10) + var(--space-6));
+    min-block-size: var(--space-10);
     line-height: var(--leading-body);
     resize: vertical;
   }
@@ -109,7 +109,7 @@ const estado = error ? 'error' : exito ? 'exito' : undefined;
 
   .campo__input:focus-visible {
     outline: var(--focus-ring);
-    outline-offset: 1px;
+    outline-offset: var(--focus-offset);
   }
 
   .campo__input:disabled {
@@ -127,7 +127,8 @@ const estado = error ? 'error' : exito ? 'exito' : undefined;
     padding-inline-end: var(--space-7);
   }
 
-  .campo__estado {
+  /* El ícono es de Icono.astro (otro scope): se alcanza con :global. */
+  .campo__control :global(.campo__estado) {
     position: absolute;
     inset-block-start: var(--space-4);
     inset-inline-end: var(--space-4);
