@@ -1,0 +1,131 @@
+---
+/**
+ * FAQ · design system §7 · PRD §3 · motion M29.
+ * Acordeón: pregunta en h3 con un botón (aria-expanded + aria-controls), + / −, filete --border-hairline.
+ * Sin JS todas las respuestas quedan abiertas (nada arranca escondido); el script las cierra al cargar.
+ * Cerrada: grid-template-rows 0fr + visibility hidden (fuera del orden de tabulación y del árbol
+ * de accesibilidad). La animación 0fr → 1fr con --spring-soft es de la Fase 6 (M29).
+ * Preguntas y respuestas: PENDIENTE hasta que Franco responda (PRD §9).
+ */
+import Icono from './Icono.astro';
+
+interface Pregunta {
+  pregunta: string;
+  respuesta: string;
+}
+
+interface Props {
+  preguntas: Pregunta[];
+  /** Prefijo de ids (único por página). */
+  id?: string;
+}
+
+const { preguntas, id = 'faq' } = Astro.props;
+---
+
+<div class="faq" data-faq>
+  {
+    preguntas.map((p, i) => (
+      <div class="faq__item">
+        <h3 class="faq__pregunta">
+          <button
+            class="faq__boton"
+            type="button"
+            id={`${id}-p${i}`}
+            aria-expanded="true"
+            aria-controls={`${id}-r${i}`}
+            data-faq-boton
+          >
+            <span>{p.pregunta}</span>
+            <Icono nombre="mas" class="faq__signo" />
+          </button>
+        </h3>
+        <div class="faq__respuesta" id={`${id}-r${i}`} role="region" aria-labelledby={`${id}-p${i}`}>
+          <div class="faq__interior">
+            <p class="t-body">{p.respuesta}</p>
+          </div>
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-faq]').forEach((faq) => {
+    faq.querySelectorAll<HTMLButtonElement>('[data-faq-boton]').forEach((boton) => {
+      boton.setAttribute('aria-expanded', 'false');
+      boton.addEventListener('click', () => {
+        boton.setAttribute('aria-expanded', String(boton.getAttribute('aria-expanded') !== 'true'));
+      });
+    });
+  });
+</script>
+
+<style>
+  .faq {
+    border-block-start: var(--border-hairline);
+  }
+
+  .faq__item {
+    border-block-end: var(--border-hairline);
+  }
+
+  .faq__pregunta {
+    margin: 0;
+    font-size: var(--text-h3);
+  }
+
+  .faq__boton {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    inline-size: 100%;
+    min-block-size: var(--control-height);
+    padding-block: var(--space-4);
+    padding-inline: 0;
+    border: 0;
+    background: none;
+    color: var(--color-text-primary);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .faq__boton :global(.faq__signo) {
+    flex: none;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+
+  .faq__boton[aria-expanded="true"] :global(.icono__vertical) {
+    opacity: 0;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .faq__boton:hover {
+      color: var(--color-accent);
+    }
+  }
+
+  .faq__respuesta {
+    display: grid;
+    grid-template-rows: 1fr;
+  }
+
+  .faq__pregunta:has([aria-expanded="false"]) + .faq__respuesta {
+    grid-template-rows: 0fr;
+    visibility: hidden;
+  }
+
+  .faq__interior {
+    min-block-size: 0;
+    overflow: hidden;
+  }
+
+  .faq__interior p {
+    max-inline-size: 60ch;
+    padding-block-end: var(--space-5);
+    color: var(--color-text-secondary);
+  }
+</style>
