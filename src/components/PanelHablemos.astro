@@ -1,0 +1,235 @@
+---
+/**
+ * Panel Hablemos · design system §7 y §8 · PRD §5. Fase 3: solo la estructura.
+ * <dialog> modal: desde la derecha en desktop (--drawer-width), pantalla completa en mobile.
+ * Velo --color-scrim; cierra con ESC, × o clic en el velo; el foco vuelve a quien lo abrió.
+ * Se abre desde cualquier [data-abre-panel] (header, barra mobile, cierre). Esos son links a
+ * /[lang]/hablemos/: sin JS llevan a la página, con JS abren el panel.
+ * El envío (Resend, anti-spam, estados) es de la Fase 7; M21 y M32 de la Fase 6.
+ */
+import Campo from './Campo.astro';
+import Boton from './Boton.astro';
+import Link from './Link.astro';
+import Icono from './Icono.astro';
+import { t, localizePath, type Lang } from '../i18n';
+import { site, linkedinHref, whatsappHref, cvHref } from '../config/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<dialog id="panel-hablemos" class="panel" aria-labelledby="panel-hablemos-titulo" data-panel>
+  <div class="panel__interior">
+    <div class="panel__cabecera">
+      <h2 id="panel-hablemos-titulo" class="t-h2">{t(lang, 'form.title')}</h2>
+      <button class="panel__cerrar" type="button" data-cierra-panel autofocus aria-label={t(lang, 'form.closePanel')}>
+        <Icono nombre="cerrar" size="1.25rem" />
+      </button>
+    </div>
+
+    <p class="t-body panel__intro">{t(lang, 'form.intro')}</p>
+
+    <form class="panel__form" method="post" action={localizePath(lang, 'hablemos/')} novalidate data-form-hablemos>
+      <Campo id="hablemos-nombre" name="nombre" label={t(lang, 'form.name')} autocomplete="name" required />
+      <Campo id="hablemos-email" name="email" tipo="email" label={t(lang, 'form.email')} autocomplete="email" required />
+      <Campo id="hablemos-mensaje" name="mensaje" tipo="textarea" label={t(lang, 'form.message')} required />
+      <Boton type="submit" textoCarga={t(lang, 'form.sending')} class="panel__enviar">{t(lang, 'form.send')}</Boton>
+    </form>
+
+    <section class="panel__directo" aria-labelledby="panel-hablemos-directo">
+      <h3 id="panel-hablemos-directo" class="t-label">{t(lang, 'contact.direct')}</h3>
+      <ul role="list">
+        <li>
+          <button
+            class="panel__copiar link"
+            type="button"
+            data-copiar={site.mail ?? undefined}
+            disabled={!site.mail}
+            data-texto={t(lang, 'contact.copyEmail')}
+            data-texto-ok={t(lang, 'contact.copied')}
+          >
+            <span data-copiar-texto>{t(lang, 'contact.copyEmail')}</span>
+            {!site.mail && <span class="visually-hidden">{t(lang, 'a11y.pending')}</span>}
+          </button>
+          <span class="visually-hidden" aria-live="polite" data-copiar-estado></span>
+        </li>
+        <li><Link href={whatsappHref()} lang={lang} externo>{t(lang, 'contact.whatsapp')}</Link></li>
+        <li><Link href={linkedinHref()} lang={lang} externo>{t(lang, 'contact.linkedin')}</Link></li>
+        <li><Link href={cvHref(lang)} lang={lang} download>{t(lang, 'contact.downloadCv')}</Link></li>
+      </ul>
+    </section>
+  </div>
+</dialog>
+
+<script>
+  const panel = document.querySelector<HTMLDialogElement>('[data-panel]');
+  if (panel) {
+    document.querySelectorAll<HTMLAnchorElement>('[data-abre-panel]').forEach((a) =>
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        panel.showModal();
+      }),
+    );
+    panel.querySelector('[data-cierra-panel]')?.addEventListener('click', () => panel.close());
+    // Clic en el velo: el evento llega al <dialog> mismo (fuera del interior).
+    panel.addEventListener('click', (e) => {
+      if (e.target === panel) panel.close();
+    });
+
+    // Copiar mail (M30 anima el cambio en la Fase 6; acá, el cambio de texto y el aviso).
+    const copiar = panel.querySelector<HTMLButtonElement>('[data-copiar]');
+    const texto = copiar?.querySelector('[data-copiar-texto]');
+    const aviso = panel.querySelector('[data-copiar-estado]');
+    copiar?.addEventListener('click', async () => {
+      const mail = copiar.dataset['copiar'];
+      if (!mail || !texto) return;
+      try {
+        await navigator.clipboard.writeText(mail);
+      } catch {
+        return;
+      }
+      texto.textContent = copiar.dataset['textoOk'] ?? '';
+      if (aviso) aviso.textContent = copiar.dataset['textoOk'] ?? '';
+      copiar.dataset['estado'] = 'ok';
+      const espera = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hold-feedback')) || 0;
+      setTimeout(() => {
+        texto.textContent = copiar.dataset['texto'] ?? '';
+        delete copiar.dataset['estado'];
+        if (aviso) aviso.textContent = '';
+      }, espera);
+    });
+  }
+</script>
+
+<style>
+  .panel {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-drawer);
+    inline-size: 100%;
+    max-inline-size: none;
+    block-size: var(--viewport-full);
+    max-block-size: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-text-primary);
+  }
+
+  .panel:not([open]) {
+    display: none;
+  }
+
+  .panel::backdrop {
+    background: var(--color-scrim);
+  }
+
+  .panel__interior {
+    display: grid;
+    align-content: start;
+    gap: var(--space-6);
+    block-size: 100%;
+    padding: calc(var(--safe-top) + var(--space-4)) var(--grid-margin) calc(var(--safe-bottom) + var(--space-6));
+    background: var(--color-raised);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* 768 px o más: panel lateral derecho de 520 px. */
+  @media (min-width: 48rem) {
+    .panel {
+      inset-inline-start: auto;
+      inline-size: var(--drawer-width);
+    }
+
+    .panel__interior {
+      padding-inline: var(--space-7);
+    }
+  }
+
+  .panel__cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-block-size: var(--header-height);
+  }
+
+  .panel__cerrar {
+    display: inline-grid;
+    place-items: center;
+    inline-size: var(--control-height);
+    block-size: var(--control-height);
+    margin-inline-end: calc(var(--space-3) * -1);
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: transparent;
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .panel__cerrar:hover {
+      background: var(--color-surface);
+    }
+  }
+
+  .panel__intro {
+    color: var(--color-text-secondary);
+  }
+
+  .panel__form {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .panel__form :global(.panel__enviar) {
+    justify-self: start;
+  }
+
+  .panel__directo {
+    display: grid;
+    gap: var(--space-3);
+    padding-block-start: var(--space-5);
+    border-block-start: var(--border-hairline);
+  }
+
+  .panel__directo h3 {
+    color: var(--color-text-secondary);
+  }
+
+  .panel__directo ul {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .panel__directo li {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--control-height);
+  }
+
+  .panel__copiar {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .panel__copiar:disabled {
+    color: var(--color-text-secondary);
+    text-decoration-style: dotted;
+    cursor: not-allowed;
+  }
+
+  .panel__copiar[data-estado="ok"] {
+    color: var(--color-success);
+  }
+</style>

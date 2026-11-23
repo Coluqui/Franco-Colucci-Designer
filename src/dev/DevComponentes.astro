@@ -7,6 +7,7 @@
 import Boton from '../components/Boton.astro';
 import Link from '../components/Link.astro';
 import Toggle from '../components/Toggle.astro';
+import Campo from '../components/Campo.astro';
 import type { Lang } from '../i18n';
 
 interface Props {
@@ -76,6 +77,28 @@ const base = `/${lang}/dev/componentes`;
       <Toggle lang={lang} tipo="modo" />
     </div>
   </section>
+
+  <section aria-labelledby="c-panel">
+    <h2 id="c-panel">4 · Menú y panel Hablemos</h2>
+    <p class="t-body">
+      El menú se abre con "Menú" del header. El panel, con "Hablemos" (header en desktop) o con este botón. Sin JS, el link lleva a
+      la página Hablemos.
+    </p>
+    <div class="fila-demo">
+      <Boton href={`/${lang}/hablemos/`} glifo data-abre-panel aria-haspopup="dialog">Abrir panel Hablemos</Boton>
+    </div>
+  </section>
+
+  <section aria-labelledby="c-campos">
+    <h2 id="c-campos">15 · Campos</h2>
+    <form class="grilla-campos" onsubmit="return false" novalidate>
+      <Campo id="demo-nombre" name="demo-nombre" label="Nombre" autocomplete="off" />
+      <Campo id="demo-email" name="demo-email" tipo="email" label="Email" value="franco@" error="Revisá el formato del email." />
+      <Campo id="demo-ok" name="demo-ok" label="Nombre (válido)" value="PENDIENTE" exito />
+      <Campo id="demo-off" name="demo-off" label="Deshabilitado" value="PENDIENTE" disabled />
+      <Campo id="demo-mensaje" name="demo-mensaje" tipo="textarea" label="Mensaje" />
+    </form>
+  </section>
 </div>
 
 <style>
@@ -101,6 +124,12 @@ const base = `/${lang}/dev/componentes`;
   .caja-invertida {
     padding: var(--space-5);
     border-radius: var(--radius-sm);
+  }
+
+  .grilla-campos {
+    display: grid;
+    gap: var(--space-5);
+    max-inline-size: 32rem;
   }
 
   .franja-alta {
