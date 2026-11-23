@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "siteName": "Franco Colucci",
+    "siteTitle": "Franco Colucci · Graphic & Digital Designer",
+    "siteDescription": "PENDING: site description in English."
+  },
+  "lang": {
+    "label": "Language",
+    "es": "Español",
+    "en": "English",
+    "switchTo": "Ver en español"
+  },
+  "redirect": {
+    "title": "Franco Colucci",
+    "choose": "Choose a language"
+  },
+  "a11y": {
+    "skipToContent": "Skip to content"
+  },
+  "placeholder": {
+    "pending": "PENDING",
+    "underConstruction": "Site under construction (Phase 1). Pages arrive in Phase 4."
+  }
+}

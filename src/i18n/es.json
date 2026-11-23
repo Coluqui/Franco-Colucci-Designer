@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "siteName": "Franco Colucci",
+    "siteTitle": "Franco Colucci · Diseñador gráfico y digital",
+    "siteDescription": "PENDIENTE: descripción del sitio en español."
+  },
+  "lang": {
+    "label": "Idioma",
+    "es": "Español",
+    "en": "English",
+    "switchTo": "Ver en English"
+  },
+  "redirect": {
+    "title": "Franco Colucci",
+    "choose": "Elegí un idioma"
+  },
+  "a11y": {
+    "skipToContent": "Saltar al contenido"
+  },
+  "placeholder": {
+    "pending": "PENDIENTE",
+    "underConstruction": "Sitio en construcción (Fase 1). Las páginas llegan en la Fase 4."
+  }
+}

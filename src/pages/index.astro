@@ -1,0 +1,37 @@
+---
+/**
+ * `/` elige idioma según el navegador (español por defecto).
+ * El sitio es estático: lo resuelve un script inline antes de pintar.
+ * Sin JS, el meta refresh lleva a /es/ y quedan los dos links a mano.
+ */
+import { defaultLang, localizePath, t } from '../i18n';
+
+const es = localizePath('es');
+const en = localizePath('en');
+---
+
+<!doctype html>
+<html lang={defaultLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{t(defaultLang, 'redirect.title')}</title>
+    <script is:inline define:vars={{ es, en }}>
+      var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+      var first = String(langs[0] || '').toLowerCase();
+      location.replace((first.indexOf('en') === 0 ? en : es) + location.search + location.hash);
+    </script>
+    <noscript><meta http-equiv="refresh" content={`0; url=${es}`} /></noscript>
+    <link rel="alternate" hreflang="es" href={es} />
+    <link rel="alternate" hreflang="en" href={en} />
+    <link rel="alternate" hreflang="x-default" href={es} />
+  </head>
+  <body>
+    <p>{t(defaultLang, 'redirect.choose')}</p>
+    <ul>
+      <li><a href={es} hreflang="es" lang="es">{t('es', 'lang.es')}</a></li>
+      <li><a href={en} hreflang="en" lang="en">{t('en', 'lang.en')}</a></li>
+    </ul>
+  </body>
+</html>
