@@ -1,0 +1,153 @@
+---
+/**
+ * Campo de formulario · design system §7.
+ * Etiqueta arriba (--text-small 600); input o textarea en --color-raised con --border-control,
+ * alto 48, --radius-xs. Hover: borde secundario. Error: borde y texto --color-danger + ícono
+ * (nunca solo color). Éxito: borde --color-success + ícono.
+ */
+import Icono from './Icono.astro';
+
+interface Props {
+  id: string;
+  name: string;
+  label: string;
+  tipo?: 'text' | 'email' | 'textarea';
+  autocomplete?: string;
+  required?: boolean;
+  disabled?: boolean;
+  value?: string;
+  /** Mensaje de error visible (estado error). */
+  error?: string;
+  exito?: boolean;
+}
+
+const { id, name, label, tipo = 'text', autocomplete, required = false, disabled = false, value, error, exito = false } = Astro.props;
+const idError = `${id}-error`;
+const estado = error ? 'error' : exito ? 'exito' : undefined;
+---
+
+<div class="campo" data-estado={estado}>
+  <label class="campo__label" for={id}>{label}</label>
+  <div class="campo__control">
+    {
+      tipo === 'textarea' ? (
+        <textarea
+          class="campo__input campo__input--area"
+          id={id}
+          name={name}
+          rows="5"
+          required={required}
+          disabled={disabled}
+          aria-invalid={error ? 'true' : undefined}
+          aria-describedby={error ? idError : undefined}
+          set:text={value ?? ''}
+        />
+      ) : (
+        <input
+          class="campo__input"
+          id={id}
+          name={name}
+          type={tipo}
+          value={value}
+          autocomplete={autocomplete}
+          required={required}
+          disabled={disabled}
+          aria-invalid={error ? 'true' : undefined}
+          aria-describedby={error ? idError : undefined}
+        />
+      )
+    }
+    {exito && <Icono nombre="check" class="campo__estado" />}
+  </div>
+  <p class="campo__error" id={idError} hidden={!error}>
+    <Icono nombre="error" />
+    <span data-campo-mensaje>{error}</span>
+  </p>
+</div>
+
+<style>
+  .campo {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .campo__label {
+    font-size: var(--text-small);
+    font-weight: var(--weight-ui);
+    line-height: var(--leading-ui);
+  }
+
+  .campo__control {
+    position: relative;
+  }
+
+  .campo__input {
+    display: block;
+    inline-size: 100%;
+    min-block-size: 3rem; /* 48 px (design system §7): --space-7 */
+    padding: var(--space-3) var(--space-4);
+    border: var(--border-control);
+    border-radius: var(--radius-xs);
+    background: var(--color-raised);
+    color: var(--color-text-primary);
+    font-size: var(--text-body);
+    line-height: var(--leading-ui);
+    transition: border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .campo__input--area {
+    min-block-size: calc(var(--space-10) + var(--space-6));
+    line-height: var(--leading-body);
+    resize: vertical;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .campo__input:not(:disabled, :focus):hover {
+      border-color: var(--color-text-secondary);
+    }
+  }
+
+  .campo__input:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 1px;
+  }
+
+  .campo__input:disabled {
+    border-color: var(--color-text-disabled);
+    color: var(--color-text-disabled);
+    cursor: not-allowed;
+  }
+
+  .campo[data-estado="error"] .campo__input {
+    border-color: var(--color-danger);
+  }
+
+  .campo[data-estado="exito"] .campo__input {
+    border-color: var(--color-success);
+    padding-inline-end: var(--space-7);
+  }
+
+  .campo__estado {
+    position: absolute;
+    inset-block-start: var(--space-4);
+    inset-inline-end: var(--space-4);
+    color: var(--color-success);
+  }
+
+  .campo__error {
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
+    color: var(--color-danger);
+    font-size: var(--text-small);
+    line-height: var(--leading-ui);
+  }
+
+  .campo__error[hidden] {
+    display: none;
+  }
+
+  .campo__error :global(.icono) {
+    margin-block-start: 0.1em;
+  }
+</style>
