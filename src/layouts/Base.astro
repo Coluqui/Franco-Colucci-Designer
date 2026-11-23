@@ -4,7 +4,8 @@
  * El header, el menú y el footer se suman en la Fase 3.
  */
 import '../styles/global.css';
-import { t, switchLangPath, locales, defaultLang, type Lang } from '../i18n';
+import Header from '../components/Header.astro';
+import { t,switchLangPath, locales, defaultLang, type Lang } from '../i18n';
 
 /** Solo se precarga Archivo (subset latin): es el LCP (wordmark) y cubre todo el español. */
 const archivoLatin = '/fonts/archivo-latin.woff2';
@@ -55,6 +56,7 @@ const { lang, title, description, noindex = false, alternates = true, chrome = f
   </head>
   <body>
     <a class="skip-link" href="#contenido">{t(lang, 'a11y.skipToContent')}</a>
+    {chrome && <Header lang={lang} />}
     <main id="contenido" tabindex="-1">
       <slot />
     </main>

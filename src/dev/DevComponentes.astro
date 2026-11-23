@@ -26,6 +26,17 @@ const base = `/${lang}/dev/componentes`;
     </p>
   </header>
 
+  <section aria-labelledby="c-header">
+    <h2 id="c-header">1 · Header</h2>
+    <p class="t-body">
+      Arriba de esta página. Transparente arriba; con scroll, fondo y filete; sobre la franja invertida de abajo se invierte. A
+      menos de 768 px, "Hablemos" pasa a la barra inferior.
+    </p>
+    <div class="seccion-invertida caja-invertida franja-alta">
+      <p class="t-body">Franja invertida: scrolleá hasta que pase debajo del header.</p>
+    </div>
+  </section>
+
   <section aria-labelledby="c-botones">
     <h2 id="c-botones">2 · Botones y links</h2>
     <div class="fila-demo">
@@ -75,5 +86,9 @@ const base = `/${lang}/dev/componentes`;
   .caja-invertida {
     padding: var(--space-5);
     border-radius: var(--radius-sm);
+  }
+
+  .franja-alta {
+    min-block-size: 60vh;
   }
 </style>

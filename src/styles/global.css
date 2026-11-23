@@ -123,10 +123,6 @@ a {
   text-decoration-style: dotted;
 }
 
-.seccion-invertida .link {
-  color: var(--color-inverse-accent);
-}
-
 /* ---- Foco: anillo cobalto en todo lo interactivo ---- */
 :focus-visible {
   outline: var(--focus-ring);
@@ -142,13 +138,34 @@ main:focus {
   outline: none;
 }
 
-/* Secciones invertidas (clientes + testimonios, cierre, siguiente caso, visor):
-   el cobalto normal no llega a 3:1 sobre inverse-bg; el anillo usa --color-inverse-accent
-   (6,9:1 en claro, 5,8:1 en oscuro). WCAG 1.4.11 y 2.4.7. */
-.seccion-invertida {
+/* ---- Secciones invertidas (clientes + testimonios, cierre, siguiente caso, visor) ----
+   Reasigna los tokens semánticos a sus versiones --color-inverse-*: cualquier componente
+   adentro se adapta solo. Los tokens compuestos (--focus-ring, --border-*) se redefinen
+   porque se calculan en :root.
+   - Foco: el cobalto normal no llega a 3:1 sobre inverse-bg; --color-inverse-accent da
+     6,9:1 (claro) y 5,8:1 (oscuro). WCAG 1.4.11 y 2.4.7.
+   - Borde de controles: --color-inverse-border no llega a 3:1; se usa
+     --color-inverse-text-secondary hasta que exista --color-inverse-border-strong (pendientes). */
+.seccion-invertida,
+[data-invertido] {
+  --color-bg: var(--color-inverse-bg);
+  --color-surface: var(--color-inverse-surface);
+  --color-stage: var(--color-inverse-surface);
+  --color-text-primary: var(--color-inverse-text);
+  --color-text-secondary: var(--color-inverse-text-secondary);
+  --color-border-subtle: var(--color-inverse-border);
+  --color-border-strong: var(--color-inverse-text-secondary);
+  --color-accent: var(--color-inverse-accent);
+  --color-accent-hover: var(--color-inverse-text);
+  --color-on-accent: var(--color-inverse-bg);
+  --border-hairline: 1px solid var(--color-inverse-border);
+  --border-control: 1px solid var(--color-inverse-text-secondary);
   --focus-ring: 2px solid var(--color-inverse-accent);
-  background: var(--color-inverse-bg);
-  color: var(--color-inverse-text);
+}
+
+.seccion-invertida {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
 }
 
 /* ---- Utilidades ---- */
