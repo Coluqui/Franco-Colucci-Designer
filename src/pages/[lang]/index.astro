@@ -16,7 +16,7 @@ import ResumenSobreMi from '../../components/ResumenSobreMi.astro';
 import Faq from '../../components/Faq.astro';
 import Cierre from '../../components/Cierre.astro';
 import Link from '../../components/Link.astro';
-import { locales, t, tf, localizePath, type Lang } from '../../i18n';
+import { locales, t, localizePath, type Lang } from '../../i18n';
 import { getCasos, filaDeCaso } from '../../lib/casos';
 import { ordenServicios, ratioServicio, piezaServicio } from '../../config/servicios';
 import { getCollection } from 'astro:content';
@@ -43,9 +43,10 @@ const servicios = ordenServicios.map((slug) => {
   };
 });
 
-const preguntas = Array.from({ length: 6 }, (_, i) => ({
-  pregunta: tf(lang, 'home.faqPending', { n: i + 1 }),
-  respuesta: t(lang, 'home.faqAnswerPending'),
+/** 6 preguntas para recruiters (borrador de Claude, PRD §8); las respuestas las da Franco. */
+const preguntas = ([1, 2, 3, 4, 5, 6] as const).map((n) => ({
+  pregunta: t(lang, `faq.q${n}`),
+  respuesta: t(lang, `faq.a${n}`),
 }));
 ---
 

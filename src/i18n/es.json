@@ -91,7 +91,19 @@
     "hint": "Usá las flechas ← → para pasar de testimonio."
   },
   "faq": {
-    "title": "Preguntas frecuentes"
+    "title": "Preguntas frecuentes",
+    "q1": "¿Qué tipo de piezas diseñás?",
+    "a1": "PENDIENTE: respuesta de Franco.",
+    "q2": "¿Buscás un puesto fijo, trabajo freelance o ambos?",
+    "a2": "PENDIENTE: respuesta de Franco.",
+    "q3": "¿Trabajás de forma remota?",
+    "a3": "PENDIENTE: respuesta de Franco.",
+    "q4": "¿Cómo usás la IA en tu proceso?",
+    "a4": "PENDIENTE: respuesta de Franco.",
+    "q5": "¿Con qué herramientas trabajás?",
+    "a5": "PENDIENTE: respuesta de Franco.",
+    "q6": "¿Cuánto tarda una pieza o una campaña?",
+    "a6": "PENDIENTE: respuesta de Franco."
   },
   "filters": {
     "byService": "Filtrar por servicio",
@@ -171,9 +183,7 @@
     "aboutText": "PENDIENTE: bio corta.",
     "aboutLink": "Más sobre mí",
     "clientsEmpty": "PENDIENTE: logos de clientes en SVG monocromo.",
-    "testimonialsEmpty": "PENDIENTE: testimonios de clientes.",
-    "faqPending": "PENDIENTE: pregunta frecuente {n}.",
-    "faqAnswerPending": "PENDIENTE: respuesta."
+    "testimonialsEmpty": "PENDIENTE: testimonios de clientes."
   },
   "serviceItems": {
     "ads": {

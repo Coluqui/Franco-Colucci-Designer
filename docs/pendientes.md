@@ -64,7 +64,7 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 - **Servicios por caso**: los puse a partir del inventario (MoonDesk, ISCAMEN y Carpa → Redes; Condimento → Ads y Branding). Confirmar o corregir.
 - **Descripciones de los 6 servicios** (`serviceItems.*.description`) y la pieza de vista previa de cada uno.
 - **Textos de páginas en PENDIENTE**: bajada de Trabajos, bio corta y bio de Sobre mí, datos (base, idiomas, modalidad), experiencia con fechas, cómo uso la IA, herramientas e IA de la home.
-- **6 preguntas frecuentes** con respuesta (los borradores de los wireframes v4 no están en el repo).
+- **6 preguntas frecuentes**: las preguntas son un borrador de Claude (`faq.q1`–`q6` en `src/i18n/*.json`), a revisar; las respuestas (`faq.a1`–`a6`) las da Franco.
 - **Títulos y descripciones SEO** por página: borradores en `pages.*` de `src/i18n/*.json`; revisarlos.
 - **Fase 5 · piezas**:
   - Originales de mayor resolución de MoonDesk one-pager, pieza QR y portada de ebook (hoy ~596 × 842 px).

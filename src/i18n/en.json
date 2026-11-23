@@ -91,7 +91,19 @@
     "hint": "Use the ← → arrow keys to move between testimonials."
   },
   "faq": {
-    "title": "Frequently asked questions"
+    "title": "Frequently asked questions",
+    "q1": "What kind of pieces do you design?",
+    "a1": "PENDING: Franco’s answer.",
+    "q2": "Are you looking for a full-time role, freelance work or both?",
+    "a2": "PENDING: Franco’s answer.",
+    "q3": "Do you work remotely?",
+    "a3": "PENDING: Franco’s answer.",
+    "q4": "How do you use AI in your process?",
+    "a4": "PENDING: Franco’s answer.",
+    "q5": "Which tools do you work with?",
+    "a5": "PENDING: Franco’s answer.",
+    "q6": "How long does a piece or a campaign take?",
+    "a6": "PENDING: Franco’s answer."
   },
   "filters": {
     "byService": "Filter by service",
@@ -171,9 +183,7 @@
     "aboutText": "PENDING: short bio.",
     "aboutLink": "More about me",
     "clientsEmpty": "PENDING: client logos as monochrome SVG.",
-    "testimonialsEmpty": "PENDING: client testimonials.",
-    "faqPending": "PENDING: frequently asked question {n}.",
-    "faqAnswerPending": "PENDING: answer."
+    "testimonialsEmpty": "PENDING: client testimonials."
   },
   "serviceItems": {
     "ads": {
