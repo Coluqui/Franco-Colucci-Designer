@@ -1,0 +1,148 @@
+---
+/**
+ * Toggles segmentados de 2 opciones · design system §7 (menú y footer).
+ * - idioma: links ES / EN a la misma página; conserva la posición del scroll (PRD §5).
+ * - modo: claro / oscuro. Respeta el sistema hasta que se elige; la elección se recuerda (localStorage 'tema').
+ *   Varios toggles en la misma página se mantienen sincronizados.
+ * M23 (View Transition del modo) y M24 (fundido del idioma) llegan en la Fase 6.
+ */
+import { t, locales, switchLangPath, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  tipo: 'idioma' | 'modo';
+}
+
+const { lang, tipo } = Astro.props;
+---
+
+{
+  tipo === 'idioma' ? (
+    <nav class="segmentado" aria-label={t(lang, 'lang.label')} data-toggle-idioma>
+      {locales.map((l) => (
+        <a
+          class="segmentado__opcion"
+          href={switchLangPath(Astro.url, l)}
+          hreflang={l}
+          lang={l}
+          aria-current={l === lang ? 'true' : undefined}
+        >
+          {t(l, `lang.${l}`)}
+        </a>
+      ))}
+    </nav>
+  ) : (
+    <div class="segmentado" role="group" aria-label={t(lang, 'theme.label')} data-toggle-modo>
+      <button class="segmentado__opcion" type="button" data-tema="light" aria-pressed="false">
+        {t(lang, 'theme.light')}
+      </button>
+      <button class="segmentado__opcion" type="button" data-tema="dark" aria-pressed="false">
+        {t(lang, 'theme.dark')}
+      </button>
+    </div>
+  )
+}
+
+<script>
+  // ---- Modo ----
+  const sistema = matchMedia('(prefers-color-scheme: dark)');
+  const temaActual = () => document.documentElement.dataset['theme'] ?? (sistema.matches ? 'dark' : 'light');
+
+  const pintar = () => {
+    const actual = temaActual();
+    document.querySelectorAll<HTMLButtonElement>('[data-toggle-modo] [data-tema]').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset['tema'] === actual));
+    });
+  };
+
+  document.querySelectorAll<HTMLButtonElement>('[data-toggle-modo] [data-tema]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const tema = b.dataset['tema'];
+      if (tema !== 'light' && tema !== 'dark') return;
+      document.documentElement.dataset['theme'] = tema;
+      try {
+        localStorage.setItem('tema', tema);
+      } catch {
+        /* sin storage: el modo vale solo para esta página */
+      }
+      pintar();
+    });
+  });
+  sistema.addEventListener('change', pintar);
+  pintar();
+
+  // ---- Idioma: misma página y misma posición ----
+  const CLAVE = 'scroll-idioma';
+  document.querySelectorAll<HTMLAnchorElement>('[data-toggle-idioma] a:not([aria-current])').forEach((a) => {
+    a.addEventListener('click', () => {
+      const alto = document.documentElement.scrollHeight - innerHeight;
+      try {
+        sessionStorage.setItem(CLAVE, JSON.stringify({ path: new URL(a.href).pathname, ratio: alto > 0 ? scrollY / alto : 0 }));
+      } catch {
+        /* sin storage: se cambia de idioma igual, arriba de todo */
+      }
+    });
+  });
+
+  try {
+    const guardado = sessionStorage.getItem(CLAVE);
+    if (guardado) {
+      sessionStorage.removeItem(CLAVE);
+      const { path, ratio } = JSON.parse(guardado) as { path: string; ratio: number };
+      if (path === location.pathname && !location.hash) {
+        scrollTo(0, ratio * (document.documentElement.scrollHeight - innerHeight));
+      }
+    }
+  } catch {
+    /* nada que restaurar */
+  }
+</script>
+
+<style>
+  .segmentado {
+    display: inline-flex;
+    padding: 2px;
+    border: var(--border-control);
+    border-radius: var(--radius-xs);
+  }
+
+  .segmentado__opcion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--control-height);
+    min-inline-size: var(--control-height);
+    padding-inline: var(--control-pad-x);
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-size: var(--text-ui);
+    font-weight: var(--weight-ui);
+    font-stretch: calc(var(--wdth-normal) * 1%);
+    line-height: var(--leading-ui);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .segmentado__opcion:not([aria-current], [aria-pressed="true"]):hover {
+      background: var(--color-surface);
+      color: var(--color-text-primary);
+    }
+  }
+
+  .segmentado__opcion[aria-current],
+  .segmentado__opcion[aria-pressed="true"] {
+    background: var(--color-text-primary);
+    color: var(--color-bg);
+    cursor: default;
+  }
+
+  .segmentado__opcion:focus-visible {
+    outline-offset: 1px;
+  }
+</style>
