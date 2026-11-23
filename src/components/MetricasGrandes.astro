@@ -14,7 +14,8 @@ const { metricas, etiqueta } = Astro.props;
 
 {
   metricas.length > 0 && (
-    <dl class="metricas" aria-label={etiqueta}>
+    <section aria-label={etiqueta}>
+    <dl class="metricas">
       {metricas.map((m) => (
         <div class="metricas__item">
           <dt class="metricas__etiqueta">{m.etiqueta}</dt>
@@ -22,6 +23,7 @@ const { metricas, etiqueta } = Astro.props;
         </div>
       ))}
     </dl>
+    </section>
   )
 }
 

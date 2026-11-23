@@ -18,7 +18,7 @@ const { lang } = Astro.props;
 <section class="seccion-invertida cierre" aria-labelledby="cierre-titulo">
   <div class="container cierre__caja">
     <FraseProblema texto={t(lang, 'closing.text')} as="h2" id="cierre-titulo" />
-    <Boton glifo href={localizePath(lang, 'hablemos/')} data-abre-panel aria-haspopup="dialog">
+    <Boton glifo href={localizePath(lang, 'hablemos/')} data-abre-panel>
       {t(lang, 'nav.talk')}
     </Boton>
   </div>

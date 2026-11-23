@@ -26,11 +26,10 @@ const datos = [
 <Base lang={lang} title={`${t(lang, 'pages.about.title')} · Franco Colucci`} description={t(lang, 'pages.about.description')} chrome>
   <div class="container sobre">
     <header class="sobre__cabecera">
-      <Retrato alt={t(lang, 'about.portraitAlt')} loading="eager" class="sobre__retrato" />
       <div class="sobre__intro">
         <h1>{t(lang, 'about.title')}</h1>
         <p class="t-lead">{t(lang, 'about.bio')}</p>
-        <dl class="sobre__datos" aria-label={t(lang, 'about.data')}>
+        <dl class="sobre__datos">
           {
             datos.map((d) => (
               <div>
@@ -44,6 +43,7 @@ const datos = [
           {t(lang, 'contact.downloadCv')}
         </Boton>
       </div>
+      <Retrato alt={t(lang, 'about.portraitAlt')} loading="eager" class="sobre__retrato" />
     </header>
 
     <section class="sobre__bloque" aria-labelledby="experiencia">
@@ -70,9 +70,8 @@ const datos = [
     gap: var(--space-8);
   }
 
-  /* Angosto: el h1 y la bio primero; el retrato debajo y más chico. */
+  /* Angosto: el h1 y la bio primero (también en el DOM); el retrato debajo y más chico. */
   .sobre :global(.sobre__retrato) {
-    order: 1;
     inline-size: min(100%, 16rem);
   }
 
@@ -117,8 +116,9 @@ const datos = [
       column-gap: calc(var(--grid-gutter) * 2 + (100% - 11 * var(--grid-gutter)) / 12);
     }
 
+    /* Ancho: el retrato pasa a la izquierda. */
     .sobre :global(.sobre__retrato) {
-      order: 0;
+      order: -1;
       inline-size: 100%;
     }
   }

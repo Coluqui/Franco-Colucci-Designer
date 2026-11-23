@@ -68,12 +68,14 @@ const { lang } = Astro.props;
 <script>
   const panel = document.querySelector<HTMLDialogElement>('[data-panel]');
   if (panel) {
-    document.querySelectorAll<HTMLAnchorElement>('[data-abre-panel]').forEach((a) =>
+    document.querySelectorAll<HTMLAnchorElement>('[data-abre-panel]').forEach((a) => {
+      // Recién con JS el link abre un diálogo: antes es un link común a /hablemos/.
+      a.setAttribute('aria-haspopup', 'dialog');
       a.addEventListener('click', (e) => {
         e.preventDefault();
         panel.showModal();
-      }),
-    );
+      });
+    });
     panel.querySelector('[data-cierra-panel]')?.addEventListener('click', () => panel.close());
     // Clic en el velo: el evento llega al <dialog> mismo (fuera del interior).
     panel.addEventListener('click', (e) => {

@@ -41,7 +41,7 @@ const links: Array<{ clave: UiKey; href: string }> = [
         {
           links.map(({ clave, href }) => (
             <li>
-              <a class="menu__link t-services" href={href} aria-current={actual === href ? 'page' : undefined}>
+              <a class="menu__link t-services" href={href} aria-current={actual === href || (clave === 'nav.work' && actual.startsWith(href)) ? 'page' : undefined}>
                 {t(lang, clave)}
               </a>
             </li>

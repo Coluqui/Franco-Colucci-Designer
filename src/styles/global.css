@@ -134,6 +134,13 @@ a {
 }
 
 /* Dato pendiente: no es link; se ve como texto secundario con subrayado punteado. */
+/* Link suelto (fuera de un párrafo): objetivo táctil de 44 px en el propio <a>. */
+.link--suelto {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--control-height);
+}
+
 .link--pendiente {
   color: var(--color-text-secondary);
   text-decoration-style: dotted;

@@ -25,8 +25,10 @@ const idTitulo = id && titulo ? `${id}-titulo` : undefined;
   <div class="container seccion__caja">
     {
       titulo && (
-        <div class:list={['seccion__cabecera', { 'visually-hidden': tituloOculto }]}>
-          <h2 id={idTitulo}>{titulo}</h2>
+        <div class="seccion__cabecera">
+          <h2 id={idTitulo} class:list={{ 'visually-hidden': tituloOculto }}>
+            {titulo}
+          </h2>
           {Astro.slots.has('accion') && <slot name="accion" />}
         </div>
       )

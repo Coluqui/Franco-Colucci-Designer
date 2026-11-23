@@ -62,7 +62,7 @@ const datos = [
   <article class="caso">
     <header class="container caso__cabecera">
       <p class="t-ui caso__volver">
-        <Link href={localizePath(lang, 'trabajos/')} lang={lang}>{t(lang, 'caseDetail.back')}</Link>
+        <Link href={localizePath(lang, 'trabajos/')} lang={lang} class="link--suelto">{t(lang, 'caseDetail.back')}</Link>
       </p>
       <div class="caso__intro">
         <h1>{caso.titulo[lang]}</h1>
@@ -187,12 +187,6 @@ const datos = [
   .caso__cabecera {
     display: grid;
     gap: var(--space-6);
-  }
-
-  .caso__volver {
-    display: flex;
-    align-items: center;
-    min-block-size: var(--control-height);
   }
 
   .caso__volver,

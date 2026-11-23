@@ -18,7 +18,7 @@ const cv = cvHref(lang);
 ---
 
 <nav class="barra-mobile" aria-label={t(lang, 'nav.quickActions')} data-barra-mobile>
-  <Boton class="barra-mobile__boton" glifo href={localizePath(lang, 'hablemos/')} data-abre-panel aria-haspopup="dialog">
+  <Boton class="barra-mobile__boton" glifo href={localizePath(lang, 'hablemos/')} data-abre-panel>
     {t(lang, 'nav.talk')}
   </Boton>
   <Boton class="barra-mobile__boton" variante="secundario" icono="flecha-abajo" href={cv} download={cv ? '' : undefined}>

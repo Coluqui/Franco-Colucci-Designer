@@ -31,11 +31,11 @@ const { lang } = Astro.props;
         glifo
         href={localizePath(lang, 'hablemos/')}
         data-abre-panel
-        aria-haspopup="dialog"
       >
         {t(lang, 'nav.talk')}
       </Boton>
       <Boton
+        class="header__menu"
         variante="secundario"
         size="sm"
         data-abre-menu
@@ -118,6 +118,13 @@ const { lang } = Astro.props;
   }
 
   /* 360 px: "Hablemos" vive en la barra inferior (design system §8). */
+  /* Sin JS el botón no abre nada: la navegación está en el footer. */
+  @media (scripting: none) {
+    .header :global(.header__menu) {
+      display: none;
+    }
+  }
+
   .header :global(.header__hablemos) {
     display: none;
   }

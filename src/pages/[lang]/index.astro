@@ -59,7 +59,7 @@ const preguntas = Array.from({ length: 6 }, (_, i) => ({
   </Seccion>
 
   <Seccion id="trabajos" titulo={t(lang, 'home.featured')}>
-    <Link slot="accion" class="t-ui accion-seccion" href={localizePath(lang, 'trabajos/')} lang={lang}>{t(lang, 'home.allWork')}</Link>
+    <Link slot="accion" class="t-ui link--suelto" href={localizePath(lang, 'trabajos/')} lang={lang}>{t(lang, 'home.allWork')}</Link>
     <ul class="filas" role="list">
       {
         casos.map((c, i) => (
@@ -91,13 +91,6 @@ const preguntas = Array.from({ length: 6 }, (_, i) => ({
 </Base>
 
 <style>
-  /* Objetivo táctil de 44 px para el link suelto de la cabecera. */
-  :global(.accion-seccion) {
-    display: inline-flex;
-    align-items: center;
-    min-block-size: var(--control-height);
-  }
-
   .frase-seccion {
     padding-block-end: var(--space-section);
   }

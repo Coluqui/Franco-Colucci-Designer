@@ -7,7 +7,7 @@
 import Glifo from './Glifo.astro';
 import Link from './Link.astro';
 import Toggle from './Toggle.astro';
-import { t, tf, type Lang } from '../i18n';
+import { t, tf, localizePath, type Lang } from '../i18n';
 import { site, mailHref, linkedinHref, whatsappHref, cvHref } from '../config/site';
 
 interface Props {
@@ -15,6 +15,14 @@ interface Props {
 }
 
 const { lang } = Astro.props;
+const actual = Astro.url.pathname;
+
+/** Navegación principal también acá: sin JS el menú no se abre y este es el camino entre páginas. */
+const paginas = [
+  { texto: t(lang, 'nav.home'), href: localizePath(lang) },
+  { texto: t(lang, 'nav.work'), href: localizePath(lang, 'trabajos/') },
+  { texto: t(lang, 'nav.about'), href: localizePath(lang, 'sobre-mi/') },
+];
 ---
 
 <footer class="footer">
@@ -24,6 +32,20 @@ const { lang } = Astro.props;
     </div>
 
     <div class="footer__datos">
+      <nav aria-label={t(lang, 'nav.label')}>
+        <ul class="footer__contacto" role="list">
+          {
+            paginas.map((p) => (
+              <li>
+                <a class="link" href={p.href} aria-current={actual === p.href ? 'page' : undefined}>
+                  {p.texto}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
       <ul class="footer__contacto" role="list" aria-label={t(lang, 'nav.contact')}>
         <li><Link href={mailHref()} lang={lang}>{site.mail ?? t(lang, 'contact.email')}</Link></li>
         <li><Link href={linkedinHref()} lang={lang} externo>{t(lang, 'contact.linkedin')}</Link></li>

@@ -6,7 +6,7 @@
  *   Varios toggles en la misma página se mantienen sincronizados.
  * M23 (View Transition del modo) y M24 (fundido del idioma) llegan en la Fase 6.
  */
-import { t, locales, switchLangPath, type Lang } from '../i18n';
+import { t, locales, switchLangPath, localizePath, type Lang } from '../i18n';
 
 interface Props {
   lang: Lang;
@@ -22,7 +22,7 @@ const { lang, tipo } = Astro.props;
       {locales.map((l) => (
         <a
           class="segmentado__opcion"
-          href={switchLangPath(Astro.url, l)}
+          href={Astro.routePattern === '/404' ? localizePath(l) : switchLangPath(Astro.url, l)}
           hreflang={l}
           lang={l}
           aria-current={l === lang ? 'true' : undefined}
