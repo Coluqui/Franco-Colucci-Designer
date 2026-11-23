@@ -1,0 +1,51 @@
+{
+  "slug": "moondesk-carrusel-dia-de-la-tierra",
+  "caso": "moondesk",
+  "formato": "carrusel",
+  "ratio": "4:5",
+  "titulo": {
+    "es": "Carrusel: Día de la Tierra",
+    "en": "Carousel: Earth Day"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Portada del carrusel de MoonDesk con el titular \"Hoy es el Día de la Tierra\" y un planeta triste rodeado de cajas y bolsas de residuos.",
+        "en": "MoonDesk carousel cover with the Spanish headline \"Hoy es el Día de la Tierra\" (Today is Earth Day) and a sad planet surrounded by boxes and trash bags."
+      }
+    },
+    {
+      "src": "./02.jpg",
+      "alt": {
+        "es": "Slide con el titular \"Un impacto que no se ve\" y la frase \"Termina en una reimpresión\", sobre una pila de hojas descartadas.",
+        "en": "Slide with the Spanish headline \"Un impacto que no se ve\" (An impact you can't see) and the line \"It ends in a reprint\", over a pile of discarded sheets."
+      }
+    },
+    {
+      "src": "./03.jpg",
+      "alt": {
+        "es": "Slide con el titular \"Costo real\", una lista con material, tinta, energía y logística, y tres íconos tachados de hoja, gota y rayo.",
+        "en": "Slide with the Spanish headline \"Costo real\" (Real cost), a list of material, ink, energy and logistics, and three crossed-out icons: sheet, drop and bolt."
+      }
+    },
+    {
+      "src": "./04.jpg",
+      "alt": {
+        "es": "Slide con el titular \"No es un problema de diseño\" y la frase \"Son fallas de proceso\", con un tablero de aprobaciones, un comentario y versiones V1 a V3.",
+        "en": "Slide with the Spanish headline \"No es un problema de diseño\" (It's not a design problem) and \"They're process failures\", with an approvals board and versions V1 to V3."
+      }
+    },
+    {
+      "src": "./05.jpg",
+      "alt": {
+        "es": "Cierre del carrusel con el titular \"Menos error, más impacto\" y un planeta sonriente con destellos.",
+        "en": "Carousel closing slide with the Spanish headline \"Menos error, más impacto\" (Fewer errors, more impact) and a smiling, sparkling planet."
+      }
+    }
+  ]
+}

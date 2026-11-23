@@ -1,0 +1,23 @@
+{
+  "slug": "moondesk-post-retrabajos",
+  "caso": "moondesk",
+  "formato": "post",
+  "ratio": "4:5",
+  "titulo": {
+    "es": "Post: ¿Qué generó más retrabajos?",
+    "en": "Post: What caused the most rework?"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Post con la pregunta \"¿Qué generó más retrabajos este año?\" en blanco dentro de un gran globo de diálogo azul, sobre un hombre ilustrado de camisa amarilla con los brazos cruzados.",
+        "en": "Post with the Spanish question \"¿Qué generó más retrabajos este año?\" (What caused the most rework this year?) in a large blue speech bubble above an illustrated man in a yellow shirt."
+      }
+    }
+  ]
+}

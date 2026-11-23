@@ -1,0 +1,23 @@
+{
+  "slug": "moondesk-post-validaciones",
+  "caso": "moondesk",
+  "formato": "post",
+  "ratio": "4:5",
+  "titulo": {
+    "es": "Post: Validaciones en segundos",
+    "en": "Post: Approvals in seconds"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Post de MoonDesk con el titular \"Validaciones que tardan días… con MoonDesk tardan segundos.\" y una interfaz ilustrada con un envase \"Aprobado\" y tres personas con el pulgar arriba.",
+        "en": "MoonDesk post with the Spanish headline \"Validaciones que tardan días… con MoonDesk tardan segundos.\" (Approvals that take days take seconds with MoonDesk) and an interface showing an approved package."
+      }
+    }
+  ]
+}

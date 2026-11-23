@@ -1,0 +1,51 @@
+{
+  "slug": "iscamen-carrusel-citricos",
+  "caso": "iscamen",
+  "formato": "carrusel",
+  "ratio": "4:5",
+  "titulo": {
+    "es": "Carrusel: Cosechá tus cítricos",
+    "en": "Carousel: Harvest your citrus"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Portada del carrusel de ISCAMEN con el titular \"Cosechá tus cítricos\" en blanco sobre la foto de una naranja en la planta, con un texto breve y los logos de ISCAMEN y Mendoza.",
+        "en": "ISCAMEN carousel cover with the Spanish headline \"Cosechá tus cítricos\" (Harvest your citrus) in white over a photo of an orange on the tree, with short text and logos."
+      }
+    },
+    {
+      "src": "./02.jpg",
+      "alt": {
+        "es": "Slide con el titular \"Mendoza agrícola\" sobre la foto de un racimo de uvas en la parra y un texto sobre la identidad agrícola de la provincia.",
+        "en": "Slide with the Spanish headline \"Mendoza agrícola\" (Agricultural Mendoza) over a photo of a grape bunch on the vine and text about the province's farming identity."
+      }
+    },
+    {
+      "src": "./03.jpg",
+      "alt": {
+        "es": "Slide con el titular \"El puente son los cítricos\" sobre la foto de una mandarina en sombra y un texto sobre la mosca del Mediterráneo en invierno.",
+        "en": "Slide with the Spanish headline \"El puente son los cítricos\" (Citrus is the bridge) over a photo of a shaded tangerine and text about the Mediterranean fruit fly in winter."
+      }
+    },
+    {
+      "src": "./04.jpg",
+      "alt": {
+        "es": "Slide con el titular \"De la planta al frasco\" sobre la foto de un frasco de dulce de cítricos atado con hilo y un texto que ofrece un recetario.",
+        "en": "Slide with the Spanish headline \"De la planta al frasco\" (From the tree to the jar) over a photo of a jar of citrus preserve tied with string and text offering a recipe book."
+      }
+    },
+    {
+      "src": "./05.jpg",
+      "alt": {
+        "es": "Slide con el titular \"Más salud\" sobre la foto de una naranja cortada al medio, con tres líneas que señalan sus beneficios. PENDIENTE: revisar texto del subtítulo (\"Vitaminas C a tu alcance\").",
+        "en": "Slide with the Spanish headline \"Más salud\" (Better health) over a photo of a halved orange, with three callout lines pointing to its benefits."
+      }
+    }
+  ]
+}

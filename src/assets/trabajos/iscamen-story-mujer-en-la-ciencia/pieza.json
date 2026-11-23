@@ -1,0 +1,23 @@
+{
+  "slug": "iscamen-story-mujer-en-la-ciencia",
+  "caso": "iscamen",
+  "formato": "story",
+  "ratio": "9:16",
+  "titulo": {
+    "es": "Story: La mujer en la ciencia",
+    "en": "Story: Women in science"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Story de una jornada interinstitucional con el titular \"La mujer en la ciencia y la tecnología\", fecha, hora y lugar, y fotos de una científica en el microscopio y una programadora.",
+        "en": "Story for an inter-institutional event with the Spanish headline \"La mujer en la ciencia y la tecnología\" (Women in science and technology), event details, and photos of a scientist and a programmer."
+      }
+    }
+  ]
+}

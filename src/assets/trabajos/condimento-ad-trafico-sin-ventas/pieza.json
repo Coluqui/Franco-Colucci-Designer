@@ -1,0 +1,23 @@
+{
+  "slug": "condimento-ad-trafico-sin-ventas",
+  "caso": "condimento",
+  "formato": "ad",
+  "ratio": "1:1",
+  "titulo": {
+    "es": "Ad: Tráfico sin ventas",
+    "en": "Ad: Traffic without sales"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Anuncio cuadrado de Condimento con el titular \"¿Tu tienda tiene tráfico, pero no ventas?\", dos tarjetas que contrastan visitas y ventas con un emoji enojado, y el botón \"Solicita tu auditoría gratis\".",
+        "en": "Square Condimento ad with the Spanish headline \"¿Tu tienda tiene tráfico, pero no ventas?\" (Your store has traffic but no sales?), two cards contrasting visits and sales with an angry emoji, and a free-audit button."
+      }
+    }
+  ]
+}

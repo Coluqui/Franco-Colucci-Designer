@@ -1,0 +1,23 @@
+{
+  "slug": "condimento-ad-otra-campana",
+  "caso": "condimento",
+  "formato": "ad",
+  "ratio": "1:1",
+  "titulo": {
+    "es": "Ad: No necesitás otra campaña",
+    "en": "Ad: You don't need another campaign"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Anuncio cuadrado de Condimento con el titular \"No necesitas otra campaña. Necesitas entender qué no funciona\" sobre una captura oscurecida de un administrador de campañas, y el botón \"Solicita tu auditoría gratis\".",
+        "en": "Square Condimento ad with the Spanish headline \"No necesitas otra campaña. Necesitas entender qué no funciona\" (You don't need another campaign, you need to understand what isn't working) over a dimmed ads manager screenshot, with a free-audit button."
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "slug": "moondesk-pieza-qr",
+  "caso": "moondesk",
+  "formato": "impreso",
+  "ratio": "596:842",
+  "titulo": {
+    "es": "¿Tu marca está preparada?",
+    "en": "Is your brand ready?"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Pieza vertical de MoonDesk y GS1 Argentina con el titular \"El código se transforma. ¿Tu marca está preparada?\" sobre un envase desplegado donde un QR reemplaza al código de barras.",
+        "en": "Vertical MoonDesk and GS1 Argentina piece with the Spanish headline \"El código se transforma. ¿Tu marca está preparada?\" (The code is changing. Is your brand ready?) over an unfolded package where a QR replaces the barcode."
+      }
+    }
+  ]
+}

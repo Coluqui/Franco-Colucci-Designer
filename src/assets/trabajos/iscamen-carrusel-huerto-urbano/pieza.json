@@ -1,0 +1,51 @@
+{
+  "slug": "iscamen-carrusel-huerto-urbano",
+  "caso": "iscamen",
+  "formato": "carrusel",
+  "ratio": "4:5",
+  "titulo": {
+    "es": "Carrusel: Huerto urbano",
+    "en": "Carousel: Urban garden"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Portada del carrusel de ISCAMEN con el titular \"Huerto urbano\", el ciclo de capacitaciones otoño-invierno en vivo, la fecha de inicio y la foto de un cantero con verduras.",
+        "en": "ISCAMEN carousel cover with the Spanish headline \"Huerto urbano\" (Urban garden), a fall-winter livestream training series, its start date and a photo of a vegetable bed."
+      }
+    },
+    {
+      "src": "./02.jpg",
+      "alt": {
+        "es": "Slide número 1 de la serie con el titular \"Diseño del huerto\", fecha y hora en etiquetas verdes y la foto de un cantero de madera dividido en cuadros.",
+        "en": "Slide number 1 of the series with the Spanish headline \"Diseño del huerto\" (Garden design), date and time in green tags and a photo of a wooden bed split into squares."
+      }
+    },
+    {
+      "src": "./03.jpg",
+      "alt": {
+        "es": "Slide número 2 de la serie con el titular \"Armado de compostaje\", fecha y hora en etiquetas verdes y la foto de una pila de compost.",
+        "en": "Slide number 2 of the series with the Spanish headline \"Armado de compostaje\" (Building a compost pile), date and time in green tags and a photo of a compost heap."
+      }
+    },
+    {
+      "src": "./04.jpg",
+      "alt": {
+        "es": "Slide número 3 de la serie con el titular \"Caldos y purines\", fecha y hora en etiquetas verdes y la foto de un balde con hojas en agua.",
+        "en": "Slide number 3 of the series with the Spanish headline \"Caldos y purines\" (Plant broths and slurries), date and time in green tags and a photo of a bucket of leaves in water."
+      }
+    },
+    {
+      "src": "./05.jpg",
+      "alt": {
+        "es": "Slide número 4 de la serie con el titular \"Reconocimiento de insectos\", fecha y hora en etiquetas verdes y la foto de una vaquita de San Antonio.",
+        "en": "Slide number 4 of the series with the Spanish headline \"Reconocimiento de insectos\" (Insect identification), date and time in green tags and a photo of a ladybug."
+      }
+    }
+  ]
+}

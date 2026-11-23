@@ -1,0 +1,23 @@
+{
+  "slug": "moondesk-post-feria-envase",
+  "caso": "moondesk",
+  "formato": "post",
+  "ratio": "4:5",
+  "titulo": {
+    "es": "Post: Feria Envase 2025",
+    "en": "Post: Envase 2025 trade fair"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Post de MoonDesk con el titular \"Visitanos en la feria Envase 2025\", el pabellón y stand, los logos de Envase y ETIF 2025 y una cinta transportadora con envases ilustrados.",
+        "en": "MoonDesk post with the Spanish headline \"Visitanos en la feria Envase 2025\" (Visit us at the Envase 2025 fair), booth details, the Envase and ETIF 2025 logos and a conveyor belt of illustrated packages."
+      }
+    }
+  ]
+}

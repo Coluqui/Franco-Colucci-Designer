@@ -66,3 +66,17 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 - **Textos de páginas en PENDIENTE**: bajada de Trabajos, bio corta y bio de Sobre mí, datos (base, idiomas, modalidad), experiencia con fechas, cómo uso la IA, herramientas e IA de la home.
 - **6 preguntas frecuentes** con respuesta (los borradores de los wireframes v4 no están en el repo).
 - **Títulos y descripciones SEO** por página: borradores en `pages.*` de `src/i18n/*.json`; revisarlos.
+- **Fase 5 · piezas**:
+  - Originales de mayor resolución de MoonDesk one-pager, pieza QR y portada de ebook (hoy ~596 × 842 px).
+  - Banner de Carpa (835 × 451) fuera del visor: cargarlo si llega un original apaisado de más resolución.
+  - "Objetivo" de cada pieza (`objetivo` en cada `pieza.json`, hoy PENDIENTE) y métricas reales si las hay.
+  - Vistas previas de **Mail (3:1)** y **Web (16:10)**: no hay piezas en esos formatos.
+  - **Loop del hero**: una misma campaña en 1:1, 4:5, 9:16, 3:1 y 16:10 (ningún trabajo la tiene hoy).
+  - Elegidas por Claude para las vistas previas (confirmar): Ads → Condimento "otra campaña"; Redes → carrusel MoonDesk "Nacimos de un error"; Reels → story testimonio MoonDesk (estática); Branding → Condimento branding.
+- **Fase 5 · dudas sobre piezas (las decide Franco)**:
+  - `moondesk-story-testimonio`: muestra la cita, el nombre y la empresa de un cliente. ¿Hay permiso para publicarlo en el portfolio? (El alt no transcribe nombre ni empresa.)
+  - `moondesk-post-retrabajos`: es una pregunta sin respuesta y sin logo; ¿es la portada de un carrusel incompleto o de otra marca?
+  - `iscamen-story-mujer-en-la-ciencia`: jornada con UNCuyo y Gobierno de Mendoza; confirmar que fue un trabajo para ISCAMEN.
+  - `moondesk-pieza-qr` (con GS1 Argentina): ¿se imprimió o fue digital? Hoy está como "impreso".
+  - `carpa-metodo` pasó de carrusel a **ebook** (son 9 portadas de módulos y bonos, no un carrusel de redes). `carpa-mockup-producto` repite esas portadas en dispositivos: ¿pieza aparte o hero del caso Carpa?
+  - `iscamen-carrusel-citricos` slide 5: el texto dice "VITAMINAS C  A TU ALCANCE" (doble espacio); revisar si falta una palabra.

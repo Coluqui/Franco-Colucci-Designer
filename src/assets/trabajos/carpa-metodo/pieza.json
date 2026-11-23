@@ -1,0 +1,79 @@
+{
+  "slug": "carpa-metodo",
+  "caso": "carpa",
+  "formato": "ebook",
+  "ratio": "1374:1600",
+  "titulo": {
+    "es": "Método Carpa: portadas",
+    "en": "Carpa Method: covers"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Portada negra del Método Carpa, con lomo rojo, etiqueta \"Bonus #1\", el titular \"Tips secretos para brokers\" y una camioneta blanca.",
+        "en": "Black Carpa Method cover with a red spine, a \"Bonus #1\" tag, the Spanish headline \"Tips secretos para brokers\" (Secret tips for brokers) and a white SUV."
+      }
+    },
+    {
+      "src": "./02.jpg",
+      "alt": {
+        "es": "Portada del Método Carpa con la etiqueta \"Bonus #2\", el titular \"Títulos y modelos de negocio\" y un sedán negro sobre líneas rojas.",
+        "en": "Carpa Method cover with a \"Bonus #2\" tag, the Spanish headline \"Titulos y modelos de negocio\" (Titles and business models) and a black sedan over red lines."
+      }
+    },
+    {
+      "src": "./03.jpg",
+      "alt": {
+        "es": "Portada del Método Carpa con la etiqueta \"Bonus #3\", el titular \"Acceso exclusivo a la comunidad privada de brokers Carpa\" y una camioneta plateada.",
+        "en": "Carpa Method cover with a \"Bonus #3\" tag, the Spanish headline \"Acceso exclusivo a la comunidad privada de brokers Carpa\" (Exclusive access to the private Carpa broker community) and a silver SUV."
+      }
+    },
+    {
+      "src": "./04.jpg",
+      "alt": {
+        "es": "Portada del Método Carpa con la etiqueta \"Bonus #4\", el titular \"Sesión grupal de asesoría y preguntas en vivo con expertos\" y tres personas con remeras de la marca.",
+        "en": "Carpa Method cover with a \"Bonus #4\" tag, the Spanish headline \"Sesión grupal de asesoría y preguntas en vivo con expertos\" (Live group Q&A with experts) and three people in branded T-shirts."
+      }
+    },
+    {
+      "src": "./05.jpg",
+      "alt": {
+        "es": "Portada del Método Carpa con la etiqueta \"Bonus imperdible\", el titular \"Masterclass exclusiva: impuestos para brokers de autos\" y una camioneta gris oscura.",
+        "en": "Carpa Method cover with a \"Must-have bonus\" tag, the Spanish headline \"Masterclass exclusiva: impuestos para brokers de autos\" (Exclusive masterclass: taxes for car brokers) and a dark gray SUV."
+      }
+    },
+    {
+      "src": "./06.jpg",
+      "alt": {
+        "es": "Portada del Método Carpa con la etiqueta \"Módulo 1-5\", el titular \"Iniciando en el negocio sin cometer errores.\" y una camioneta blanca.",
+        "en": "Carpa Method cover with a \"Module 1-5\" tag, the Spanish headline \"Iniciando en el negocio sin cometer errores.\" (Starting the business without mistakes) and a white SUV."
+      }
+    },
+    {
+      "src": "./07.jpg",
+      "alt": {
+        "es": "Portada del Método Carpa con la etiqueta \"Módulo 6-15\", el titular \"Compra con inteligencia y sin pagar de más.\" y un auto deportivo plateado.",
+        "en": "Carpa Method cover with a \"Module 6-15\" tag, the Spanish headline \"Compra con inteligencia y sin pagar de más.\" (Buy smart without overpaying) and a silver sports car."
+      }
+    },
+    {
+      "src": "./08.jpg",
+      "alt": {
+        "es": "Portada del Método Carpa con la etiqueta \"Módulo 16-25\", el titular \"Venta rápida con máximas ganancias\" y un auto verde lima.",
+        "en": "Carpa Method cover with a \"Module 16-25\" tag, the Spanish headline \"Venta rápida con máximas ganancias\" (Fast sales, maximum profit) and a lime-green car."
+      }
+    },
+    {
+      "src": "./09.jpg",
+      "alt": {
+        "es": "Portada del Método Carpa con la etiqueta \"Módulo 26-30\", el titular \"Documentación, impuestos y escalabilidad.\" y un auto deportivo gris de frente sobre humo rojo.",
+        "en": "Carpa Method cover with a \"Module 26-30\" tag, the Spanish headline \"Documentación, impuestos y escalabilidad.\" (Paperwork, taxes and scaling) and a gray muscle car over red smoke."
+      }
+    }
+  ]
+}

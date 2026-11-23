@@ -1,0 +1,65 @@
+{
+  "slug": "iscamen-carrusel-bioinsumos",
+  "caso": "iscamen",
+  "formato": "carrusel",
+  "ratio": "4:5",
+  "titulo": {
+    "es": "Carrusel: Bioinsumos de exportación",
+    "en": "Carousel: Export bio-inputs"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Portada del carrusel de ISCAMEN con el titular \"Bioinsumos de exportación\" en verde y la foto de una caja de pupas de moscas estériles con destino a Chile.",
+        "en": "ISCAMEN carousel cover with the Spanish headline \"Bioinsumos de exportación\" (Export bio-inputs) in green and a photo of a box of sterile fly pupae bound for Chile."
+      }
+    },
+    {
+      "src": "./02.jpg",
+      "alt": {
+        "es": "Slide de texto con el titular \"Bioplanta multipropósito de producción de insectos estériles\" y tres párrafos sobre la Técnica del Insecto Estéril.",
+        "en": "Text slide with the Spanish headline \"Bioplanta multipropósito de producción de insectos estériles\" (Multipurpose sterile insect bioplant) and three paragraphs on the technique."
+      }
+    },
+    {
+      "src": "./03.jpg",
+      "alt": {
+        "es": "Slide con el titular \"¿Mosca del Mediterráneo?\", un texto sobre la plaga y un dato destacado en verde, con una foto ampliada de la mosca.",
+        "en": "Slide with the Spanish headline \"¿Mosca del Mediterráneo?\" (Mediterranean fruit fly?), text about the pest with a key fact in green, and a close-up photo of the fly."
+      }
+    },
+    {
+      "src": "./04.jpg",
+      "alt": {
+        "es": "Slide con el titular \"Mosquito vector del dengue\", un texto sobre el control de Aedes aegypti y la foto de un mosquito sobre la curva verde.",
+        "en": "Slide with the Spanish headline \"Mosquito vector del dengue\" (Dengue vector mosquito), text on Aedes aegypti control and a photo of a mosquito over the green curve."
+      }
+    },
+    {
+      "src": "./05.jpg",
+      "alt": {
+        "es": "Slide con el titular \"Drosophila suzukii\", un texto sobre un proyecto binacional con Chile y la foto de la mosca con alas abiertas.",
+        "en": "Slide with the headline \"Drosophila suzukii\", Spanish text about a binational project with Chile, and a photo of the fly with open wings."
+      }
+    },
+    {
+      "src": "./06.jpg",
+      "alt": {
+        "es": "Slide con el titular \"Tenebrio molitor\", un texto sobre este bioinsumo en desarrollo y la foto de un escarabajo oscuro.",
+        "en": "Slide with the headline \"Tenebrio molitor\", Spanish text about this bio-input in development, and a photo of a dark beetle."
+      }
+    },
+    {
+      "src": "./07.jpg",
+      "alt": {
+        "es": "Cierre del carrusel con los logos de ISCAMEN y del Gobierno de Mendoza sobre fondo blanco y la curva verde texturada.",
+        "en": "Carousel closing slide with the ISCAMEN and Government of Mendoza logos on white, above the textured green curve."
+      }
+    }
+  ]
+}

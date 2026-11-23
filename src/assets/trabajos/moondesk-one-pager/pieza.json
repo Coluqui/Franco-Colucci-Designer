@@ -1,0 +1,23 @@
+{
+  "slug": "moondesk-one-pager",
+  "caso": "moondesk",
+  "formato": "impreso",
+  "ratio": "596:842",
+  "titulo": {
+    "es": "One pager de MoonDesk",
+    "en": "MoonDesk one-pager"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "One pager vertical de MoonDesk que presenta \"La plataforma que agiliza y asegura tu proceso de aprobación de documentos de packaging\", con características, resultados, una cita, logos de clientes y un QR.",
+        "en": "Vertical MoonDesk one-pager presenting, in Spanish, \"the platform that speeds up and secures your packaging approval process\", with features, results, a quote, client logos and a QR code."
+      }
+    }
+  ]
+}

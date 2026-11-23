@@ -1,0 +1,23 @@
+{
+  "slug": "condimento-ad-anuncios",
+  "caso": "condimento",
+  "formato": "ad",
+  "ratio": "1:1",
+  "titulo": {
+    "es": "Ad: Una auditoría, no otra promesa",
+    "en": "Ad: An audit, not another promise"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Anuncio cuadrado de Condimento en rojo y negro con el titular \"Si ya hiciste anuncios y no generaste resultados, necesitas una auditoría, no otra promesa\" y el botón \"Solicítala gratis aquí\".",
+        "en": "Square red and black Condimento ad with the Spanish headline \"Si ya hiciste anuncios y no generaste resultados, necesitas una auditoría, no otra promesa\" (If your ads didn't deliver, you need an audit, not another promise) and a free-request button."
+      }
+    }
+  ]
+}

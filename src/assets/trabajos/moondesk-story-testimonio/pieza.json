@@ -1,0 +1,23 @@
+{
+  "slug": "moondesk-story-testimonio",
+  "caso": "moondesk",
+  "formato": "story",
+  "ratio": "9:16",
+  "titulo": {
+    "es": "Story: Testimonio de cliente",
+    "en": "Story: Customer testimonial"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Story de MoonDesk con la foto de un hombre sonriente en una oficina y la cita \"Si volviera al pasado me recomendaría MoonDesk\" en un recuadro celeste, con su nombre y cargo debajo.",
+        "en": "MoonDesk story with a photo of a smiling man in an office and the Spanish quote \"Si volviera al pasado me recomendaría MoonDesk\" (If I could go back, I'd recommend MoonDesk to myself), with his name and role below."
+      }
+    }
+  ]
+}

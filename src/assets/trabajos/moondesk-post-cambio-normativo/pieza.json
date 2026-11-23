@@ -1,0 +1,23 @@
+{
+  "slug": "moondesk-post-cambio-normativo",
+  "caso": "moondesk",
+  "formato": "post",
+  "ratio": "4:5",
+  "titulo": {
+    "es": "Post: Un cambio normativo",
+    "en": "Post: A regulatory change"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Post de MoonDesk con el titular \"Un cambio normativo. Veinte artes afectados.\" y una mujer preocupada frente a su laptop, rodeada de sellos de reciclaje, QR y CE.",
+        "en": "MoonDesk post with the Spanish headline \"Un cambio normativo. Veinte artes afectados.\" (One regulatory change. Twenty artworks affected.) and a worried woman at her laptop amid recycling, QR and CE marks."
+      }
+    }
+  ]
+}

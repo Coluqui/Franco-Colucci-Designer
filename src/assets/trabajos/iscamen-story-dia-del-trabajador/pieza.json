@@ -1,0 +1,23 @@
+{
+  "slug": "iscamen-story-dia-del-trabajador",
+  "caso": "iscamen",
+  "formato": "story",
+  "ratio": "9:16",
+  "titulo": {
+    "es": "Story: Día del Trabajador",
+    "en": "Story: Labor Day"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Story de ISCAMEN con el titular \"Feliz Día del Trabajador\" bajo una lupa que amplía el isotipo de la marca, lleno de íconos de laboratorio, frutas, insectos y transporte.",
+        "en": "ISCAMEN story with the Spanish headline \"Feliz Día del Trabajador\" (Happy Labor Day) under a magnifying glass over the brand symbol, filled with lab, fruit, insect and transport icons."
+      }
+    }
+  ]
+}

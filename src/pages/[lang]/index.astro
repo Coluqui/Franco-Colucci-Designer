@@ -18,7 +18,8 @@ import Cierre from '../../components/Cierre.astro';
 import Link from '../../components/Link.astro';
 import { locales, t, tf, localizePath, type Lang } from '../../i18n';
 import { getCasos, filaDeCaso } from '../../lib/casos';
-import { ordenServicios, ratioServicio } from '../../config/servicios';
+import { ordenServicios, ratioServicio, piezaServicio } from '../../config/servicios';
+import { getCollection } from 'astro:content';
 
 export const getStaticPaths = (() => locales.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
 
@@ -28,12 +29,19 @@ const casos = await getCasos();
 /** Clientes del PRD §3; los logos SVG monocromos están PENDIENTE (se muestra el nombre). */
 const clientes = ['ISCAMEN', 'MoonDesk', 'Condimento', 'Carpa', 'RLB', 'Interlink'].map((nombre) => ({ nombre }));
 
-const servicios = ordenServicios.map((slug) => ({
-  slug,
-  nombre: t(lang, `serviceItems.${slug}.name`),
-  descripcion: t(lang, `serviceItems.${slug}.description`),
-  ratio: ratioServicio[slug],
-}));
+const piezas = await getCollection('piezas');
+const servicios = ordenServicios.map((slug) => {
+  // Vista previa: slide 1 de la pieza elegida; si todavía no está cargada, el marco queda PENDIENTE.
+  const portada = piezas.find((p) => p.id === piezaServicio[slug])?.data.slides[0];
+  return {
+    slug,
+    nombre: t(lang, `serviceItems.${slug}.name`),
+    descripcion: t(lang, `serviceItems.${slug}.description`),
+    ratio: ratioServicio[slug],
+    imagen: portada?.src,
+    alt: portada?.alt[lang],
+  };
+});
 
 const preguntas = Array.from({ length: 6 }, (_, i) => ({
   pregunta: tf(lang, 'home.faqPending', { n: i + 1 }),

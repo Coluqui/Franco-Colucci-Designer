@@ -1,0 +1,23 @@
+{
+  "slug": "moondesk-ebook-portada",
+  "caso": "moondesk",
+  "formato": "ebook",
+  "ratio": "597:842",
+  "titulo": {
+    "es": "Ebook: Los 5 errores del packaging",
+    "en": "Ebook: The 5 packaging mistakes"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Portada de ebook de MoonDesk con el titular \"Cómo evitar los 5 errores más comunes del packaging\" sobre fondo celeste y una lata roja de muestra con la marca ficticia \"Nada\".",
+        "en": "MoonDesk ebook cover with the Spanish headline \"Cómo evitar los 5 errores más comunes del packaging\" (How to avoid the 5 most common packaging mistakes) and a red sample can with the dummy brand \"Nada\"."
+      }
+    }
+  ]
+}

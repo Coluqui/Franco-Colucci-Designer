@@ -1,0 +1,23 @@
+{
+  "slug": "carpa-mockup-producto",
+  "caso": "carpa",
+  "formato": "ebook",
+  "ratio": "1337:1600",
+  "titulo": {
+    "es": "Mockup del Método Carpa",
+    "en": "Carpa Method mockup"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Mockup del producto Método Carpa: las portadas de módulos y bonus aplicadas en monitor, laptop, tablet, celulares y libros impresos, con un sello dorado de garantía de 7 días.",
+        "en": "Carpa Method product mockup: the module and bonus covers shown on a monitor, laptop, tablet, phones and printed books, with a gold 7-day guarantee seal in Spanish."
+      }
+    }
+  ]
+}

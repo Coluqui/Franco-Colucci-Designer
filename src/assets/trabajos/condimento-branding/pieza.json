@@ -1,0 +1,23 @@
+{
+  "slug": "condimento-branding",
+  "caso": "condimento",
+  "formato": "branding",
+  "ratio": "1504:1545",
+  "titulo": {
+    "es": "Identidad de Condimento",
+    "en": "Condimento brand identity"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Lámina de identidad de Condimento: el logotipo con un ají en la letra i sobre rojo y sobre negro, el isotipo en dos versiones, un patrón de ajíes y el lema \"El toque justo para que tu marca se note\".",
+        "en": "Condimento identity board: the logotype with a chili pepper in the letter i on red and on black, the symbol in two versions, a chili pattern and the Spanish tagline \"El toque justo para que tu marca se note\" (The right touch to make your brand stand out)."
+      }
+    }
+  ]
+}

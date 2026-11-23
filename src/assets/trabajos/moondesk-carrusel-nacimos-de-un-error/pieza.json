@@ -1,0 +1,51 @@
+{
+  "slug": "moondesk-carrusel-nacimos-de-un-error",
+  "caso": "moondesk",
+  "formato": "carrusel",
+  "ratio": "4:5",
+  "titulo": {
+    "es": "Carrusel: Nacimos de un error",
+    "en": "Carousel: Born from a mistake"
+  },
+  "objetivo": {
+    "es": "PENDIENTE: objetivo de la pieza.",
+    "en": "PENDING: piece goal."
+  },
+  "slides": [
+    {
+      "src": "./01.jpg",
+      "alt": {
+        "es": "Portada del carrusel de MoonDesk con el titular \"Nacimos de un error\" sobre una pila ilustrada de cajas marcadas con cruces y un globo con un archivo rechazado.",
+        "en": "MoonDesk carousel cover with the Spanish headline \"Nacimos de un error\" (Born from a mistake) over an illustrated stack of boxes marked with crosses and a rejected file."
+      }
+    },
+    {
+      "src": "./02.jpg",
+      "alt": {
+        "es": "Slide con el titular \"El costo fue alto\" y una lista de consecuencias, junto a un camión que vuelca cajas por un acantilado.",
+        "en": "Slide with the Spanish headline \"El costo fue alto\" (The cost was high) and a list of consequences, next to a truck dumping boxes off a cliff."
+      }
+    },
+    {
+      "src": "./03.jpg",
+      "alt": {
+        "es": "Slide con el titular \"El problema no era el diseño, sino el desorden\" y una fila de archivos azules numerados hasta V_12, con un cursor.",
+        "en": "Slide with the Spanish headline \"El problema no era el diseño, sino el desorden\" (The problem wasn't design, it was disorder) and a row of blue files numbered up to V_12."
+      }
+    },
+    {
+      "src": "./04.jpg",
+      "alt": {
+        "es": "Slide con el titular \"De ese error, nació una solución\" y una interfaz ilustrada con tres tarjetas de indicadores y archivos AI y PDF.",
+        "en": "Slide with the Spanish headline \"De ese error, nació una solución\" (From that mistake, a solution was born) and an illustrated interface with three indicator cards and AI and PDF files."
+      }
+    },
+    {
+      "src": "./05.jpg",
+      "alt": {
+        "es": "Cierre del carrusel con el titular \"El caos quedó atrás\", una persona trabajando en su laptop con un mate al lado y el botón \"Agenda una demo\".",
+        "en": "Carousel closing slide with the Spanish headline \"El caos quedó atrás\" (The chaos is behind us), a person working on a laptop next to a mate, and a \"Book a demo\" button in Spanish."
+      }
+    }
+  ]
+}

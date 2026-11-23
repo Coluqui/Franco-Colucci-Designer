@@ -21,3 +21,15 @@ export const ratioServicio: Record<ServicioSlug, RatioServicio> = {
 };
 
 export const ordenServicios: readonly ServicioSlug[] = ['ads', 'redes', 'reels', 'mail', 'web', 'branding'];
+
+/**
+ * Pieza de vista previa de cada servicio (slug de la colección `piezas`; se muestra su slide 1).
+ * Mail 3:1 y Web 16:10 no tienen pieza todavía: PENDIENTE (docs/pendientes.md).
+ * La pieza se recorta dentro del marco del servicio; nunca se deforma.
+ */
+export const piezaServicio: Partial<Record<ServicioSlug, string>> = {
+  ads: 'condimento-ad-otra-campana',
+  redes: 'moondesk-carrusel-nacimos-de-un-error',
+  reels: 'moondesk-story-testimonio',
+  branding: 'condimento-branding',
+};
