@@ -25,8 +25,9 @@ interface Props {
   metricas?: Array<{ valor: string; etiqueta: string }>;
   descripcion: string;
   servicios: string[];
-  imagen: ImageMetadata;
-  alt: string;
+  /** Media 16:10 (hero del caso). Sin imagen: marco PENDIENTE sobre --color-stage. */
+  imagen?: ImageMetadata | undefined;
+  alt?: string;
   /** Nivel del título según la página: h3 en la home (bajo "Trabajos"), h2 en Trabajos. */
   nivel?: 'h2' | 'h3';
   /** La primera fila de la home se ve en el primer frame: carga ansiosa. */
@@ -40,14 +41,20 @@ const Titulo = nivel;
 <div class="fila-caja">
   <article class="fila">
     <div class="fila__media">
-      <Image
-        src={imagen}
-        alt={alt}
-        widths={[480, 800, 1200]}
-        sizes="(min-width: 80rem) 44rem, (min-width: 48rem) 90vw, 100vw"
-        loading={prioridad ? 'eager' : 'lazy'}
-        fetchpriority={prioridad ? 'high' : undefined}
-      />
+      {
+        imagen ? (
+          <Image
+            src={imagen}
+            alt={alt ?? ''}
+            widths={[480, 800, 1200]}
+            sizes="(min-width: 80rem) 44rem, (min-width: 48rem) 90vw, 100vw"
+            loading={prioridad ? 'eager' : 'lazy'}
+            fetchpriority={prioridad ? 'high' : undefined}
+          />
+        ) : (
+          <span class="t-label fila__pendiente">{t(lang, 'placeholder.pending')}</span>
+        )
+      }
     </div>
 
     <div class="fila__texto">
@@ -117,6 +124,12 @@ const Titulo = nivel;
     overflow: hidden;
     border-radius: var(--radius-sm);
     background: var(--color-stage);
+  }
+
+  .fila__media:has(.fila__pendiente) {
+    display: grid;
+    place-items: center;
+    color: var(--color-text-secondary);
   }
 
   .fila__media :global(img) {

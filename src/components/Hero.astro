@@ -40,13 +40,16 @@ const formatos = [
   <div class="container">
     <ul class="hero__formatos" role="list" aria-label={t(lang, 'hero.formatsLabel')}>
       {
-        formatos.map((f) => (
+        formatos.map((f, i) => (
+          <>
+          {i === 3 && <li class="hero__corte" aria-hidden="true" />}
           <li class="hero__formato" style={`--aspecto: var(--ratio-${f.ratio})`}>
             <span class="hero__marco">
               <span class="t-label">{f.etiqueta}</span>
               <span class="visually-hidden">· {t(lang, 'hero.formatPending')}</span>
             </span>
           </li>
+          </>
         ))
       }
     </ul>
@@ -57,7 +60,7 @@ const formatos = [
   .hero {
     display: grid;
     gap: var(--space-8);
-    padding-block: calc(var(--header-height) + var(--safe-top) + var(--space-6)) var(--space-section);
+    padding-block: var(--space-6) var(--space-section); /* el header es sticky: ya ocupa su alto */
   }
 
   /* El wordmark se mide contra este contenedor (t-wordmark usa cqi). */
@@ -111,13 +114,20 @@ const formatos = [
     min-inline-size: 0;
   }
 
-  /* Angosto: dos filas (1:1 · 4:5 · 9:16 arriba; 3:1 · 16:10 abajo). */
-  .hero__formato:nth-child(4) {
+  /* Angosto: dos filas (1:1 · 4:5 · 9:16 arriba; 3:1 · 16:10 abajo). El corte es un ítem
+     vacío de ancho completo, oculto para lectores de pantalla. */
+  .hero__corte {
     flex-basis: 100%;
+    block-size: 0;
   }
 
-  .hero__formato:nth-child(4) ~ .hero__formato {
-    flex-basis: 100%;
+  /* Sin row-gap (si no, el corte sumaría dos): la segunda fila se separa con su margen. */
+  .hero__formatos:has(.hero__corte) {
+    row-gap: 0;
+  }
+
+  .hero__corte ~ .hero__formato {
+    margin-block-start: var(--grid-gutter);
   }
 
   .hero__marco {
@@ -130,9 +140,12 @@ const formatos = [
   }
 
   @media (min-width: 48rem) {
-    .hero__formato:nth-child(4),
-    .hero__formato:nth-child(4) ~ .hero__formato {
-      flex-basis: 0;
+    .hero__corte {
+      display: none;
+    }
+
+    .hero__corte ~ .hero__formato {
+      margin-block-start: 0;
     }
   }
 

@@ -1,34 +1,144 @@
 ---
 /**
- * Home provisoria: verifica rutas, layout, fuentes, tema y grano.
- * La home real (PRD §5) se construye en la Fase 4.
+ * Home · PRD §5: Hero · Frase-problema · Clientes + Testimonios (invertida) · Trabajos destacados (4 filas)
+ * · Qué hago (servicios + herramientas e IA) · Sobre mí (resumen) · Preguntas frecuentes · Cierre · Footer.
+ * Contenido real que falta: PENDIENTE (docs/pendientes.md). Motion (M04, M15, M16, M17): Fase 6.
  */
 import type { GetStaticPaths } from 'astro';
 import Base from '../../layouts/Base.astro';
-import { locales, t, switchLangPath, type Lang } from '../../i18n';
+import Hero from '../../components/Hero.astro';
+import Seccion from '../../components/Seccion.astro';
+import FraseProblema from '../../components/FraseProblema.astro';
+import GrillaClientes from '../../components/GrillaClientes.astro';
+import FilaCaso from '../../components/FilaCaso.astro';
+import ListaServicios from '../../components/ListaServicios.astro';
+import ResumenSobreMi from '../../components/ResumenSobreMi.astro';
+import Faq from '../../components/Faq.astro';
+import Cierre from '../../components/Cierre.astro';
+import Link from '../../components/Link.astro';
+import { locales, t, tf, localizePath, type Lang } from '../../i18n';
+import { getCasos, filaDeCaso } from '../../lib/casos';
+import { ordenServicios, ratioServicio } from '../../config/servicios';
 
 export const getStaticPaths = (() => locales.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
 
 const lang = Astro.params.lang as Lang;
-const other: Lang = lang === 'es' ? 'en' : 'es';
+const casos = await getCasos();
+
+/** Clientes del PRD §3; los logos SVG monocromos están PENDIENTE (se muestra el nombre). */
+const clientes = ['ISCAMEN', 'MoonDesk', 'Condimento', 'Carpa', 'RLB', 'Interlink'].map((nombre) => ({ nombre }));
+
+const servicios = ordenServicios.map((slug) => ({
+  slug,
+  nombre: t(lang, `serviceItems.${slug}.name`),
+  descripcion: t(lang, `serviceItems.${slug}.description`),
+  ratio: ratioServicio[slug],
+}));
+
+const preguntas = Array.from({ length: 6 }, (_, i) => ({
+  pregunta: tf(lang, 'home.faqPending', { n: i + 1 }),
+  respuesta: t(lang, 'home.faqAnswerPending'),
+}));
 ---
 
-<Base lang={lang} title={t(lang, 'meta.siteTitle')} description={t(lang, 'meta.siteDescription')} noindex>
-  <div class="container provisoria">
-    <h1>{t(lang, 'meta.siteTitle')}</h1>
-    <p class="t-lead">{t(lang, 'placeholder.underConstruction')}</p>
-    <p><a href={switchLangPath(Astro.url, other)} hreflang={other} lang={other}>{t(lang, 'lang.switchTo')}</a></p>
+<Base lang={lang} title={t(lang, 'pages.home.title')} description={t(lang, 'pages.home.description')} chrome>
+  <Hero lang={lang} />
+
+  <div class="container frase-seccion">
+    <FraseProblema texto={t(lang, 'problem.text')} />
   </div>
+
+  <Seccion id="clientes" titulo={t(lang, 'clients.title')} invertida>
+    <div class="clientes">
+      <GrillaClientes clientes={clientes} etiqueta={t(lang, 'clients.title')} />
+      <div class="clientes__testimonios">
+        <h3 class="t-h3">{t(lang, 'testimonials.title')}</h3>
+        <p class="t-body clientes__pendiente">{t(lang, 'home.testimonialsEmpty')}</p>
+      </div>
+    </div>
+  </Seccion>
+
+  <Seccion id="trabajos" titulo={t(lang, 'home.featured')}>
+    <Link slot="accion" class="t-ui" href={localizePath(lang, 'trabajos/')} lang={lang}>{t(lang, 'home.allWork')}</Link>
+    <ul class="filas" role="list">
+      {
+        casos.map((c, i) => (
+          <li>
+            <FilaCaso lang={lang} {...filaDeCaso(lang, c)} prioridad={i === 0} />
+          </li>
+        ))
+      }
+    </ul>
+  </Seccion>
+
+  <Seccion id="que-hago" titulo={t(lang, 'home.whatIDo')}>
+    <ListaServicios lang={lang} servicios={servicios} />
+    <div class="herramientas">
+      <h3 class="t-h3">{t(lang, 'home.tools')}</h3>
+      <p class="t-body">{t(lang, 'home.toolsText')}</p>
+    </div>
+  </Seccion>
+
+  <Seccion id="sobre-mi" titulo={t(lang, 'home.aboutTitle')}>
+    <ResumenSobreMi lang={lang} />
+  </Seccion>
+
+  <Seccion id="preguntas" titulo={t(lang, 'faq.title')}>
+    <Faq preguntas={preguntas} />
+  </Seccion>
+
+  <Cierre lang={lang} />
 </Base>
 
 <style>
-  .provisoria {
-    display: grid;
-    gap: var(--space-5);
-    padding-block: var(--space-section);
+  .frase-seccion {
+    padding-block-end: var(--space-section);
   }
 
-  a {
-    color: var(--color-accent);
+  .clientes {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .clientes__testimonios {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+  }
+
+  .clientes__testimonios h3,
+  .clientes__pendiente {
+    margin: 0;
+  }
+
+  .clientes__pendiente {
+    color: var(--color-text-secondary);
+  }
+
+  /* ≥ 1280: logos en 6 columnas + testimonios en 5 (design system §8). */
+  @media (min-width: 80rem) {
+    .clientes {
+      grid-template-columns: 6fr 5fr;
+      column-gap: calc(var(--grid-gutter) * 2 + (100% - 11 * var(--grid-gutter)) / 12);
+    }
+  }
+
+  .filas {
+    display: grid;
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .herramientas {
+    display: grid;
+    gap: var(--space-4);
+    max-inline-size: var(--measure);
+  }
+
+  .herramientas h3,
+  .herramientas p {
+    margin: 0;
   }
 </style>
