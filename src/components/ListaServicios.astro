@@ -7,11 +7,11 @@
  *   (5 columnas), la vista previa fija del ítem abierto (caja --color-stage). El marco toma el
  *   formato de la pieza de ese servicio (--ratio-*). Hover con intención (--hover-intent) o foco
  *   abre el ítem; un clic no lo cierra (siempre hay uno activo).
- * Activo: --color-text-primary y wdth 125; inactivos: --color-text-secondary y wdth 112.
+ * Activo: --color-text-primary y wdth 125; inactivos: --color-text-secondary y wdth 112 (M13: respira).
  * M05 (encastre): con JS, el marco es el recorte (clip-path) de una capa del tamaño del escenario;
  * al cambiar de servicio el recorte pasa del formato anterior al nuevo con --spring-snap, la pieza
  * anterior se va con fundido y la nueva entra cuando el marco llegó al 70 %. Sin JS, el marco es
- * una caja de su proporción (como antes). Fase 6, paso 3: la respiración 112 → 125 (M13).
+ * una caja de su proporción (como antes).
  */
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
@@ -217,6 +217,11 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
     cursor: pointer;
     white-space: nowrap;
     container-type: inline-size;
+    /* M13 · respiración: el activo pasa de 112 a 125 y el que deja de estarlo vuelve (⚠ font-stretch:
+       una sola línea, alto fijo, no mueve nada alrededor). Reducido: todos en 125, solo cambia el color. */
+    transition:
+      font-stretch var(--duration-breathe) var(--spring-soft),
+      color var(--duration-fast) var(--ease-out);
   }
 
   .servicio__nombre::-webkit-details-marker {
