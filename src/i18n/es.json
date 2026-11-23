@@ -168,7 +168,7 @@
     "tagline": "Diseño piezas que tu equipo puede publicar hoy y medir mañana.",
     "formatsLabel": "Una campaña en cinco formatos",
     "formatPending": "Pieza PENDIENTE",
-    "pause": "Pausar el loop de formatos",
+    "pause": "Pausar la animación de formatos",
     "campaignPending": "PENDIENTE"
   },
   "problem": {

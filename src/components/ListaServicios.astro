@@ -139,7 +139,11 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
         salida.className = 'servicio__salida';
         Object.assign(salida.style, { inlineSize: `${viejo.w}px`, blockSize: `${viejo.h}px` });
         capa.append(salida);
-        animar(salida, { opacity: 0 }, curva('in', 'fast')).finished.then(() => salida.remove(), () => salida.remove());
+        // Fundido cruzado: la vieja se ve recortada todo el recorrido y se cruza con la nueva al 70 %.
+        animar(salida, { opacity: 0 }, { ...curva('in', 'fast'), delay: resorte('snap').duration * 0.7 }).finished.then(
+          () => salida.remove(),
+          () => salida.remove(),
+        );
       }
     };
 
@@ -160,6 +164,9 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
         if (!ancho() || e.pointerType !== 'mouse') return;
         window.clearTimeout(espera);
         espera = window.setTimeout(() => {
+          // El mouse no le saca el panel al teclado: si el foco está dentro del abierto, no cambia.
+          const foco = document.activeElement;
+          if (activo && activo !== d && activo.contains(foco) && foco !== activo.querySelector('summary')) return;
           d.open = true;
           activar(d);
         }, intencion());
@@ -284,16 +291,17 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
   }
 
   /* Hasta que el script fija el recorte, la capa no se ve (nunca un cuadro lleno de un frame). */
+  /* --color-bg contrasta con --color-stage en los dos modos: el cambio de formato se lee. */
   .servicios[data-encastre] .servicio__capa {
     clip-path: inset(50%);
-    background: var(--color-surface);
+    background: var(--color-bg);
   }
 
   .servicios[data-encastre] .servicio__marco {
     background: none;
   }
 
-  /* La pieza que se va: centrada en su tamaño; se desvanece antes de que entre la nueva. */
+  /* La pieza que se va: centrada en su tamaño, se cruza con la nueva al 70 %. */
   .servicio__capa :global(.servicio__salida) {
     position: absolute;
     inset: 0;

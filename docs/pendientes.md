@@ -82,3 +82,11 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
   - `iscamen-carrusel-citricos` slide 5: el texto dice "VITAMINAS C  A TU ALCANCE" (doble espacio); revisar si falta una palabra.
 - **Vista previa de Branding**: la pieza de Condimento es ≈1:1 y el marco de Branding es 4:5 (PRD §8), así que el recorte corta el logotipo. Opciones: (a) una pieza de branding pensada para 4:5; (b) un punto de foco por pieza; (c) Branding en 1:1, actualizando antes el PRD §8.
 - **Orden de piezas por caso**: hoy es automático (carruseles, posts, stories… impresos al final). Si querés un orden curado, se agrega `orden` en cada `pieza.json`.
+
+## Fase 6 · motion (paso 2: M04 y M05)
+
+- **Decisión de Franco · M05 con movimiento reducido.** `docs/motion.md` pide "fundido de 120 ms, el marco salta". Hoy el marco encastra en 120 ms con `--ease-out` y la pieza cambia sin fundido (`--duration-fast` vale 0 en reducido). Para cumplirlo al pie de la letra hace falta (a) un token de duración del encastre que valga 0 en reducido, o (b) permitir una rama `reducido()` en M05 (hoy `.claude/rules/motion.md` solo la permite en M04 y FLIP). La otra salida es actualizar la columna "Reducido" de M05 en `docs/motion.md`.
+- **Campaña del loop (M04).** Cuando llegue: cada `.hero__pieza` lleva su imagen (la regla `object-fit: cover` ya está) y el texto oculto de cada `<li>` de la tira nombra la campaña ("ISCAMEN · 4:5" + una descripción breve), para que el lector no diga menos que la pantalla. `hero.campaignPending` se reemplaza por el nombre real.
+- **Paso 3 (M15).** "Un protagonista por pantalla": a 360 px la frase-problema entra en el primer viewport con el loop andando. Cuando M15 esté activa, el loop se pausa mientras la frase se enciende.
+- **Paso 4 (`<ClientRouter />`).** Los scripts de M04 y M05 tienen que correr en `astro:page-load` y liberar en `astro:before-swap`; si no, al volver a la home no hay loop ni hover en servicios.
+- **QA de cierre.** El CLS de carga se mide con el build de producción (`astro preview`): en dev, Vite inyecta estilos tarde y con el server cargado el wordmark baja unos px (en producción, 0 en 8 cargas en paralelo).

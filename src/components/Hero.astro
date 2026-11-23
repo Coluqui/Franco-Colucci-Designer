@@ -106,6 +106,9 @@ const formatos = [
     let activo = false;
     let visible = false;
     let pausadoPorUsuario = false;
+    /** La escena se monta recién la primera vez que el loop corre (pestaña de fondo o hero fuera de
+     *  pantalla: hasta entonces queda la tira, sin una etiqueta que no coincide con lo que se ve). */
+    let montada = false;
     /** El reloj del hold es una animación sin efecto: se pausa y se retoma igual que el resto. */
     let reloj: Animation | null = null;
 
@@ -114,6 +117,7 @@ const formatos = [
     /** Pausa o retoma TODO lo del loop donde está (reloj, marco, piezas, etiqueta). */
     const sincronizar = () => {
       const si = corre();
+      if (si && !montada) return montar();
       [...(reloj ? [reloj] : []), ...loop.getAnimations({ subtree: true })].forEach((a) => {
         if (si && a.playState === 'paused') a.play();
         if (!si && a.playState === 'running') a.pause();
@@ -154,6 +158,11 @@ const formatos = [
     const iniciar = () => {
       if (activo) return;
       activo = true;
+      sincronizar();
+    };
+
+    const montar = () => {
+      montada = true;
       actual = 0;
       piezas.forEach((p, k) => (p.style.opacity = k === 0 ? '1' : '0'));
       etiqueta.textContent = texto(0);
@@ -168,6 +177,7 @@ const formatos = [
     const terminar = () => {
       if (!activo) return;
       activo = false;
+      montada = false;
       reloj?.cancel();
       reloj = null;
       [capa, tira, escena, etiqueta, ...piezas].forEach((el) => {
@@ -178,10 +188,21 @@ const formatos = [
       delete loop.dataset['activo'];
     };
 
+    /** La pausa del usuario nunca congela a mitad de una transición (etiqueta a media opacidad,
+     *  dos piezas superpuestas): termina el formato en curso y recién ahí se detiene. */
+    const terminarTransiciones = () =>
+      loop.getAnimations({ subtree: true }).forEach((a) => a.playState === 'running' && a.finish());
+
     pausa.addEventListener('click', () => {
       pausadoPorUsuario = !pausadoPorUsuario;
       pausa.setAttribute('aria-pressed', String(pausadoPorUsuario));
-      sincronizar();
+      if (!pausadoPorUsuario) return sincronizar();
+      terminarTransiciones();
+      // La entrada de la etiqueta nueva arranca al terminar la salida: se termina en el cuadro siguiente.
+      requestAnimationFrame(() => {
+        terminarTransiciones();
+        sincronizar();
+      });
     });
     observar(loop, (e) => {
       visible = e.isIntersecting;
@@ -190,7 +211,7 @@ const formatos = [
     document.addEventListener('visibilitychange', sincronizar);
     // Si cambia el tamaño, el marco se reacomoda al formato actual sin animar.
     new ResizeObserver(() => {
-      if (!activo) return;
+      if (!montada) return;
       detener(capa);
       capa.style.clipPath = recorteDe(actual);
     }).observe(capa);
@@ -205,7 +226,9 @@ const formatos = [
   .hero {
     display: grid;
     gap: var(--space-8);
-    padding-block: var(--space-6) var(--space-section); /* el header es sticky: ya ocupa su alto */
+    /* El header es sticky: ya ocupa su alto. Abajo, el aire de sección más el alto de los controles
+       del loop (etiqueta + pausa), siempre reservado: no se pegan a la frase-problema. */
+    padding-block: var(--space-6) calc(var(--space-section) + var(--control-height) + var(--space-2));
   }
 
   /* El wordmark se mide contra este contenedor (t-wordmark usa cqi). */
@@ -295,10 +318,12 @@ const formatos = [
     display: none;
   }
 
+  /* Sin eventos de puntero: la exploración táctil de un lector de pantalla llega a la tira. */
   .hero__loop[data-activo] .hero__escena {
     position: absolute;
     inset: 0;
     display: block;
+    pointer-events: none;
     container-type: size;
   }
 
@@ -319,6 +344,14 @@ const formatos = [
     color: var(--color-text-secondary);
   }
 
+  /* Cuando llegue la campaña: la pieza llena su marco sin estirarse. */
+  .hero__pieza :is(img, video) {
+    grid-area: 1 / 1;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
   /* Etiqueta y pausa debajo, sobre el aire inferior del hero: tampoco mueven el layout. */
   .hero__loop[data-activo] .hero__controles {
     position: absolute;
@@ -333,6 +366,7 @@ const formatos = [
   .hero__etiqueta {
     margin: 0;
     overflow: hidden;
+    white-space: nowrap;
     color: var(--color-text-secondary);
   }
 
@@ -377,6 +411,14 @@ const formatos = [
     .hero__loop {
       max-inline-size: calc((100% + var(--grid-gutter)) * 7 / 12 - var(--grid-gutter));
       margin-inline: auto;
+    }
+
+    /* La pausa tiene que verse con el loop: a la derecha, arriba (debajo quedaba fuera de pantalla). */
+    .hero__loop[data-activo] .hero__controles {
+      inset-block-start: 0;
+      inset-inline: calc(100% + var(--grid-gutter)) auto;
+      flex-direction: column;
+      align-items: flex-start;
     }
   }
 </style>

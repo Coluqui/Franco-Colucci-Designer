@@ -25,7 +25,11 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       // Mail (3:1): el recorte es más bajo que ancho.
       await page.locator('[data-servicios] summary').nth(3).click();
       if (ancho && reducedMotion === 'no-preference') expect((await estado(page, 3)).animando).toBe(true);
-      await expect.poll(async () => (await estado(page, 3)).animando).toBe(false);
+      // El evento toggle es asíncrono: se espera a que el recorte esté puesto y quieto.
+      await expect.poll(async () => {
+        const e = await estado(page, 3);
+        return !e.animando && e.clip !== 'inset(50%)';
+      }).toBe(true);
       const fin = await estado(page, 3);
       const [y, x] = fin.clip.match(/[\d.]+px/g)!.map(parseFloat);
       expect(y).toBeGreaterThan(x ?? 0);

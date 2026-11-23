@@ -13,6 +13,9 @@ const modos = ['light', 'dark'] as const;
 export default defineConfig({
   testDir: 'tests',
   fullyParallel: true,
+  // Con más workers el dev server se satura: los cuadros de animación no avanzan y los estilos que
+  // Vite inyecta tarde mueven el layout (solo en dev: en el build de producción el CLS da 0).
+  workers: 2,
   reporter: 'list',
   use: { baseURL: 'http://localhost:4321' },
   webServer: { command: 'npm run dev', url: 'http://localhost:4321/es/', reuseExistingServer: true },
