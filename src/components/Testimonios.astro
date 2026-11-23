@@ -28,7 +28,14 @@ const varios = total > 1;
 ---
 
 <section class="testimonios" aria-roledescription={varios ? t(lang, 'testimonials.carousel') : undefined} aria-label={t(lang, 'testimonials.label')} data-testimonios>
-  <ul class="testimonios__pista" role="list" tabindex={varios ? 0 : undefined} data-pista>
+  <ul
+    class="testimonios__pista"
+    role="list"
+    tabindex={varios ? 0 : undefined}
+    aria-label={varios ? t(lang, 'testimonials.label') : undefined}
+    aria-describedby={varios ? 'testimonios-ayuda' : undefined}
+    data-pista
+  >
     {
       testimonios.map((x, i) => (
         <li
@@ -54,6 +61,7 @@ const varios = total > 1;
   {
     varios && (
       <div class="testimonios__nav">
+        <p class="visually-hidden" id="testimonios-ayuda">{t(lang, 'testimonials.hint')}</p>
         <p class="t-label testimonios__contador" aria-live="polite" aria-atomic="true">
           <span class="visually-hidden" data-contador-texto>
             {tf(lang, 'testimonials.position', { actual: 1, total })}
@@ -91,8 +99,13 @@ const varios = total > 1;
       actual = i;
       if (contador) contador.textContent = String(i + 1).padStart(2, '0');
       if (contadorTexto) contadorTexto.textContent = items[i]?.getAttribute('aria-label') ?? '';
+      // Si la flecha con foco se deshabilita, el foco pasa a la otra (nunca al body).
+      const focoAnterior = document.activeElement === anterior;
+      const focoSiguiente = document.activeElement === siguiente;
       anterior.disabled = i === 0;
       siguiente.disabled = i === items.length - 1;
+      if (focoAnterior && anterior.disabled) siguiente.focus();
+      if (focoSiguiente && siguiente.disabled) anterior.focus();
     };
 
     const ir = (i: number) => {

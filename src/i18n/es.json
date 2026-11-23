@@ -87,7 +87,8 @@
     "prev": "Testimonio anterior",
     "next": "Testimonio siguiente",
     "position": "Testimonio {actual} de {total}",
-    "slide": "testimonio"
+    "slide": "testimonio",
+    "hint": "Usá las flechas ← → para pasar de testimonio."
   },
   "faq": {
     "title": "Preguntas frecuentes"

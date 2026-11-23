@@ -87,7 +87,8 @@
     "prev": "Previous testimonial",
     "next": "Next testimonial",
     "position": "Testimonial {actual} of {total}",
-    "slide": "testimonial"
+    "slide": "testimonial",
+    "hint": "Use the ← → arrow keys to move between testimonials."
   },
   "faq": {
     "title": "Frequently asked questions"

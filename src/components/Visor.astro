@@ -45,7 +45,7 @@ const { lang, piezas } = Astro.props;
     </button>
   </div>
 
-  <div class="visor__escena" aria-roledescription={t(lang, 'viewer.carousel')} data-visor-escena>
+  <div class="visor__escena" role="group" aria-roledescription={t(lang, 'viewer.carousel')} aria-label={t(lang, 'viewer.label')} data-visor-escena>
     <button class="visor__boton visor__lado visor__lado--izq" type="button" data-visor-slide="-1" aria-label={t(lang, 'viewer.prevSlide')}>
       <Icono nombre="flecha-izq" size="1.25rem" />
     </button>
@@ -56,7 +56,7 @@ const { lang, piezas } = Astro.props;
   </div>
 
   <div class="visor__pie">
-    <ol class="visor__segmentos" role="list" aria-hidden="true" data-visor-segmentos></ol>
+    <ol class="visor__segmentos" role="list" data-visor-segmentos></ol>
     <div class="visor__piezas">
       <button class="visor__boton visor__boton--texto" type="button" data-visor-pieza="-1">
         <Icono nombre="flecha-izq" />
@@ -105,70 +105,107 @@ const { lang, piezas } = Astro.props;
     const contador = visor.querySelector('[data-visor-contador]')!;
     const estado = visor.querySelector('[data-visor-estado]')!;
     const segmentos = visor.querySelector('[data-visor-segmentos]')!;
+    const cerrar = visor.querySelector<HTMLButtonElement>('[data-visor-cerrar]')!;
     const plantillas = [...visor.querySelectorAll<HTMLTemplateElement>('[data-visor-plantilla]')];
     const slugs = plantillas.map((p) => p.dataset['visorPlantilla'] ?? '');
     const siguientePanel = visor.querySelector<HTMLTemplateElement>('[data-visor-siguiente]')!;
     const d = visor.dataset;
     const dos = (n: number) => String(n).padStart(2, '0');
+    const posSlide = (a: number, t: number) => (d['tSlidePos'] ?? '').replace('{actual}', String(a)).replace('{total}', String(t));
+    const posPieza = (a: number, t: number) => (d['tPiezaPos'] ?? '').replace('{actual}', String(a)).replace('{total}', String(t));
 
     let pieza = 0;
     let slide = 0;
     let total = 0;
 
     const slides = () => [...pista.querySelectorAll<HTMLElement>('.visor__slide:not(.visor__slide--siguiente)')];
+    const panelFinal = () => pista.querySelector<HTMLElement>('.visor__slide--siguiente');
+    const boton = (sel: string) => visor.querySelector<HTMLButtonElement>(sel);
 
-    const actualizar = (anunciar: boolean) => {
+    /** Si un control con foco se deshabilita, el foco pasa a su opuesto (o a Cerrar): nunca al body ni a algo invisible. */
+    const deshabilitar = (b: HTMLButtonElement | null, inactivo: boolean, opuesto: string) => {
+      if (!b) return;
+      const teniaFoco = document.activeElement === b;
+      b.disabled = inactivo;
+      if (inactivo && teniaFoco) {
+        const otro = boton(opuesto);
+        (otro && !otro.disabled ? otro : cerrar).focus();
+      }
+    };
+
+    const actualizar = (anuncio: string | null) => {
       if (!visor.open) return;
       const n = slugs.length;
       let texto = `${d['tPieza']} ${dos(pieza + 1)} / ${dos(n)}`;
       if (total > 1) texto += ` · ${d['tSlide']} ${slide + 1} / ${total}`;
       contador.textContent = texto;
-      segmentos.querySelectorAll('li').forEach((li, i) => li.toggleAttribute('data-activo', i === slide));
-      visor.querySelectorAll<HTMLButtonElement>('[data-visor-slide="-1"]').forEach((b) => (b.disabled = slide === 0 && pieza === 0));
-      visor.querySelectorAll<HTMLButtonElement>('[data-visor-slide="1"]').forEach((b) => (b.disabled = slide === total - 1 && pieza === n - 1));
-      visor.querySelectorAll<HTMLButtonElement>('[data-visor-pieza="-1"]').forEach((b) => (b.disabled = pieza === 0));
-      visor.querySelectorAll<HTMLButtonElement>('[data-visor-pieza="1"]').forEach((b) => (b.disabled = pieza === n - 1));
+      segmentos.querySelectorAll('li').forEach((li, i) => {
+        li.toggleAttribute('data-activo', i === slide);
+        li.querySelector('button')?.setAttribute('aria-current', String(i === slide));
+      });
+      deshabilitar(boton('.visor__lado--izq'), slide === 0 && pieza === 0, '.visor__lado--der');
+      deshabilitar(boton('.visor__lado--der'), slide === total - 1 && pieza === n - 1, '.visor__lado--izq');
+      deshabilitar(boton('.visor__piezas [data-visor-pieza="-1"]'), pieza === 0, '.visor__piezas [data-visor-pieza="1"]');
+      deshabilitar(boton('.visor__piezas [data-visor-pieza="1"]'), pieza === n - 1, '.visor__piezas [data-visor-pieza="-1"]');
       visor.toggleAttribute('data-un-slide', total < 2);
       const url = new URL(location.href);
       url.searchParams.set('pieza', slugs[pieza] ?? '');
       url.searchParams.set('slide', String(slide + 1));
       history.replaceState(history.state, '', url);
-      if (anunciar) {
-        estado.textContent =
-          total > 1
-            ? (d['tSlidePos'] ?? '').replace('{actual}', String(slide + 1)).replace('{total}', String(total))
-            : (d['tPiezaPos'] ?? '').replace('{actual}', String(pieza + 1)).replace('{total}', String(n));
-      }
+      if (anuncio !== null) estado.textContent = anuncio;
     };
+
+    /** "Pieza 2 de 3 · Slide 1 de 5": al abrir y al cambiar de pieza se anuncian las dos cosas. */
+    const anuncioCompleto = () =>
+      total > 1 ? `${posPieza(pieza + 1, slugs.length)} · ${posSlide(slide + 1, total)}` : posPieza(pieza + 1, slugs.length);
 
     const irSlide = (i: number, anunciar = true) => {
       const destino = slides()[i];
       if (!destino) return;
       slide = i;
       pista.scrollTo({ left: destino.offsetLeft - pista.offsetLeft });
-      actualizar(anunciar);
+      actualizar(anunciar ? posSlide(slide + 1, total) : null);
     };
 
     const montar = (i: number, s = 0) => {
+      // Si el foco estaba en la pista (panel final), se reubica después de reemplazarla.
+      const focoEnPista = pista.contains(document.activeElement);
       pieza = Math.max(0, Math.min(slugs.length - 1, i));
       pista.replaceChildren(plantillas[pieza]!.content.cloneNode(true));
       total = slides().length;
       if (pieza < slugs.length - 1 && total > 1) pista.append(siguientePanel.content.cloneNode(true));
-      pista.querySelectorAll<HTMLElement>('.visor__slide').forEach((li, k) => {
-        if (k < total) li.setAttribute('aria-label', (d['tSlidePos'] ?? '').replace('{actual}', String(k + 1)).replace('{total}', String(total)));
-      });
-      segmentos.replaceChildren(...Array.from({ length: total > 1 ? total : 0 }, () => document.createElement('li')));
-      pista.querySelectorAll<HTMLButtonElement>('[data-visor-pieza]').forEach((b) => b.addEventListener('click', () => cambiarPieza(1)));
-      // Síncrono (el <dialog> ya está abierto y offsetLeft fuerza el layout): sin rAF, que no corre
-      // en pestañas en segundo plano y dejaba el enlace directo en el slide 1.
+      slides().forEach((li, k) => li.setAttribute('aria-label', posSlide(k + 1, total)));
+      // El panel final solo es alcanzable cuando el swipe llega a él (no se tabula fuera de vista).
+      const panel = panelFinal();
+      if (panel) {
+        panel.inert = true;
+        panel.querySelector('button')?.addEventListener('click', () => cambiarPieza(1));
+      }
+      // Segmentos: también son botones (44 px de área) para pasar de slide sin swipe (WCAG 2.5.7).
+      segmentos.replaceChildren(
+        ...Array.from({ length: total > 1 ? total : 0 }, (_, k) => {
+          const li = document.createElement('li');
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.tabIndex = -1;
+          b.setAttribute('aria-label', posSlide(k + 1, total));
+          b.addEventListener('click', () => irSlide(k));
+          li.append(b);
+          return li;
+        }),
+      );
       irSlide(Math.max(0, Math.min(total - 1, s)), false);
+      if (focoEnPista) {
+        const sig = boton('.visor__piezas [data-visor-pieza="1"]');
+        (sig && !sig.disabled ? sig : cerrar).focus();
+      }
     };
 
     const cambiarPieza = (delta: number, alFinal = false) => {
       const nueva = pieza + delta;
       if (nueva < 0 || nueva >= slugs.length) return;
       montar(nueva, alFinal ? Number.MAX_SAFE_INTEGER : 0);
-      actualizar(true);
+      actualizar(anuncioCompleto());
     };
 
     const moverSlide = (delta: number) => {
@@ -183,6 +220,7 @@ const { lang, piezas } = Astro.props;
       if (i < 0) return;
       if (!visor.open) visor.showModal();
       montar(i, s);
+      actualizar(anuncioCompleto());
     };
 
     // Abridores: los tiles (links a la imagen grande, para cuando no hay JS).
@@ -194,7 +232,7 @@ const { lang, piezas } = Astro.props;
       }),
     );
 
-    visor.querySelector('[data-visor-cerrar]')?.addEventListener('click', () => visor.close());
+    cerrar.addEventListener('click', () => visor.close());
     visor.querySelectorAll<HTMLButtonElement>('[data-visor-slide]').forEach((b) =>
       b.addEventListener('click', () => moverSlide(Number(b.dataset['visorSlide']))),
     );
@@ -202,7 +240,9 @@ const { lang, piezas } = Astro.props;
       b.addEventListener('click', () => cambiarPieza(Number(b.dataset['visorPieza']))),
     );
 
-    visor.addEventListener('keydown', (e) => {
+    // En document y no en el dialog: el teclado sigue andando aunque el foco quede en cualquier lado.
+    document.addEventListener('keydown', (e) => {
+      if (!visor.open) return;
       const map: Record<string, () => void> = {
         ArrowRight: () => moverSlide(1),
         ArrowLeft: () => moverSlide(-1),
@@ -216,17 +256,22 @@ const { lang, piezas } = Astro.props;
       }
     });
 
-    // Swipe / rueda: el slide más visible pasa a ser el actual.
+    // Swipe / rueda: el slide más visible pasa a ser el actual; el panel final se habilita al llegar.
     pista.addEventListener('scrollend', () => {
       const ancho = pista.clientWidth || 1;
       const i = Math.round(pista.scrollLeft / ancho);
+      const panel = panelFinal();
+      if (panel) panel.inert = i !== total;
       if (i !== slide && i < total) {
         slide = i;
-        actualizar(true);
+        actualizar(posSlide(slide + 1, total));
       }
     });
 
     visor.addEventListener('close', () => {
+      // El foco vuelve al tile de la pieza que se estaba viendo (también al abrir por enlace directo).
+      const tile = document.querySelector<HTMLElement>(`[data-abre-visor="${slugs[pieza]}"]`);
+      if (tile && tile.offsetParent) tile.focus();
       pista.replaceChildren();
       const url = new URL(location.href);
       url.searchParams.delete('pieza');
@@ -410,14 +455,30 @@ const { lang, piezas } = Astro.props;
     list-style: none;
   }
 
-  /* Los segmentos los crea el script: no llevan el atributo de scope, van con :global. */
+  /* Los segmentos los crea el script: no llevan el atributo de scope, van con :global.
+     Cada uno es un botón de 44 px de alto con la barra dibujada en el centro. */
   .visor__segmentos :global(li) {
     flex: 0 1 var(--space-7);
+  }
+
+  .visor__segmentos :global(button) {
+    display: grid;
+    align-items: center;
+    inline-size: 100%;
+    min-block-size: var(--control-height);
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .visor__segmentos :global(button)::before {
+    content: "";
     block-size: 2px; /* PENDIENTE token (el mismo que la barra de carga, ver docs/pendientes.md) */
     background: var(--color-border-subtle);
   }
 
-  .visor__segmentos :global(li[data-activo]) {
+  .visor__segmentos :global(li[data-activo] button)::before {
     background: var(--color-text-primary);
   }
 

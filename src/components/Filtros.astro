@@ -8,7 +8,7 @@
  * con `hidden`, guarda el valor en la URL (?param=valor) y anuncia "{n} piezas" (aria-live).
  * Sin JS no se muestran: todo queda visible. Fase 6: reacomodo FLIP (M12) y punto que encastra.
  */
-import { t, type Lang } from '../i18n';
+import { t, tf, type Lang } from '../i18n';
 
 interface Opcion {
   valor: string;
@@ -49,8 +49,9 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
           <button class="filtro" type="button" aria-pressed={o.valor === '' ? 'true' : 'false'} data-valor={o.valor}>
             <span class="filtro__punto" aria-hidden="true" />
             {o.nombre}
-            <span class="filtro__cantidad">
-              <span aria-hidden="true">·</span> {o.cantidad}
+            <span class="filtro__cantidad" aria-hidden="true">· {o.cantidad}</span>
+            <span class="visually-hidden">
+              {o.cantidad === 1 ? t(lang, 'filters.resultsOne') : tf(lang, 'filters.results', { n: o.cantidad })}
             </span>
           </button>
         </li>

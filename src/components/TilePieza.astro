@@ -27,7 +27,7 @@ const esCarrusel = pieza.slides.length > 1;
 ---
 
 <div class="tile" data-filtro={filtro}>
-  <a class="tile__link" href={grande.src} data-abre-visor={pieza.slug}>
+  <a class="tile__link" href={grande.src} data-abre-visor={pieza.slug} aria-haspopup="dialog">
     <span class="tile__escenario" style={`--aspecto: ${aspecto(pieza.ratio)}`}>
       <Image src={portada.src} alt={portada.alt} widths={[320, 480, 720]} sizes={sizes} loading="lazy" />
       <span class="t-ui tile__ver">

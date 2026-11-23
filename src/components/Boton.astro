@@ -50,7 +50,7 @@ const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
 {
   pendiente ? (
     /* Dato pendiente: no es un link (un <a> sin href no anuncia aria-disabled). Igual que Link. */
-    <span class:list={[...clases, 'boton--pendiente']} aria-disabled="true">
+    <span class:list={[...clases, 'boton--pendiente']}>
       {glifo && <Glifo size="0.875rem" class="boton__glifo" />}
       <span class="boton__texto"><slot /></span>
       {icono && <Icono nombre={icono} class="boton__icono" />}
@@ -144,34 +144,34 @@ const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .boton--primario:not([aria-disabled="true"], :disabled):hover {
+    .boton--primario:not([aria-disabled="true"], :disabled, .boton--pendiente):hover {
       background: var(--color-accent);
       color: var(--color-on-accent);
     }
 
-    .boton--secundario:not([aria-disabled="true"], :disabled):hover {
+    .boton--secundario:not([aria-disabled="true"], :disabled, .boton--pendiente):hover {
       background: var(--color-surface);
     }
   }
 
-  .boton:not([aria-disabled="true"], :disabled):active {
+  .boton:not([aria-disabled="true"], :disabled, .boton--pendiente):active {
     transform: scale(var(--scale-press));
   }
 
   /* ---- Deshabilitado ---- */
   .boton:disabled,
-  .boton[aria-disabled="true"] {
+  .boton:is([aria-disabled="true"], .boton--pendiente) {
     cursor: not-allowed;
   }
 
   .boton--primario:disabled,
-  .boton--primario[aria-disabled="true"] {
+  .boton--primario:is([aria-disabled="true"], .boton--pendiente) {
     background: var(--color-surface);
     color: var(--color-text-disabled);
   }
 
   .boton--secundario:disabled,
-  .boton--secundario[aria-disabled="true"] {
+  .boton--secundario:is([aria-disabled="true"], .boton--pendiente) {
     border-color: var(--color-text-disabled);
     color: var(--color-text-disabled);
   }
