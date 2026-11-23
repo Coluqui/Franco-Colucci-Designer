@@ -26,9 +26,13 @@ interface Props {
   /** Parámetro de la URL: servicio | formato. */
   param: string;
   total: number;
+  /** Qué se cuenta: piezas (caso) o casos (Trabajos). */
+  unidad?: 'piezas' | 'casos';
 }
 
-const { lang, etiqueta, opciones, objetivo, param, total } = Astro.props;
+const { lang, etiqueta, opciones, objetivo, param, total, unidad = 'piezas' } = Astro.props;
+const claveVarios = unidad === 'casos' ? 'filters.resultsCases' : 'filters.results';
+const claveUno = unidad === 'casos' ? 'filters.resultsCasesOne' : 'filters.resultsOne';
 const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: total };
 ---
 
@@ -39,8 +43,8 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
   data-filtros
   data-objetivo={objetivo}
   data-param={param}
-  data-texto-uno={t(lang, 'filters.resultsOne')}
-  data-texto-varios={t(lang, 'filters.results')}
+  data-texto-uno={t(lang, claveUno)}
+  data-texto-varios={t(lang, claveVarios)}
 >
   <ul role="list">
     {
@@ -51,7 +55,7 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
             {o.nombre}
             <span class="filtro__cantidad" aria-hidden="true">· {o.cantidad}</span>
             <span class="visually-hidden">
-              {o.cantidad === 1 ? t(lang, 'filters.resultsOne') : tf(lang, 'filters.results', { n: o.cantidad })}
+              {o.cantidad === 1 ? t(lang, claveUno) : tf(lang, claveVarios, { n: o.cantidad })}
             </span>
           </button>
         </li>

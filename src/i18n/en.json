@@ -98,7 +98,9 @@
     "byFormat": "Filter by format",
     "all": "All",
     "results": "{n} pieces",
-    "resultsOne": "1 piece"
+    "resultsOne": "1 piece",
+    "resultsCases": "{n} case studies",
+    "resultsCasesOne": "1 case study"
   },
   "tile": {
     "view": "View piece",

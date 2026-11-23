@@ -98,7 +98,9 @@
     "byFormat": "Filtrar por formato",
     "all": "Todos",
     "results": "{n} piezas",
-    "resultsOne": "1 pieza"
+    "resultsOne": "1 pieza",
+    "resultsCases": "{n} casos",
+    "resultsCasesOne": "1 caso"
   },
   "tile": {
     "view": "Ver pieza",
