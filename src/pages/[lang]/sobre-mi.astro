@@ -1,0 +1,137 @@
+---
+/**
+ * Sobre mí · PRD §5: retrato (duotono), bio, datos con etiqueta (base, idiomas, modalidad),
+ * experiencia con fechas, cómo uso la IA y CV. Todo el texto real está PENDIENTE (docs/pendientes.md).
+ */
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import Retrato from '../../components/Retrato.astro';
+import Boton from '../../components/Boton.astro';
+import { locales, t, type Lang } from '../../i18n';
+import { cvHref } from '../../config/site';
+
+export const getStaticPaths = (() => locales.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
+
+const lang = Astro.params.lang as Lang;
+const cv = cvHref(lang);
+const pendiente = t(lang, 'placeholder.pending');
+
+const datos = [
+  { etiqueta: t(lang, 'about.base'), valor: pendiente },
+  { etiqueta: t(lang, 'about.languages'), valor: pendiente },
+  { etiqueta: t(lang, 'about.workMode'), valor: pendiente },
+];
+---
+
+<Base lang={lang} title={`${t(lang, 'pages.about.title')} · Franco Colucci`} description={t(lang, 'pages.about.description')} chrome>
+  <div class="container sobre">
+    <header class="sobre__cabecera">
+      <Retrato alt={t(lang, 'about.portraitAlt')} loading="eager" class="sobre__retrato" />
+      <div class="sobre__intro">
+        <h1>{t(lang, 'about.title')}</h1>
+        <p class="t-lead">{t(lang, 'about.bio')}</p>
+        <dl class="sobre__datos" aria-label={t(lang, 'about.data')}>
+          {
+            datos.map((d) => (
+              <div>
+                <dt class="t-label">{d.etiqueta}</dt>
+                <dd class="t-body">{d.valor}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <Boton variante="secundario" icono="flecha-abajo" href={cv} download={cv ? '' : undefined}>
+          {t(lang, 'contact.downloadCv')}
+        </Boton>
+      </div>
+    </header>
+
+    <section class="sobre__bloque" aria-labelledby="experiencia">
+      <h2 id="experiencia">{t(lang, 'about.experience')}</h2>
+      <p class="t-body">{t(lang, 'about.experiencePending')}</p>
+    </section>
+
+    <section class="sobre__bloque" aria-labelledby="ia">
+      <h2 id="ia">{t(lang, 'about.ai')}</h2>
+      <p class="t-body">{t(lang, 'about.aiPending')}</p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .sobre {
+    display: grid;
+    gap: var(--space-section);
+    padding-block: var(--space-6) var(--space-section);
+  }
+
+  .sobre__cabecera {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .sobre :global(.sobre__retrato) {
+    inline-size: min(100%, 24rem);
+  }
+
+  .sobre__intro {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: var(--space-6);
+  }
+
+  .sobre__intro h1,
+  .sobre__intro p {
+    margin: 0;
+  }
+
+  .sobre__intro .t-lead {
+    max-inline-size: var(--measure);
+  }
+
+  .sobre__datos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: var(--space-5) var(--grid-gutter);
+    inline-size: 100%;
+    margin: 0;
+  }
+
+  .sobre__datos div {
+    display: grid;
+    gap: var(--space-1);
+    padding-block-start: var(--space-3);
+    border-block-start: var(--border-hairline);
+  }
+
+  .sobre__datos dt {
+    color: var(--color-text-secondary);
+  }
+
+  .sobre__datos dd {
+    margin: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .sobre__cabecera {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      column-gap: calc(var(--grid-gutter) * 2 + (100% - 11 * var(--grid-gutter)) / 12);
+    }
+
+    .sobre :global(.sobre__retrato) {
+      inline-size: 100%;
+    }
+  }
+
+  .sobre__bloque {
+    display: grid;
+    gap: var(--space-6);
+    max-inline-size: var(--measure);
+  }
+
+  .sobre__bloque h2,
+  .sobre__bloque p {
+    margin: 0;
+  }
+</style>
