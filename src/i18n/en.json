@@ -46,7 +46,8 @@
     "cv": "CV",
     "downloadCv": "Download CV",
     "downloading": "Downloading",
-    "direct": "Or reach me directly"
+    "direct": "Or reach me directly",
+    "copyFailed": "Couldn't copy. The email is {mail}"
   },
   "form": {
     "title": "Let's talk",
@@ -61,7 +62,8 @@
     "retry": "Try again",
     "required": "Please fill in this field.",
     "invalidEmail": "Check the email: something seems to be missing.",
-    "closePanel": "Close panel"
+    "closePanel": "Close panel",
+    "requiredMark": "(required)"
   },
   "case": {
     "view": "View case",
@@ -84,7 +86,8 @@
     "carousel": "carousel",
     "prev": "Previous testimonial",
     "next": "Next testimonial",
-    "position": "Testimonial {actual} of {total}"
+    "position": "Testimonial {actual} of {total}",
+    "slide": "testimonial"
   },
   "faq": {
     "title": "Frequently asked questions"

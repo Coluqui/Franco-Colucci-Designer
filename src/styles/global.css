@@ -22,6 +22,15 @@ html {
   hanging-punctuation: first last;
   /* Reserva el lugar de la barra de scroll: abrir un modal no corre el layout (CLS = 0). */
   scrollbar-gutter: stable;
+  /* El header sticky no tapa el foco ni los anclas (WCAG 2.4.11). */
+  scroll-padding-block-start: calc(var(--header-height) + var(--safe-top) + var(--space-4));
+}
+
+/* Debajo de 768 px la barra inferior fija tampoco tapa el foco. */
+@media (max-width: 47.999rem) {
+  html {
+    scroll-padding-block-end: calc(var(--bottom-bar-height) + var(--safe-bottom) + var(--space-4));
+  }
 }
 
 /* Con menú, panel o visor abiertos, la página de atrás no scrollea. */

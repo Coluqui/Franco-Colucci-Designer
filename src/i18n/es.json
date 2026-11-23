@@ -46,7 +46,8 @@
     "cv": "CV",
     "downloadCv": "Descargar CV",
     "downloading": "Descargando",
-    "direct": "O escribime directo"
+    "direct": "O escribime directo",
+    "copyFailed": "No se pudo copiar. El mail es {mail}"
   },
   "form": {
     "title": "Hablemos",
@@ -61,7 +62,8 @@
     "retry": "Reintentar",
     "required": "Completá este campo.",
     "invalidEmail": "Revisá el email: parece que falta algo.",
-    "closePanel": "Cerrar panel"
+    "closePanel": "Cerrar panel",
+    "requiredMark": "(obligatorio)"
   },
   "case": {
     "view": "Ver caso",
@@ -84,7 +86,8 @@
     "carousel": "carrusel",
     "prev": "Testimonio anterior",
     "next": "Testimonio siguiente",
-    "position": "Testimonio {actual} de {total}"
+    "position": "Testimonio {actual} de {total}",
+    "slide": "testimonio"
   },
   "faq": {
     "title": "Preguntas frecuentes"

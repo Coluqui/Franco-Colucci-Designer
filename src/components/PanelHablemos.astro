@@ -33,9 +33,9 @@ const { lang } = Astro.props;
     <p class="t-body panel__intro">{t(lang, 'form.intro')}</p>
 
     <form class="panel__form" method="post" action={localizePath(lang, 'hablemos/')} novalidate data-form-hablemos>
-      <Campo id="hablemos-nombre" name="nombre" label={t(lang, 'form.name')} autocomplete="name" required />
-      <Campo id="hablemos-email" name="email" tipo="email" label={t(lang, 'form.email')} autocomplete="email" required />
-      <Campo id="hablemos-mensaje" name="mensaje" tipo="textarea" label={t(lang, 'form.message')} required />
+      <Campo id="hablemos-nombre" name="nombre" label={t(lang, 'form.name')} autocomplete="name" required textoObligatorio={t(lang, 'form.requiredMark')} />
+      <Campo id="hablemos-email" name="email" tipo="email" label={t(lang, 'form.email')} autocomplete="email" required textoObligatorio={t(lang, 'form.requiredMark')} />
+      <Campo id="hablemos-mensaje" name="mensaje" tipo="textarea" label={t(lang, 'form.message')} required textoObligatorio={t(lang, 'form.requiredMark')} />
       <Boton type="submit" textoCarga={t(lang, 'form.sending')} class="panel__enviar">{t(lang, 'form.send')}</Boton>
     </form>
 
@@ -50,14 +50,15 @@ const { lang } = Astro.props;
             disabled={!site.mail}
             data-texto={t(lang, 'contact.copyEmail')}
             data-texto-ok={t(lang, 'contact.copied')}
+            data-texto-error={t(lang, 'contact.copyFailed')}
           >
             <span data-copiar-texto>{t(lang, 'contact.copyEmail')}</span>
             {!site.mail && <span class="visually-hidden">{t(lang, 'a11y.pending')}</span>}
           </button>
           <span class="visually-hidden" aria-live="polite" data-copiar-estado></span>
         </li>
-        <li><Link href={whatsappHref()} lang={lang} externo>{t(lang, 'contact.whatsapp')}</Link></li>
         <li><Link href={linkedinHref()} lang={lang} externo>{t(lang, 'contact.linkedin')}</Link></li>
+        <li><Link href={whatsappHref()} lang={lang} externo>{t(lang, 'contact.whatsapp')}</Link></li>
         <li><Link href={cvHref(lang)} lang={lang} download>{t(lang, 'contact.downloadCv')}</Link></li>
       </ul>
     </section>
@@ -89,6 +90,10 @@ const { lang } = Astro.props;
       try {
         await navigator.clipboard.writeText(mail);
       } catch {
+        // Sin permiso de portapapeles: se anuncia y se muestra el mail para copiarlo a mano.
+        const error = (copiar.dataset['textoError'] ?? '').replace('{mail}', mail);
+        texto.textContent = error;
+        if (aviso) aviso.textContent = error;
         return;
       }
       texto.textContent = copiar.dataset['textoOk'] ?? '';
@@ -215,6 +220,13 @@ const { lang } = Astro.props;
 
   .panel__directo li {
     display: flex;
+    align-items: center;
+    min-block-size: var(--control-height);
+  }
+
+  /* Objetivo de 44 px en el link mismo, no solo en el ítem. */
+  .panel__directo li > :global(*:not(.visually-hidden)) {
+    display: inline-flex;
     align-items: center;
     min-block-size: var(--control-height);
   }

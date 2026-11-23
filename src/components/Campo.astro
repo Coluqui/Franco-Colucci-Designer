@@ -16,18 +16,23 @@ interface Props {
   required?: boolean;
   disabled?: boolean;
   value?: string;
+  /** Texto visible de obligatorio, "(obligatorio)" (WCAG 3.3.2). Se pasa desde i18n. */
+  textoObligatorio?: string;
   /** Mensaje de error visible (estado error). */
   error?: string;
   exito?: boolean;
 }
 
-const { id, name, label, tipo = 'text', autocomplete, required = false, disabled = false, value, error, exito = false } = Astro.props;
+const { id, name, label, tipo = 'text', autocomplete, required = false, textoObligatorio, disabled = false, value, error, exito = false } = Astro.props;
 const idError = `${id}-error`;
 const estado = error ? 'error' : exito ? 'exito' : undefined;
 ---
 
 <div class="campo" data-estado={estado}>
-  <label class="campo__label" for={id}>{label}</label>
+  <label class="campo__label" for={id}>
+    {label}
+    {required && textoObligatorio && <span class="campo__obligatorio">{textoObligatorio}</span>}
+  </label>
   <div class="campo__control">
     {
       tipo === 'textarea' ? (
@@ -75,6 +80,12 @@ const estado = error ? 'error' : exito ? 'exito' : undefined;
     font-size: var(--text-small);
     font-weight: var(--weight-ui);
     line-height: var(--leading-ui);
+  }
+
+  .campo__obligatorio {
+    margin-inline-start: var(--space-1);
+    color: var(--color-text-secondary);
+    font-weight: var(--weight-regular);
   }
 
   .campo__control {

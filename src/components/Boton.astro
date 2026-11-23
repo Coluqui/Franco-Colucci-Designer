@@ -5,11 +5,14 @@
  * - Alto visual 36 px (--control-height-sm) en `size="sm"` (header) con área táctil de 44 px; 44 px por defecto.
  * - Primario: tinta → cobalto en hover (M25: el desencastre del glifo llega en la Fase 6).
  * - Press: scale(--scale-press) y vuelve con --spring-press.
- * - Loading: texto de carga + barra en la base (estática hasta la Fase 6, M32).
+ * - Loading: texto de carga + barra en la base (estática hasta la Fase 6, M32). Usa aria-disabled
+ *   y no disabled, para que el foco no se pierda al enviar; el bloqueo del envío es de la Fase 7.
+ * - href null (dato pendiente): <span> con "(pendiente)" para lectores de pantalla.
  */
 import type { HTMLAttributes } from 'astro/types';
 import Glifo from './Glifo.astro';
 import Icono, { type NombreIcono } from './Icono.astro';
+import { t, langFromUrl } from '../i18n';
 
 type Props = {
   variante?: 'primario' | 'secundario';
@@ -39,16 +42,26 @@ const {
   ...rest
 } = Astro.props;
 
-const inactivo = disabled || loading;
+const lang = langFromUrl(Astro.url);
+const pendiente = href === null;
 const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
 ---
 
 {
-  href !== undefined ? (
+  pendiente ? (
+    /* Dato pendiente: no es un link (un <a> sin href no anuncia aria-disabled). Igual que Link. */
+    <span class:list={[...clases, 'boton--pendiente']} aria-disabled="true">
+      {glifo && <Glifo size="0.875rem" class="boton__glifo" />}
+      <span class="boton__texto"><slot /></span>
+      {icono && <Icono nombre={icono} class="boton__icono" />}
+      <span class="visually-hidden">{t(lang, 'a11y.pending')}</span>
+    </span>
+  ) : href !== undefined ? (
     <a
       class:list={clases}
-      href={inactivo || href === null ? undefined : href}
-      aria-disabled={inactivo || href === null ? 'true' : undefined}
+      href={disabled || loading ? undefined : href}
+      role={disabled || loading ? 'link' : undefined}
+      aria-disabled={disabled || loading ? 'true' : undefined}
       aria-busy={loading ? 'true' : undefined}
       {...rest}
     >
@@ -58,7 +71,14 @@ const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
       {loading && <span class="boton__carga" aria-hidden="true" />}
     </a>
   ) : (
-    <button class:list={clases} type={type} disabled={inactivo} aria-busy={loading ? 'true' : undefined} {...rest}>
+    <button
+      class:list={clases}
+      type={type}
+      disabled={disabled}
+      aria-disabled={loading ? 'true' : undefined}
+      aria-busy={loading ? 'true' : undefined}
+      {...rest}
+    >
       {glifo && <Glifo size="0.875rem" class="boton__glifo" />}
       <span class="boton__texto">{loading && textoCarga ? textoCarga : <slot />}</span>
       {icono && <Icono nombre={icono} class="boton__icono" />}
@@ -83,7 +103,10 @@ const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
     font-stretch: calc(var(--wdth-normal) * 1%);
     line-height: var(--leading-ui);
     text-decoration: none;
-    white-space: nowrap;
+    /* Con texto al 200 % (WCAG 1.4.4 y 1.4.10) el label pasa a dos líneas en vez de desbordar. */
+    max-inline-size: 100%;
+    text-align: center;
+    text-wrap: balance;
     cursor: pointer;
     overflow: hidden;
     transition:
