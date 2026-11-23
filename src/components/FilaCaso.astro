@@ -1,0 +1,214 @@
+---
+/**
+ * Fila de caso (home y Trabajos) · design system §7 y §8 · PRD §3.
+ * Panel --color-surface, --radius-sm. Todo el panel es clicable (link estirado desde el título),
+ * así el lector de pantalla oye un solo link con el nombre del caso.
+ * - Ancho (contenedor ≥ 60rem): media 16:10 en 7 columnas + texto en 5.
+ * - Angosto: una columna, las métricas arriba de la imagen.
+ * Hover: la media escala --scale-media-hover con --spring-soft y aparece "Ver caso →" (M27).
+ * Foco: anillo en todo el panel y "Ver caso →" visible. En táctil, "Ver caso →" siempre visible.
+ * Fase 6: la media se convierte en el hero del caso con View Transitions (M06, M07).
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import ChipMetrica from './ChipMetrica.astro';
+import Icono from './Icono.astro';
+import { t, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  href: string;
+  titulo: string;
+  /** Tipo de trabajo, en label (p. ej. "Campaña · Redes y ads"). */
+  tipo: string;
+  /** Hasta 2 chips (design system §7). */
+  metricas?: Array<{ valor: string; etiqueta: string }>;
+  descripcion: string;
+  servicios: string[];
+  imagen: ImageMetadata;
+  alt: string;
+  /** Nivel del título según la página: h3 en la home (bajo "Trabajos"), h2 en Trabajos. */
+  nivel?: 'h2' | 'h3';
+  /** La primera fila de la home se ve en el primer frame: carga ansiosa. */
+  prioridad?: boolean;
+}
+
+const { lang, href, titulo, tipo, metricas = [], descripcion, servicios, imagen, alt, nivel = 'h3', prioridad = false } = Astro.props;
+const Titulo = nivel;
+---
+
+<div class="fila-caja">
+  <article class="fila">
+    <div class="fila__media">
+      <Image
+        src={imagen}
+        alt={alt}
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 80rem) 44rem, (min-width: 48rem) 90vw, 100vw"
+        loading={prioridad ? 'eager' : 'lazy'}
+        fetchpriority={prioridad ? 'high' : undefined}
+      />
+    </div>
+
+    <div class="fila__texto">
+      <Titulo class="t-h3 fila__titulo"><a class="fila__link" href={href}>{titulo}</a></Titulo>
+      <p class="t-label fila__tipo">{tipo}</p>
+      {
+        metricas.length > 0 && (
+          <ul class="fila__metricas" role="list" aria-label={t(lang, 'case.metrics')}>
+            {metricas.slice(0, 2).map((m) => (
+              <li>
+                <ChipMetrica valor={m.valor} etiqueta={m.etiqueta} />
+              </li>
+            ))}
+          </ul>
+        )
+      }
+      <p class="t-body fila__descripcion">{descripcion}</p>
+      <p class="t-ui fila__servicios">
+        <span class="visually-hidden">{t(lang, 'case.servicesLabel')}</span>
+        {servicios.join(' · ')}
+      </p>
+      <span class="t-ui fila__ver" aria-hidden="true">
+        {t(lang, 'case.view')}
+        <Icono nombre="flecha-der" />
+      </span>
+    </div>
+  </article>
+</div>
+
+<style>
+  .fila-caja {
+    container: fila / inline-size;
+  }
+
+  .fila {
+    position: relative;
+    display: grid;
+    gap: var(--space-5);
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+  }
+
+  /* Angosto: el texto se aplana en la grilla para poder subir las métricas arriba de la imagen. */
+  .fila__texto {
+    display: contents;
+  }
+
+  .fila__metricas {
+    order: -2;
+  }
+
+  .fila__media {
+    order: -1;
+    aspect-ratio: var(--ratio-web);
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: var(--color-stage);
+  }
+
+  .fila__media :global(img) {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    transition: transform var(--spring-soft-duration) var(--spring-soft);
+  }
+
+  @container fila (min-width: 60rem) {
+    .fila {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: var(--grid-gutter);
+      padding: var(--space-5);
+    }
+
+    .fila__texto {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      padding-block: var(--space-2);
+    }
+
+    .fila__metricas,
+    .fila__media {
+      order: 0;
+    }
+
+    .fila__ver {
+      margin-block-start: auto;
+    }
+  }
+
+  .fila__titulo {
+    margin: 0;
+  }
+
+  /* Link estirado: cubre todo el panel. */
+  .fila__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .fila__link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-sm);
+  }
+
+  .fila__link:focus-visible {
+    outline: none;
+  }
+
+  .fila:has(.fila__link:focus-visible) {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+
+  .fila__tipo,
+  .fila__servicios {
+    color: var(--color-text-secondary);
+  }
+
+  .fila__metricas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .fila__descripcion {
+    max-inline-size: 60ch;
+  }
+
+  .fila__ver {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-accent);
+    font-weight: var(--weight-ui);
+  }
+
+  .fila:has(.fila__link:focus-visible) .fila__ver {
+    opacity: 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .fila__ver {
+      opacity: 0;
+      transition: opacity var(--duration-fast) var(--ease-out);
+    }
+
+    .fila:hover .fila__ver,
+    .fila:has(.fila__link:focus-visible) .fila__ver {
+      opacity: 1;
+    }
+
+    .fila:hover .fila__media :global(img) {
+      transform: scale(var(--scale-media-hover));
+    }
+  }
+</style>

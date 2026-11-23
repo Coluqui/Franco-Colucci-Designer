@@ -66,11 +66,14 @@
   "case": {
     "view": "Ver caso",
     "services": "Servicios",
-    "metrics": "Métricas"
+    "metrics": "Métricas",
+    "servicesLabel": "Servicios:"
   },
   "services": {
     "title": "Qué hago",
-    "preview": "Vista previa"
+    "preview": "Vista previa",
+    "seeWork": "Ver trabajos de {servicio}",
+    "pendingPreview": "Vista previa PENDIENTE"
   },
   "clients": {
     "title": "Clientes"

@@ -66,11 +66,14 @@
   "case": {
     "view": "View case",
     "services": "Services",
-    "metrics": "Metrics"
+    "metrics": "Metrics",
+    "servicesLabel": "Services:"
   },
   "services": {
     "title": "What I do",
-    "preview": "Preview"
+    "preview": "Preview",
+    "seeWork": "See {servicio} work",
+    "pendingPreview": "Preview PENDING"
   },
   "clients": {
     "title": "Clients"
