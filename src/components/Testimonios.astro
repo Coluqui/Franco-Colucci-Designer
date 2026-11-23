@@ -1,0 +1,232 @@
+---
+/**
+ * Testimonios · design system §7 · PRD §3 y §14 · motion M28.
+ * Carrusel con scroll-snap nativo: sin JS se desliza con el dedo, la rueda o el teclado.
+ * Con JS: flechas ← →, teclado (← → con foco en el carrusel) y contador 01/03 con aria-live.
+ * Cita en --text-h2 (wdth 100, 600); autor en --text-small; contador en label.
+ * Si hay 1 solo testimonio no hay flechas ni contador. Nunca se inventan (PENDIENTE).
+ * Fase 6: arrastre 1:1 con resorte al soltar y el contador que rueda (M28).
+ */
+import Icono from './Icono.astro';
+import { t, tf, dosDigitos, type Lang } from '../i18n';
+
+interface Testimonio {
+  cita: string;
+  autor: string;
+  /** Cargo y empresa. */
+  rol: string;
+}
+
+interface Props {
+  lang: Lang;
+  testimonios: Testimonio[];
+}
+
+const { lang, testimonios } = Astro.props;
+const total = testimonios.length;
+const varios = total > 1;
+---
+
+<section class="testimonios" aria-roledescription={varios ? t(lang, 'testimonials.carousel') : undefined} aria-label={t(lang, 'testimonials.label')} data-testimonios>
+  <ul class="testimonios__pista" role="list" tabindex={varios ? 0 : undefined} data-pista>
+    {
+      testimonios.map((x, i) => (
+        <li
+          class="testimonio"
+          role={varios ? 'group' : undefined}
+          aria-roledescription={varios ? t(lang, 'testimonials.slide') : undefined}
+          aria-label={varios ? tf(lang, 'testimonials.position', { actual: i + 1, total }) : undefined}
+        >
+          <figure>
+            <blockquote class="testimonio__cita">
+              <p>{x.cita}</p>
+            </blockquote>
+            <figcaption class="testimonio__autor">
+              <span class="testimonio__nombre">{x.autor}</span>
+              <span class="testimonio__rol">{x.rol}</span>
+            </figcaption>
+          </figure>
+        </li>
+      ))
+    }
+  </ul>
+
+  {
+    varios && (
+      <div class="testimonios__nav">
+        <p class="t-label testimonios__contador" aria-live="polite" aria-atomic="true">
+          <span class="visually-hidden" data-contador-texto>
+            {tf(lang, 'testimonials.position', { actual: 1, total })}
+          </span>
+          <span aria-hidden="true">
+            <span data-contador>{dosDigitos(1)}</span>/{dosDigitos(total)}
+          </span>
+        </p>
+        <div class="testimonios__flechas">
+          <button class="testimonios__flecha" type="button" data-anterior aria-label={t(lang, 'testimonials.prev')} disabled>
+            <Icono nombre="flecha-izq" />
+          </button>
+          <button class="testimonios__flecha" type="button" data-siguiente aria-label={t(lang, 'testimonials.next')}>
+            <Icono nombre="flecha-der" />
+          </button>
+        </div>
+      </div>
+    )
+  }
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-testimonios]').forEach((raiz) => {
+    const pista = raiz.querySelector<HTMLElement>('[data-pista]');
+    const anterior = raiz.querySelector<HTMLButtonElement>('[data-anterior]');
+    const siguiente = raiz.querySelector<HTMLButtonElement>('[data-siguiente]');
+    const contador = raiz.querySelector('[data-contador]');
+    const contadorTexto = raiz.querySelector('[data-contador-texto]');
+    if (!pista || !anterior || !siguiente) return;
+    const items = [...pista.children] as HTMLElement[];
+    let actual = 0;
+
+    const marcar = (i: number) => {
+      if (i === actual) return;
+      actual = i;
+      if (contador) contador.textContent = String(i + 1).padStart(2, '0');
+      if (contadorTexto) contadorTexto.textContent = items[i]?.getAttribute('aria-label') ?? '';
+      anterior.disabled = i === 0;
+      siguiente.disabled = i === items.length - 1;
+    };
+
+    const ir = (i: number) => {
+      const destino = items[Math.max(0, Math.min(items.length - 1, i))];
+      if (!destino) return;
+      // El contador cambia con el clic; scrollend lo reconcilia si el usuario desliza.
+      marcar(items.indexOf(destino));
+      // Suave solo si el usuario no pidió menos movimiento (lo decide el CSS de la pista).
+      pista.scrollTo({ left: destino.offsetLeft - pista.offsetLeft });
+    };
+
+    anterior.addEventListener('click', () => ir(actual - 1));
+    siguiente.addEventListener('click', () => ir(actual + 1));
+    pista.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        ir(actual - 1);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        ir(actual + 1);
+      }
+    });
+
+    // Al terminar de desplazarse (dedo, rueda o flechas), el testimonio más cercano es el actual.
+    pista.addEventListener('scrollend', () => {
+      const posiciones = items.map((it) => Math.abs(it.offsetLeft - pista.offsetLeft - pista.scrollLeft));
+      marcar(posiciones.indexOf(Math.min(...posiciones)));
+    });
+  });
+</script>
+
+<style>
+  .testimonios {
+    display: grid;
+    gap: var(--space-6);
+    color: var(--color-text-primary);
+  }
+
+  .testimonios__pista {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    gap: var(--grid-gutter);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    border-radius: var(--radius-xs);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .testimonios__pista {
+      scroll-behavior: smooth;
+    }
+  }
+
+  .testimonios__pista::-webkit-scrollbar {
+    display: none;
+  }
+
+  .testimonio {
+    scroll-snap-align: start;
+  }
+
+  .testimonio figure {
+    display: grid;
+    gap: var(--space-5);
+    margin: 0;
+  }
+
+  .testimonio__cita {
+    margin: 0;
+    font-size: var(--text-h2);
+    font-stretch: calc(var(--wdth-normal) * 1%);
+    font-weight: var(--weight-ui);
+    line-height: var(--leading-heading);
+    text-wrap: pretty;
+  }
+
+  .testimonio__autor {
+    display: grid;
+    font-size: var(--text-small);
+    line-height: var(--leading-ui);
+  }
+
+  .testimonio__nombre {
+    font-weight: var(--weight-ui);
+  }
+
+  .testimonio__rol {
+    color: var(--color-text-secondary);
+  }
+
+  .testimonios__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .testimonios__contador {
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .testimonios__flechas {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .testimonios__flecha {
+    display: inline-grid;
+    place-items: center;
+    inline-size: var(--control-height);
+    block-size: var(--control-height);
+    border: var(--border-control);
+    border-radius: var(--radius-xs);
+    background: transparent;
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .testimonios__flecha:disabled {
+    border-color: var(--color-text-disabled);
+    color: var(--color-text-disabled);
+    cursor: not-allowed;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .testimonios__flecha:not(:disabled):hover {
+      background: var(--color-surface);
+    }
+  }
+</style>
