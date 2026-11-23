@@ -1,0 +1,94 @@
+---
+/**
+ * Grilla de clientes · design system §7 y §8 · PRD §3.
+ * Va dentro de la sección invertida (clientes + testimonios): toma --color-inverse-* por el remapeo.
+ * Celdas con filete --border-hairline; logos SVG monocromos en currentColor (--color-text-primary).
+ * Hover: el logo pasa a opacidad 1 (el resto queda en 0,7: falta el token, ver docs/pendientes.md).
+ * 2 × 3 en angosto, 3 × 2 desde 30rem de contenedor.
+ * Sin logo (PENDIENTE hasta que Franco entregue los SVG): el nombre en label.
+ */
+interface Cliente {
+  nombre: string;
+  /** Markup SVG monocromo (fill="currentColor"), importado con ?raw. */
+  logo?: string;
+}
+
+interface Props {
+  clientes: Cliente[];
+  etiqueta: string;
+}
+
+const { clientes, etiqueta } = Astro.props;
+---
+
+<div class="clientes-caja">
+<ul class="clientes" role="list" aria-label={etiqueta}>
+  {
+    clientes.map((c) => (
+      <li class="cliente">
+        {c.logo ? (
+          <span class="cliente__logo" role="img" aria-label={c.nombre} set:html={c.logo} />
+        ) : (
+          <span class="t-label cliente__nombre">{c.nombre}</span>
+        )}
+      </li>
+    ))
+  }
+</ul>
+</div>
+
+<style>
+  .clientes-caja {
+    container-type: inline-size;
+  }
+
+  .clientes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-block-start: var(--border-hairline);
+    border-inline-start: var(--border-hairline);
+  }
+
+  @container (min-width: 30rem) {
+    .clientes {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .cliente {
+    display: grid;
+    place-items: center;
+    aspect-ratio: var(--ratio-ad-mrec);
+    padding: var(--space-5);
+    border-block-end: var(--border-hairline);
+    border-inline-end: var(--border-hairline);
+    color: var(--color-text-primary);
+  }
+
+  .cliente__logo {
+    display: block;
+    inline-size: 100%;
+    max-inline-size: 8rem;
+    opacity: 0.7; /* PENDIENTE token --opacity-logo-rest (design system §7: "resto 0,7") */
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .cliente__logo :global(svg) {
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .cliente:hover .cliente__logo {
+      opacity: 1;
+    }
+  }
+
+  .cliente__nombre {
+    color: var(--color-text-secondary);
+    text-align: center;
+  }
+</style>
