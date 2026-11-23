@@ -4,7 +4,9 @@
  * <dialog> modal: foco atrapado e inerte el resto (nativo), ESC cierra, el foco vuelve a "Menú".
  * Links en --text-services: wdth 112 en reposo, 125 en hover/foco y en la página actual.
  * A la derecha: mail, LinkedIn, WhatsApp, CV y toggles ES/EN y modo.
- * En la Fase 6: crece desde el botón "Menú" (M20) y los links respiran al entrar (M14).
+ * M14: al abrir, los links suben y respiran con --stagger-fast; en hover, el link pasa a 125 y el
+ * resto queda en 112 (transición de font-stretch ⚠). Paso 4: crece desde el botón "Menú" (M20) y
+ * los links entran cuando el menú llega al 60 %.
  */
 import Boton from './Boton.astro';
 import Glifo from './Glifo.astro';
@@ -68,6 +70,8 @@ const links: Array<{ clave: UiKey; href: string }> = [
 </dialog>
 
 <script>
+  import { respirarEntrada } from '../scripts/motion/respiracion';
+
   const menu = document.querySelector<HTMLDialogElement>('[data-menu]');
   const abridores = document.querySelectorAll<HTMLElement>('[data-abre-menu]');
   if (menu) {
@@ -76,6 +80,7 @@ const links: Array<{ clave: UiKey; href: string }> = [
       b.addEventListener('click', () => {
         menu.showModal();
         marcar(true);
+        respirarEntrada([...menu.querySelectorAll<HTMLElement>('.menu__link')]);
       }),
     );
     menu.querySelector('[data-cierra-menu]')?.addEventListener('click', () => menu.close());
@@ -169,6 +174,9 @@ const links: Array<{ clave: UiKey; href: string }> = [
     color: var(--color-text-secondary);
     text-decoration: none;
     white-space: nowrap;
+    transition:
+      font-stretch var(--duration-breathe) var(--spring-soft),
+      color var(--duration-fast) var(--ease-out);
   }
 
   .menu__link[aria-current="page"],
