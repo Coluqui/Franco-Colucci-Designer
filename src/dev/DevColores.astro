@@ -1,0 +1,144 @@
+---
+/**
+ * /es/dev/colores?tema=light|dark — tokens semánticos de color y contraste WCAG calculado
+ * en vivo desde los valores computados de tokens.css (no hay valores copiados acá).
+ * Se muestra en dos iframes lado a lado dentro de /es/dev/tokens.
+ */
+const tokens = [
+  'bg', 'surface', 'stage', 'raised', 'text-primary', 'text-secondary', 'text-disabled',
+  'border-subtle', 'border-strong', 'accent', 'accent-hover', 'on-accent',
+  'success', 'success-bg', 'danger', 'danger-bg',
+  'inverse-bg', 'inverse-surface', 'inverse-text', 'inverse-text-secondary', 'inverse-border', 'inverse-accent',
+];
+---
+
+<div class="colores">
+  <h2 class="t-h3" data-tema-titulo>Tema</h2>
+
+  <ul class="muestras" role="list">
+    {
+      tokens.map((tk) => (
+        <li class="muestra">
+          <span class="chip" style={`background: var(--color-${tk})`} />
+          <code class="t-label">--color-{tk}</code>
+          <code class="t-label valor" data-token={tk} />
+        </li>
+      ))
+    }
+  </ul>
+
+  <h3 class="t-ui">Contraste (texto ≥ 4,5 · controles ≥ 3)</h3>
+  <table class="contraste t-label">
+    <thead>
+      <tr><th scope="col">Primer plano</th><th scope="col">Fondo</th><th scope="col">Ratio</th><th scope="col">Mín.</th><th scope="col">OK</th></tr>
+    </thead>
+    <tbody data-contraste></tbody>
+  </table>
+</div>
+
+<script>
+  const css = getComputedStyle(document.documentElement);
+  const val = (tk: string) => css.getPropertyValue(`--color-${tk}`).trim();
+
+  const temaAttr = document.documentElement.dataset['theme'];
+  const titulo = document.querySelector('[data-tema-titulo]');
+  if (titulo) titulo.textContent = temaAttr === 'dark' ? 'Modo oscuro' : temaAttr === 'light' ? 'Modo claro' : 'Según el sistema';
+
+  document.querySelectorAll<HTMLElement>('[data-token]').forEach((el) => {
+    el.textContent = val(el.dataset['token'] ?? '');
+  });
+
+  // Luminancia relativa y contraste WCAG 2.x
+  function rgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    const n = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
+    return [0, 2, 4].map((i) => parseInt(n.slice(i, i + 2), 16) / 255) as [number, number, number];
+  }
+  const lin = (c: number) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const lum = (hex: string) => {
+    const [r, g, b] = rgb(hex).map(lin) as [number, number, number];
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const ratio = (a: string, b: string) => {
+    const [l1, l2] = [lum(a), lum(b)].sort((x, y) => y - x) as [number, number];
+    return (l1 + 0.05) / (l2 + 0.05);
+  };
+
+  const fondos = ['bg', 'surface', 'stage', 'raised'];
+  const pares: Array<[string, string, number]> = [];
+  for (const f of fondos) {
+    for (const t of ['text-primary', 'text-secondary', 'accent', 'accent-hover', 'success', 'danger']) pares.push([t, f, 4.5]);
+    pares.push(['border-strong', f, 3]);
+  }
+  pares.push(['on-accent', 'accent', 4.5], ['on-accent', 'accent-hover', 4.5], ['bg', 'text-primary', 4.5]);
+  pares.push(['success', 'success-bg', 4.5], ['danger', 'danger-bg', 4.5]);
+  for (const f of ['inverse-bg', 'inverse-surface']) {
+    for (const t of ['inverse-text', 'inverse-text-secondary', 'inverse-accent']) pares.push([t, f, 4.5]);
+    pares.push(['inverse-border', f, 1]);
+  }
+
+  const tbody = document.querySelector('[data-contraste]');
+  let fallas = 0;
+  for (const [fg, bg, min] of pares) {
+    const r = ratio(val(fg), val(bg));
+    const ok = r >= min;
+    if (!ok) fallas++;
+    const tr = document.createElement('tr');
+    if (!ok) tr.className = 'falla';
+    tr.innerHTML = `<td>${fg}</td><td>${bg}</td><td>${r.toFixed(2)}</td><td>${min}</td><td>${ok ? 'sí' : 'NO'}</td>`;
+    tbody?.append(tr);
+  }
+  document.documentElement.dataset['fallasContraste'] = String(fallas);
+</script>
+
+<style>
+  .colores {
+    display: grid;
+    gap: var(--space-5);
+    padding: var(--space-5);
+  }
+
+  .muestras {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .muestra {
+    display: grid;
+    grid-template-columns: var(--space-7) 1fr;
+    grid-template-rows: auto auto;
+    column-gap: var(--space-3);
+    align-items: center;
+  }
+
+  .chip {
+    grid-row: span 2;
+    block-size: var(--space-7);
+    border: var(--border-hairline);
+    border-radius: var(--radius-xs);
+  }
+
+  .valor {
+    color: var(--color-text-secondary);
+  }
+
+  .contraste {
+    border-collapse: collapse;
+    inline-size: 100%;
+  }
+
+  .contraste :is(th, td) {
+    padding: var(--space-1) var(--space-2);
+    border-block-end: var(--border-hairline);
+    text-align: start;
+  }
+
+  .contraste :global(.falla) {
+    color: var(--color-danger);
+    background: var(--color-danger-bg);
+  }
+</style>

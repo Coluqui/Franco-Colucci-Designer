@@ -15,9 +15,11 @@ interface Props {
   description: string;
   /** Previews, páginas internas y 404: no se indexan. */
   noindex?: boolean;
+  /** hreflang a la misma ruta en cada idioma. false en páginas que existen en un solo idioma (/es/dev/*). */
+  alternates?: boolean;
 }
 
-const { lang, title, description, noindex = false } = Astro.props;
+const { lang, title, description, noindex = false, alternates = true } = Astro.props;
 ---
 
 <!doctype html>
@@ -43,7 +45,7 @@ const { lang, title, description, noindex = false } = Astro.props;
 
     <link rel="preload" href={archivoLatin} as="font" type="font/woff2" crossorigin />
 
-    {locales.map((l) => <link rel="alternate" hreflang={l} href={switchLangPath(Astro.url, l)} />)}
+    {alternates && locales.map((l) => <link rel="alternate" hreflang={l} href={switchLangPath(Astro.url, l)} />)}
 
     <slot name="head" />
   </head>

@@ -1,0 +1,404 @@
+---
+/**
+ * /es/dev/tokens — muestrario de los tokens v2.1: color (claro y oscuro lado a lado),
+ * ancho de Archivo medido, escala tipográfica, espaciado, radios y resortes en movimiento.
+ * Todo lee tokens.css; los textos de ejemplo son los más largos en español (PRD §14).
+ */
+const anchos = [62, 100, 112, 125];
+
+const roles = [
+  { clase: 't-wordmark', token: '--text-wordmark', nota: 'wdth 125 · 850', texto: 'Colucci' },
+  { clase: 't-display', token: '--text-display', nota: 'wdth 112 · 800', texto: 'Una campaña puede perder clics' },
+  { clase: 't-services', token: '--text-services (≤ 7.6cqi)', nota: 'wdth 112 → 125 · 800', texto: 'Ads de performance' },
+  { clase: 't-h1', token: '--text-h1', nota: 'wdth 125 · 800', texto: 'Comunicación institucional' },
+  { clase: 't-h2', token: '--text-h2', nota: 'wdth 112 · 750', texto: 'Preguntas frecuentes' },
+  { clase: 't-h3', token: '--text-h3', nota: 'wdth 100 · 700', texto: '¿Trabajás de forma remota con equipos de otros países?' },
+  { clase: 't-metric', token: '--text-metric', nota: 'wdth 112 · 800 · tabular', texto: '+38 %' },
+  { clase: 't-lead', token: '--text-lead', nota: 'wdth 100 · 400', texto: 'Diseño piezas que tu equipo puede publicar hoy y medir mañana.' },
+  { clase: 't-body', token: '--text-body', nota: 'wdth 100 · 400 · máx. --measure', texto: 'Diseñador gráfico y digital que produce piezas de redes, ads de performance, mails, ebooks y webs que se entienden en un segundo y se pueden medir.' },
+  { clase: 't-ui', token: '--text-ui', nota: 'wdth 100 · 600', texto: 'Hablemos · Menú · Descargar CV' },
+  { clase: 't-label', token: '--text-label', nota: 'Geist Mono 500', texto: 'ISCAMEN · 4:5 · Pieza 03 / 12' },
+];
+
+const espacios = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const radios = ['xs', 'sm', 'full'];
+const resortes = [
+  { nombre: 'snap', uso: 'Encastre: cambios de formato, glifo, filtro activo' },
+  { nombre: 'soft', uso: 'Menú, panel, testimonios, entradas, respiración' },
+  { nombre: 'press', uso: 'Press y suelta de botones, desencastre del glifo' },
+];
+---
+
+<div class="container dev">
+  <header class="dev-cabecera">
+    <p class="t-label">Dev · tokens v2.1 · design system "Formato"</p>
+    <h1>Tokens</h1>
+  </header>
+
+  <section aria-labelledby="s-color">
+    <h2 id="s-color">Color</h2>
+    <div class="temas">
+      <iframe src="/es/dev/colores?tema=light" title="Colores en modo claro" data-iframe-tema="light"></iframe>
+      <iframe src="/es/dev/colores?tema=dark" title="Colores en modo oscuro" data-iframe-tema="dark"></iframe>
+    </div>
+  </section>
+
+  <section aria-labelledby="s-ancho">
+    <h2 id="s-ancho">Ancho de Archivo (font-stretch)</h2>
+    <p class="t-body nota">Si <code>font-stretch</code> funciona, el ancho medido crece con cada paso. Prueba: 125 % tiene que medir más que 100 %.</p>
+    <ul class="anchos" role="list">
+      {
+        anchos.map((w) => (
+          <li>
+            <span class="t-label">wdth {w}</span>
+            <span class="muestra-ancho" style={`font-stretch: ${w}%`} data-ancho={w}>
+              COLUCCI
+            </span>
+            <span class="t-label medida" data-medida={w} />
+          </li>
+        ))
+      }
+    </ul>
+    <p class="t-ui veredicto" data-veredicto-ancho aria-live="polite"></p>
+  </section>
+
+  <section aria-labelledby="s-tipo">
+    <h2 id="s-tipo">Escala tipográfica</h2>
+    <ul class="roles" role="list">
+      {
+        roles.map((r) => (
+          <li class="rol">
+            <p class="t-label meta">
+              .{r.clase} · {r.token} · {r.nota} · <span data-px={r.clase} />
+            </p>
+            <p class={r.clase} data-rol={r.clase}>
+              {r.texto}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="respira-demo">
+      <p class="t-label meta">Respiración (M13): hover o foco → wdth 112 → 125 con --spring-soft y --duration-breathe</p>
+      <button type="button" class="t-services respira">Branding</button>
+      <button type="button" class="t-services respira">Mail marketing</button>
+    </div>
+  </section>
+
+  <section aria-labelledby="s-espacio">
+    <h2 id="s-espacio">Espaciado</h2>
+    <ul class="espacios" role="list">
+      {
+        espacios.map((n) => (
+          <li>
+            <code class="t-label">--space-{n}</code>
+            <span class="barra" style={`inline-size: var(--space-${n})`} />
+          </li>
+        ))
+      }
+      <li>
+        <code class="t-label">--space-section</code>
+        <span class="barra" style="inline-size: var(--space-section)"></span>
+      </li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="s-radio">
+    <h2 id="s-radio">Radios</h2>
+    <ul class="radios" role="list">
+      {
+        radios.map((r) => (
+          <li>
+            <span class="caja" style={`border-radius: var(--radius-${r})`} />
+            <code class="t-label">--radius-{r}</code>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section aria-labelledby="s-resorte">
+    <h2 id="s-resorte">Resortes</h2>
+    <p class="t-body nota">Cada botón mueve el marco con <code>element.animate()</code> usando el <code>linear()</code> y la duración del token. Con movimiento reducido, los tokens pasan a un fundido corto.</p>
+    <ul class="resortes" role="list">
+      {
+        resortes.map((s) => (
+          <li class="resorte">
+            <button type="button" class="t-ui boton" data-resorte={s.nombre}>
+              --spring-{s.nombre}
+            </button>
+            <span class="t-label">{s.uso} · <span data-duracion={s.nombre} /></span>
+            <span class="pista">
+              <span class="marco" data-marco={s.nombre} />
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</div>
+
+<script>
+  const root = getComputedStyle(document.documentElement);
+
+  // ---- Ancho medido ----
+  document.fonts.ready.then(() => {
+    const medidas: Record<string, number> = {};
+    document.querySelectorAll<HTMLElement>('[data-ancho]').forEach((el) => {
+      const w = el.dataset['ancho'] ?? '';
+      const px = el.getBoundingClientRect().width;
+      medidas[w] = px;
+      const out = document.querySelector(`[data-medida="${w}"]`);
+      if (out) out.textContent = `${px.toFixed(1)} px`;
+    });
+    const ok = (medidas['125'] ?? 0) > (medidas['100'] ?? 0) * 1.1 && (medidas['62'] ?? 0) < (medidas['100'] ?? 0);
+    const cargada = document.fonts.check('850 16px Archivo');
+    const v = document.querySelector('[data-veredicto-ancho]');
+    if (v) {
+      v.textContent = ok
+        ? `✓ font-stretch cambia el ancho (125 % = ${(((medidas['125'] ?? 0) / (medidas['100'] ?? 1)) * 100).toFixed(0)} % del ancho a 100 %). Archivo cargada: ${cargada ? 'sí' : 'no'}.`
+        : `✗ font-stretch NO cambia el ancho. Archivo cargada: ${cargada ? 'sí' : 'no'}.`;
+    }
+    document.documentElement.dataset['fontStretchOk'] = String(ok);
+  });
+
+  // ---- Tamaño computado de cada rol ----
+  const pintarPx = () =>
+    document.querySelectorAll<HTMLElement>('[data-rol]').forEach((el) => {
+      const out = document.querySelector(`[data-px="${el.dataset['rol']}"]`);
+      if (out) out.textContent = `${parseFloat(getComputedStyle(el).fontSize).toFixed(0)} px`;
+    });
+  pintarPx();
+  addEventListener('resize', pintarPx, { passive: true });
+
+  // ---- Resortes con Web Animations (siempre se interrumpen: cancel() antes de animar) ----
+  const ms = (v: string) => (v.endsWith('ms') ? parseFloat(v) : parseFloat(v) * 1000);
+  const enCurso = new Map<string, Animation>();
+
+  document.querySelectorAll<HTMLElement>('[data-duracion]').forEach((el) => {
+    el.textContent = root.getPropertyValue(`--spring-${el.dataset['duracion']}-duration`).trim();
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-resorte]').forEach((btn) => {
+    let ida = true;
+    btn.addEventListener('click', () => {
+      const nombre = btn.dataset['resorte'] ?? '';
+      const marco = document.querySelector<HTMLElement>(`[data-marco="${nombre}"]`);
+      const pista = marco?.parentElement;
+      if (!marco || !pista) return;
+      const css = getComputedStyle(document.documentElement);
+      const easing = css.getPropertyValue(`--spring-${nombre}`).trim();
+      const duration = ms(css.getPropertyValue(`--spring-${nombre}-duration`).trim());
+      const distancia = pista.clientWidth - marco.offsetWidth;
+      const desde = ida ? 0 : distancia;
+      const hasta = ida ? distancia : 0;
+      const actual = new DOMMatrix(getComputedStyle(marco).transform).m41;
+      enCurso.get(nombre)?.cancel();
+      const anim = marco.animate(
+        [{ transform: `translateX(${enCurso.has(nombre) ? actual : desde}px)` }, { transform: `translateX(${hasta}px)` }],
+        { duration, easing, fill: 'forwards' },
+      );
+      enCurso.set(nombre, anim);
+      ida = !ida;
+    });
+  });
+</script>
+
+<style>
+  .dev {
+    display: grid;
+    gap: var(--space-9);
+    padding-block: var(--space-8) var(--space-section);
+  }
+
+  .dev-cabecera {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  section {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .nota,
+  .meta,
+  .medida {
+    color: var(--color-text-secondary);
+  }
+
+  /* ---- Color ---- */
+  .temas {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 80rem) {
+    .temas {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  iframe {
+    inline-size: 100%;
+    block-size: 72rem;
+    border: var(--border-hairline);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+  }
+
+  /* ---- Ancho ---- */
+  .anchos {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .anchos li {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .muestra-ancho {
+    inline-size: fit-content;
+    font-size: var(--text-h1);
+    font-weight: var(--weight-heavy);
+    line-height: var(--leading-wordmark);
+    letter-spacing: var(--tracking-wordmark);
+  }
+
+  /* ---- Tipografía ---- */
+  .roles {
+    display: grid;
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    container-type: inline-size;
+  }
+
+  .rol {
+    display: grid;
+    gap: var(--space-2);
+    padding-block-end: var(--space-5);
+    border-block-end: var(--border-hairline);
+    min-inline-size: 0;
+  }
+
+  .t-wordmark {
+    overflow-wrap: anywhere;
+  }
+
+  .respira-demo {
+    display: grid;
+    justify-items: start;
+    container-type: inline-size;
+  }
+
+  .respira {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-text-secondary);
+    text-align: start;
+    cursor: pointer;
+    transition:
+      font-stretch var(--duration-breathe) var(--spring-soft),
+      color var(--duration-fast) var(--ease-out);
+  }
+
+  .respira:focus-visible {
+    color: var(--color-text-primary);
+    font-stretch: calc(var(--wdth-active) * 1%);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .respira:hover {
+      color: var(--color-text-primary);
+      font-stretch: calc(var(--wdth-active) * 1%);
+    }
+  }
+
+  /* ---- Espaciado y radios ---- */
+  .espacios,
+  .radios,
+  .resortes {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .espacios li {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .barra {
+    display: block;
+    block-size: var(--space-3);
+    max-inline-size: 100%;
+    background: var(--color-accent);
+    border-radius: var(--radius-xs);
+  }
+
+  .radios {
+    grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+  }
+
+  .radios li {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: start;
+  }
+
+  .caja {
+    display: block;
+    inline-size: var(--space-8);
+    block-size: var(--space-8);
+    background: var(--color-surface);
+    border: var(--border-control);
+  }
+
+  /* ---- Resortes ---- */
+  .resorte {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .boton {
+    justify-self: start;
+    min-block-size: var(--control-height);
+    padding-inline: var(--control-pad-x);
+    border: var(--border-control);
+    border-radius: var(--radius-xs);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .boton:hover {
+      background: var(--color-surface);
+    }
+  }
+
+  .pista {
+    display: block;
+    padding: var(--space-2);
+    background: var(--color-stage);
+    border-radius: var(--radius-sm);
+  }
+
+  .marco {
+    display: block;
+    inline-size: var(--space-8);
+    aspect-ratio: var(--ratio-carousel);
+    border: 2px solid var(--color-accent);
+    border-radius: var(--radius-xs);
+  }
+</style>
