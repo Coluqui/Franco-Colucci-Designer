@@ -1,0 +1,64 @@
+---
+/**
+ * Barra inferior (mobile) · design system §7 y §8 · PRD §2 (el recruiter: CV a un toque).
+ * Fija abajo, solo por debajo de 48rem: "▣ Hablemos" (abre el panel; sin JS, la página) + "CV ↓".
+ * Fondo --color-raised, alto --bottom-bar-height + safe area. Con menú, panel o visor abiertos
+ * queda debajo del <dialog> modal y además se oculta. El body reserva su alto para no tapar contenido.
+ */
+import Boton from './Boton.astro';
+import { t, localizePath, type Lang } from '../i18n';
+import { cvHref } from '../config/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const cv = cvHref(lang);
+---
+
+<nav class="barra-mobile" aria-label={t(lang, 'nav.quickActions')} data-barra-mobile>
+  <Boton class="barra-mobile__boton" glifo href={localizePath(lang, 'hablemos/')} data-abre-panel aria-haspopup="dialog">
+    {t(lang, 'nav.talk')}
+  </Boton>
+  <Boton class="barra-mobile__boton" variante="secundario" icono="flecha-abajo" href={cv} download={cv ? '' : undefined}>
+    {t(lang, 'contact.cv')}
+  </Boton>
+</nav>
+
+<style>
+  .barra-mobile {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: var(--z-bottom-bar);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    align-items: center;
+    min-block-size: calc(var(--bottom-bar-height) + var(--safe-bottom));
+    padding: var(--space-2) var(--grid-margin) calc(var(--safe-bottom) + var(--space-2));
+    border-block-start: var(--border-hairline);
+    background: var(--color-raised);
+  }
+
+  .barra-mobile :global(.barra-mobile__boton) {
+    justify-content: center;
+  }
+
+  @media (min-width: 48rem) {
+    .barra-mobile {
+      display: none;
+    }
+  }
+
+  :global(html:has(dialog[open])) .barra-mobile {
+    display: none;
+  }
+
+  @media (max-width: 47.999rem) {
+    :global(body:has(.barra-mobile)) {
+      padding-block-end: calc(var(--bottom-bar-height) + var(--safe-bottom));
+    }
+  }
+</style>

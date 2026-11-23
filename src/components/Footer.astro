@@ -1,0 +1,109 @@
+---
+/**
+ * Footer · design system §7 · PRD §3.
+ * Glifo grande, mail, LinkedIn, WhatsApp, CV, toggles ES/EN y modo, y la firma "Franco Colucci, 2026".
+ * Los datos de contacto salen de src/config/site.ts (PENDIENTE hasta que Franco los complete).
+ */
+import Glifo from './Glifo.astro';
+import Link from './Link.astro';
+import Toggle from './Toggle.astro';
+import { t, tf, type Lang } from '../i18n';
+import { site, mailHref, linkedinHref, whatsappHref, cvHref } from '../config/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<footer class="footer">
+  <div class="footer__interior container">
+    <div class="footer__glifo">
+      <Glifo size="100cqi" />
+    </div>
+
+    <div class="footer__datos">
+      <ul class="footer__contacto" role="list" aria-label={t(lang, 'nav.contact')}>
+        <li><Link href={mailHref()} lang={lang}>{site.mail ?? t(lang, 'contact.email')}</Link></li>
+        <li><Link href={linkedinHref()} lang={lang} externo>{t(lang, 'contact.linkedin')}</Link></li>
+        <li><Link href={whatsappHref()} lang={lang} externo>{t(lang, 'contact.whatsapp')}</Link></li>
+        <li><Link href={cvHref(lang)} lang={lang} download>{t(lang, 'contact.downloadCv')}</Link></li>
+      </ul>
+
+      <div class="footer__toggles">
+        <Toggle lang={lang} tipo="idioma" />
+        <Toggle lang={lang} tipo="modo" />
+      </div>
+
+      <p class="t-label footer__firma">{tf(lang, 'footer.signature', { nombre: site.nombre, anio: site.anio })}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-block: var(--space-section) var(--space-7);
+    border-block-start: var(--border-hairline);
+  }
+
+  .footer__interior {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  /* El glifo mide el ancho de esta caja (100cqi): una longitud real, también para su borde. */
+  .footer__glifo {
+    container-type: inline-size;
+    inline-size: min(100%, 12rem);
+    aspect-ratio: var(--ratio-square);
+  }
+
+  .footer__datos {
+    display: grid;
+    gap: var(--space-6);
+    align-content: end;
+  }
+
+  .footer__contacto {
+    display: grid;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-lead);
+  }
+
+  .footer__contacto li {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--control-height);
+  }
+
+  .footer__contacto li > :global(*) {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--control-height);
+  }
+
+  .footer__toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .footer__firma {
+    color: var(--color-text-secondary);
+  }
+
+  @media (min-width: 48rem) {
+    .footer__interior {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: end;
+    }
+
+    .footer__glifo {
+      inline-size: min(100%, 20rem);
+    }
+  }
+</style>
