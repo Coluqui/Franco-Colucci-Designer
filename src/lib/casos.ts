@@ -4,6 +4,7 @@
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { t, localizePath, type Lang } from '../i18n';
+import { formatos } from '../content.config';
 import type { ServicioSlug } from '../config/servicios';
 
 export type Caso = CollectionEntry<'casos'>['data'];
@@ -15,7 +16,14 @@ export async function getCasos(): Promise<Caso[]> {
 
 export async function getPiezasDeCaso(slug: string) {
   const piezas = await getCollection('piezas', (p) => p.data.caso === slug);
-  return piezas.map((p) => p.data).sort((a, b) => a.slug.localeCompare(b.slug));
+  const clave = (p: (typeof piezas)[number]['data']) => [p.orden ?? Infinity, formatos.indexOf(p.formato)] as const;
+  return piezas
+    .map((p) => p.data)
+    .sort((a, b) => {
+      const [oa, fa] = clave(a);
+      const [ob, fb] = clave(b);
+      return oa - ob || fa - fb || a.slug.localeCompare(b.slug);
+    });
 }
 
 export function siguienteCaso(casos: Caso[], slug: string): Caso | undefined {

@@ -80,3 +80,5 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
   - `moondesk-pieza-qr` (con GS1 Argentina): ¿se imprimió o fue digital? Hoy está como "impreso".
   - `carpa-metodo` pasó de carrusel a **ebook** (son 9 portadas de módulos y bonos, no un carrusel de redes). `carpa-mockup-producto` repite esas portadas en dispositivos: ¿pieza aparte o hero del caso Carpa?
   - `iscamen-carrusel-citricos` slide 5: el texto dice "VITAMINAS C  A TU ALCANCE" (doble espacio); revisar si falta una palabra.
+- **Vista previa de Branding**: la pieza de Condimento es ≈1:1 y el marco de Branding es 4:5 (PRD §8), así que el recorte corta el logotipo. Opciones: (a) una pieza de branding pensada para 4:5; (b) un punto de foco por pieza; (c) Branding en 1:1, actualizando antes el PRD §8.
+- **Orden de piezas por caso**: hoy es automático (carruseles, posts, stories… impresos al final). Si querés un orden curado, se agrega `orden` en cada `pieza.json`.

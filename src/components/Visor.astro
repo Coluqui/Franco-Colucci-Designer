@@ -58,12 +58,14 @@ const { lang, piezas } = Astro.props;
   <div class="visor__pie">
     <ol class="visor__segmentos" role="list" data-visor-segmentos></ol>
     <div class="visor__piezas">
-      <button class="visor__boton visor__boton--texto" type="button" data-visor-pieza="-1">
+      <button class="visor__boton visor__boton--texto" type="button" data-visor-pieza="-1" aria-label={t(lang, 'viewer.prevPiece')}>
         <Icono nombre="flecha-izq" />
-        {t(lang, 'viewer.prevPiece')}
+        <span class="visor__texto-corto" aria-hidden="true">{t(lang, 'viewer.prevShort')}</span>
+        <span class="visor__texto-largo" aria-hidden="true">{t(lang, 'viewer.prevPiece')}</span>
       </button>
-      <button class="visor__boton visor__boton--texto" type="button" data-visor-pieza="1">
-        {t(lang, 'viewer.nextPiece')}
+      <button class="visor__boton visor__boton--texto" type="button" data-visor-pieza="1" aria-label={t(lang, 'viewer.nextPiece')}>
+        <span class="visor__texto-corto" aria-hidden="true">{t(lang, 'viewer.nextShort')}</span>
+        <span class="visor__texto-largo" aria-hidden="true">{t(lang, 'viewer.nextPiece')}</span>
         <Icono nombre="flecha-der" />
       </button>
     </div>
@@ -79,8 +81,8 @@ const { lang, piezas } = Astro.props;
             <Image
               src={s.src}
               alt={s.alt}
-              widths={[480, 720, 1080].filter((w) => w <= s.src.width)}
-              sizes="(min-width: 48rem) 60vh, 100vw"
+              widths={[...new Set([480, 720, 1080, 1440].filter((w) => w < s.src.width).concat(Math.min(s.src.width, 1440)))]}
+              sizes={`(min-width: 48rem) min(100vw, calc((100dvh - 12rem) * ${s.src.width / s.src.height})), 100vw`}
               loading="lazy"
             />
           </li>
@@ -133,20 +135,28 @@ const { lang, piezas } = Astro.props;
       }
     };
 
+    /** Índices de las piezas que el filtro deja ver (la actual siempre cuenta, por si se abrió por enlace). */
+    const visibles = () =>
+      slugs
+        .map((_, i) => i)
+        .filter((i) => i === pieza || !document.querySelector(`[data-abre-visor="${slugs[i]}"]`)?.closest<HTMLElement>('[hidden]'));
+
     const actualizar = (anuncio: string | null) => {
       if (!visor.open) return;
-      const n = slugs.length;
-      let texto = `${d['tPieza']} ${dos(pieza + 1)} / ${dos(n)}`;
+      const lista = visibles();
+      const n = lista.length;
+      const pos = lista.indexOf(pieza);
+      let texto = `${d['tPieza']} ${dos(pos + 1)} / ${dos(n)}`;
       if (total > 1) texto += ` · ${d['tSlide']} ${slide + 1} / ${total}`;
       contador.textContent = texto;
       segmentos.querySelectorAll('li').forEach((li, i) => {
         li.toggleAttribute('data-activo', i === slide);
         li.querySelector('button')?.setAttribute('aria-current', String(i === slide));
       });
-      deshabilitar(boton('.visor__lado--izq'), slide === 0 && pieza === 0, '.visor__lado--der');
-      deshabilitar(boton('.visor__lado--der'), slide === total - 1 && pieza === n - 1, '.visor__lado--izq');
-      deshabilitar(boton('.visor__piezas [data-visor-pieza="-1"]'), pieza === 0, '.visor__piezas [data-visor-pieza="1"]');
-      deshabilitar(boton('.visor__piezas [data-visor-pieza="1"]'), pieza === n - 1, '.visor__piezas [data-visor-pieza="-1"]');
+      deshabilitar(boton('.visor__lado--izq'), slide === 0 && pos === 0, '.visor__lado--der');
+      deshabilitar(boton('.visor__lado--der'), slide === total - 1 && pos === n - 1, '.visor__lado--izq');
+      deshabilitar(boton('.visor__piezas [data-visor-pieza="-1"]'), pos === 0, '.visor__piezas [data-visor-pieza="1"]');
+      deshabilitar(boton('.visor__piezas [data-visor-pieza="1"]'), pos === n - 1, '.visor__piezas [data-visor-pieza="-1"]');
       visor.toggleAttribute('data-un-slide', total < 2);
       const url = new URL(location.href);
       url.searchParams.set('pieza', slugs[pieza] ?? '');
@@ -156,8 +166,11 @@ const { lang, piezas } = Astro.props;
     };
 
     /** "Pieza 2 de 3 · Slide 1 de 5": al abrir y al cambiar de pieza se anuncian las dos cosas. */
-    const anuncioCompleto = () =>
-      total > 1 ? `${posPieza(pieza + 1, slugs.length)} · ${posSlide(slide + 1, total)}` : posPieza(pieza + 1, slugs.length);
+    const anuncioCompleto = () => {
+      const lista = visibles();
+      const p = posPieza(lista.indexOf(pieza) + 1, lista.length);
+      return total > 1 ? `${p} · ${posSlide(slide + 1, total)}` : p;
+    };
 
     const irSlide = (i: number, anunciar = true) => {
       const destino = slides()[i];
@@ -173,7 +186,8 @@ const { lang, piezas } = Astro.props;
       pieza = Math.max(0, Math.min(slugs.length - 1, i));
       pista.replaceChildren(plantillas[pieza]!.content.cloneNode(true));
       total = slides().length;
-      if (pieza < slugs.length - 1 && total > 1) pista.append(siguientePanel.content.cloneNode(true));
+      const lista = visibles();
+      if (lista.indexOf(pieza) < lista.length - 1 && total > 1) pista.append(siguientePanel.content.cloneNode(true));
       slides().forEach((li, k) => li.setAttribute('aria-label', posSlide(k + 1, total)));
       // El panel final solo es alcanzable cuando el swipe llega a él (no se tabula fuera de vista).
       const panel = panelFinal();
@@ -202,8 +216,9 @@ const { lang, piezas } = Astro.props;
     };
 
     const cambiarPieza = (delta: number, alFinal = false) => {
-      const nueva = pieza + delta;
-      if (nueva < 0 || nueva >= slugs.length) return;
+      const lista = visibles();
+      const nueva = lista[lista.indexOf(pieza) + delta];
+      if (nueva === undefined) return;
       montar(nueva, alFinal ? Number.MAX_SAFE_INTEGER : 0);
       actualizar(anuncioCompleto());
     };
@@ -497,11 +512,23 @@ const { lang, piezas } = Astro.props;
     gap: var(--space-3);
   }
 
-  /* Angosto: los dos botones se reparten el ancho y el texto puede pasar a dos líneas. */
+  /* Angosto: "Anterior" / "Siguiente" en una línea; desde 48rem, el texto completo. */
   .visor__piezas .visor__boton--texto {
     flex: 0 1 auto;
     min-inline-size: 0;
-    white-space: normal;
-    text-align: start;
+  }
+
+  .visor__texto-largo {
+    display: none;
+  }
+
+  @media (min-width: 48rem) {
+    .visor__texto-corto {
+      display: none;
+    }
+
+    .visor__texto-largo {
+      display: inline;
+    }
   }
 </style>

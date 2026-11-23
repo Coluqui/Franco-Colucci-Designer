@@ -131,7 +131,9 @@
     "slide": "Slide",
     "slidePosition": "Slide {actual} of {total}",
     "piecePosition": "Piece {actual} of {total}",
-    "nextPanel": "Next piece"
+    "nextPanel": "Next piece",
+    "prevShort": "Previous",
+    "nextShort": "Next"
   },
   "footer": {
     "signature": "{nombre}, {anio}"

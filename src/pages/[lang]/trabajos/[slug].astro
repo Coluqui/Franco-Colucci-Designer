@@ -277,7 +277,8 @@ const datos = [
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--grid-gutter);
-    align-items: start;
+    /* Proporciones mezcladas: las etiquetas comparten línea y el hueco queda arriba. */
+    align-items: end;
   }
 
   @media (min-width: 48rem) {

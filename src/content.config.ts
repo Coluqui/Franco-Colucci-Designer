@@ -15,7 +15,8 @@ const localized = z.object({
 });
 
 /** Formatos de pieza (filtro "por formato" del caso y etiqueta del tile). */
-export const formatos = ['post', 'carrusel', 'story', 'reel', 'ad', 'mail', 'web', 'ebook', 'branding', 'impreso'] as const;
+/** El orden también es el de la grilla del caso y el de los chips: lo digital primero, impresos al final. */
+export const formatos = ['carrusel', 'post', 'story', 'reel', 'ad', 'branding', 'mail', 'web', 'ebook', 'impreso'] as const;
 
 const piezas = defineCollection({
   loader: glob({
@@ -37,6 +38,8 @@ const piezas = defineCollection({
         /** Slug del caso al que pertenece (agregado al modelo del PRD §8 para contar "piezas por caso"). */
         caso: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
         formato: z.enum(formatos),
+        /** Orden curado dentro del caso (menor primero). Sin orden: por formato y después por slug. */
+        orden: z.number().int().min(1).optional(),
         /** Proporción de la pieza, p. ej. "4:5", "9:16", "16:10". */
         ratio: z.string().regex(/^\d+(?:\.\d+)?:\d+(?:\.\d+)?$/, 'ratio como "4:5"'),
         titulo: localized,

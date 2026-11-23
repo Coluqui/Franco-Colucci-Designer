@@ -38,8 +38,9 @@ const esCarrusel = pieza.slides.length > 1;
     <span class="t-label tile__meta">
       {esCarrusel && <Icono nombre="carrusel" class="tile__icono" />}
       <span>
-        {pieza.cliente} · {pieza.formato}
-        {esCarrusel && ` · ${tf(lang, 'tile.slides', { n: pieza.slides.length })}`}
+        <span class="tile__segmento">{pieza.cliente} ·</span>
+        <span class="tile__segmento">{pieza.formato}{esCarrusel && ' ·'}</span>
+        {esCarrusel && <span class="tile__segmento">{tf(lang, 'tile.slides', { n: pieza.slides.length })}</span>}
       </span>
     </span>
   </a>
@@ -106,6 +107,10 @@ const esCarrusel = pieza.slides.length > 1;
     align-items: flex-start;
     gap: var(--space-2);
     color: var(--color-text-secondary);
+  }
+
+  .tile__segmento {
+    white-space: nowrap;
   }
 
   .tile__meta :global(.tile__icono) {
