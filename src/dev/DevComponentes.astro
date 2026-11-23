@@ -8,6 +8,14 @@ import Boton from '../components/Boton.astro';
 import Link from '../components/Link.astro';
 import Toggle from '../components/Toggle.astro';
 import Campo from '../components/Campo.astro';
+import ChipMetrica from '../components/ChipMetrica.astro';
+import FilaCaso from '../components/FilaCaso.astro';
+import ListaServicios from '../components/ListaServicios.astro';
+import moondesk01 from './fixtures/moondesk-01.jpg';
+import moondesk02 from './fixtures/moondesk-02.jpg';
+import moondesk03 from './fixtures/moondesk-03.jpg';
+import condimento01 from './fixtures/condimento-01.jpg';
+import iscamen13 from './fixtures/iscamen-13.jpg';
 import type { Lang } from '../i18n';
 
 interface Props {
@@ -87,6 +95,66 @@ const base = `/${lang}/dev/componentes`;
     <div class="fila-demo">
       <Boton href={`/${lang}/hablemos/`} glifo data-abre-panel aria-haspopup="dialog">Abrir panel Hablemos</Boton>
     </div>
+  </section>
+
+  <section aria-labelledby="c-chip">
+    <h2 id="c-chip">5 · Chip de métrica</h2>
+    <div class="fila-demo">
+      <ChipMetrica valor="00 %" etiqueta="PENDIENTE" />
+      <ChipMetrica valor="0,0×" etiqueta="PENDIENTE: etiqueta larga de métrica" />
+    </div>
+    <div class="seccion-invertida caja-invertida fila-demo">
+      <ChipMetrica valor="00 %" etiqueta="PENDIENTE" />
+    </div>
+  </section>
+
+  <section aria-labelledby="c-fila">
+    <h2 id="c-fila">6 · Fila de caso</h2>
+    <p class="t-body">Hover: la media escala y aparece "Ver caso →". Tab: anillo en todo el panel. Angosta: métricas arriba.</p>
+    <FilaCaso
+      lang={lang}
+      href="#c-fila"
+      titulo="PENDIENTE: caso uno"
+      tipo="PENDIENTE · tipo de trabajo"
+      metricas={[
+        { valor: '00 %', etiqueta: 'PENDIENTE' },
+        { valor: '0,0×', etiqueta: 'PENDIENTE' },
+      ]}
+      descripcion="PENDIENTE: descripción corta del caso, una o dos líneas con el problema y lo que se hizo."
+      servicios={['Redes', 'Ads', 'Branding']}
+      imagen={moondesk02}
+      alt="PENDIENTE: alt de la pieza"
+    />
+    <FilaCaso
+      lang={lang}
+      href="#c-fila"
+      titulo="PENDIENTE: caso dos, título más largo"
+      tipo="PENDIENTE"
+      metricas={[{ valor: '00', etiqueta: 'PENDIENTE' }]}
+      descripcion="PENDIENTE: descripción corta del caso."
+      servicios={['Redes']}
+      imagen={iscamen13}
+      alt="PENDIENTE: alt de la pieza"
+    />
+  </section>
+
+  <section aria-labelledby="c-servicios">
+    <h2 id="c-servicios">7 · Lista de servicios</h2>
+    <p class="t-body">
+      Ancho: hover (80 ms) o foco abren el servicio y el marco toma su formato. Angosto: acordeón. Mail, Web y Branding sin pieza
+      (PENDIENTE).
+    </p>
+    <ListaServicios
+      lang={lang}
+      servicios={[
+        { slug: 'ads', nombre: 'Ads', descripcion: 'PENDIENTE: descripción del servicio.', ratio: 'square', imagen: condimento01, alt: 'PENDIENTE: alt' },
+        { slug: 'redes', nombre: 'Redes', descripcion: 'PENDIENTE: descripción del servicio.', ratio: 'carousel', imagen: moondesk01, alt: 'PENDIENTE: alt' },
+        { slug: 'reels', nombre: 'Reels', descripcion: 'PENDIENTE: descripción del servicio.', ratio: 'reel', imagen: moondesk03, alt: 'PENDIENTE: alt' },
+        { slug: 'mail', nombre: 'Mail', descripcion: 'PENDIENTE: descripción del servicio.', ratio: 'mail-header' },
+        { slug: 'web', nombre: 'Web', descripcion: 'PENDIENTE: descripción del servicio.', ratio: 'web' },
+        { slug: 'branding', nombre: 'Branding', descripcion: 'PENDIENTE: descripción del servicio.', ratio: 'carousel' },
+      ]}
+    />
   </section>
 
   <section aria-labelledby="c-campos">

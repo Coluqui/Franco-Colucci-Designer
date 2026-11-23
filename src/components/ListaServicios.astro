@@ -1,0 +1,247 @@
+---
+/**
+ * Lista de servicios · design system §7 y §8 · PRD §3 · motion M05 y M13.
+ * Base: acordeón exclusivo nativo (<details name>): funciona sin JS y con teclado.
+ * - Angosto: + / −; la descripción, la vista previa y el link van dentro del ítem abierto.
+ * - Ancho (contenedor ≥ 60rem): lista en 7 columnas con ítems de alto fijo y, a la derecha
+ *   (5 columnas), la vista previa fija del ítem abierto (caja --color-stage). El marco toma el
+ *   formato de la pieza de ese servicio (--ratio-*). Hover con intención (--hover-intent) o foco
+ *   abre el ítem; un clic no lo cierra (siempre hay uno activo).
+ * Activo: --color-text-primary y wdth 125; inactivos: --color-text-secondary y wdth 112.
+ * Fase 6: la respiración 112 → 125 (M13) y el encastre del marco (M05).
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Icono from './Icono.astro';
+import { t, tf, localizePath, type Lang } from '../i18n';
+
+/** Nombre del token --ratio-* del formato de la pieza de vista previa. */
+type Ratio = 'square' | 'carousel' | 'reel' | 'mail-header' | 'web';
+
+interface Servicio {
+  slug: string;
+  nombre: string;
+  descripcion: string;
+  ratio: Ratio;
+  imagen?: ImageMetadata;
+  alt?: string;
+}
+
+interface Props {
+  lang: Lang;
+  servicios: Servicio[];
+  /** Nombre del grupo exclusivo (único por página). */
+  grupo?: string;
+}
+
+const { lang, servicios, grupo = 'servicios' } = Astro.props;
+---
+
+<div class="servicios-caja">
+  <ul class="servicios" role="list" data-servicios>
+    {
+      servicios.map((s, i) => (
+        <li class="servicio" style={`--ratio: var(--ratio-${s.ratio})`}>
+          <details name={grupo} open={i === 0} data-servicio>
+            <summary class="servicio__nombre">
+              <span class="t-services">{s.nombre}</span>
+              <Icono nombre="mas" class="servicio__signo" />
+            </summary>
+            <div class="servicio__panel">
+              <div class="servicio__escenario">
+                <figure class="servicio__marco">
+                  {s.imagen ? (
+                    <Image src={s.imagen} alt={s.alt ?? ''} widths={[400, 720]} sizes="(min-width: 80rem) 32rem, 90vw" loading="lazy" />
+                  ) : (
+                    <figcaption class="t-label servicio__pendiente">{t(lang, 'services.pendingPreview')}</figcaption>
+                  )}
+                </figure>
+              </div>
+              <p class="t-body servicio__descripcion">{s.descripcion}</p>
+              <a class="link t-ui servicio__link" href={localizePath(lang, `trabajos/?servicio=${s.slug}`)}>
+                {tf(lang, 'services.seeWork', { servicio: s.nombre })}
+                <Icono nombre="flecha-der" />
+              </a>
+            </div>
+          </details>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<script>
+  /* Solo en el modo ancho: hover con intención o foco abren el ítem; el clic no lo cierra. */
+  document.querySelectorAll<HTMLElement>('[data-servicios]').forEach((lista) => {
+    const ancho = () => getComputedStyle(lista).getPropertyValue('--servicios-fijo').trim() === '1';
+    const intencion = () =>
+      parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hover-intent')) || 0;
+    let espera: number | undefined;
+
+    lista.querySelectorAll<HTMLDetailsElement>('[data-servicio]').forEach((d) => {
+      const summary = d.querySelector('summary');
+      if (!summary) return;
+      summary.addEventListener('click', (e) => {
+        if (ancho() && d.open) e.preventDefault();
+      });
+      summary.addEventListener('focus', () => {
+        if (ancho()) d.open = true;
+      });
+      summary.addEventListener('pointerenter', (e) => {
+        if (!ancho() || e.pointerType !== 'mouse') return;
+        window.clearTimeout(espera);
+        espera = window.setTimeout(() => (d.open = true), intencion());
+      });
+      summary.addEventListener('pointerleave', () => window.clearTimeout(espera));
+    });
+  });
+</script>
+
+<style>
+  .servicios-caja {
+    container: servicios / inline-size;
+  }
+
+  .servicios {
+    --servicios-fijo: 0;
+    position: relative;
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .servicio {
+    border-block-end: var(--border-hairline);
+  }
+
+  .servicio__nombre {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-block-size: var(--control-height);
+    padding-block: var(--space-2);
+    color: var(--color-text-secondary);
+    font-stretch: calc(var(--wdth-rest) * 1%);
+    list-style: none;
+    cursor: pointer;
+    white-space: nowrap;
+    container-type: inline-size;
+  }
+
+  .servicio__nombre::-webkit-details-marker {
+    display: none;
+  }
+
+  .servicio__nombre .t-services {
+    font-stretch: inherit;
+  }
+
+  details[open] > .servicio__nombre {
+    color: var(--color-text-primary);
+    font-stretch: calc(var(--wdth-active) * 1%);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .servicio__nombre:hover {
+      color: var(--color-text-primary);
+    }
+  }
+
+  /* + / −: la barra vertical desaparece al abrir. */
+  .servicio__nombre :global(.servicio__signo) {
+    flex: none;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+
+  details[open] > .servicio__nombre :global(.icono__vertical) {
+    opacity: 0;
+  }
+
+  .servicio__panel {
+    display: grid;
+    gap: var(--space-4);
+    padding-block: var(--space-2) var(--space-6);
+  }
+
+  /* Escenario: caja fija; el marco adentro toma el formato de la pieza y entra entero. */
+  .servicio__escenario {
+    display: grid;
+    place-items: center;
+    aspect-ratio: var(--ratio-square);
+    padding: var(--space-5);
+    border-radius: var(--radius-sm);
+    background: var(--color-stage);
+    container-type: size;
+  }
+
+  .servicio__marco {
+    display: grid;
+    place-items: center;
+    inline-size: min(100cqi, calc(100cqb * var(--ratio)));
+    aspect-ratio: var(--ratio);
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius-xs);
+    background: var(--color-surface);
+  }
+
+  .servicio__marco :global(img) {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  .servicio__pendiente {
+    padding: var(--space-3);
+    color: var(--color-text-secondary);
+    text-align: center;
+  }
+
+  .servicio__descripcion {
+    max-inline-size: 60ch;
+    color: var(--color-text-secondary);
+  }
+
+  .servicio__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    justify-self: start;
+    min-block-size: var(--control-height);
+  }
+
+  /* ---- Ancho: lista en 7 columnas + vista previa fija en 5 ---- */
+  @container servicios (min-width: 60rem) {
+    .servicios {
+      --servicios-fijo: 1;
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      column-gap: var(--grid-gutter);
+    }
+
+    .servicio {
+      grid-column: 1;
+    }
+
+    .servicio__nombre :global(.servicio__signo) {
+      display: none;
+    }
+
+    /* El panel del ítem abierto se ubica en la columna derecha, a lo alto de toda la lista. */
+    .servicio__panel {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: 0;
+      inline-size: calc((100% - var(--grid-gutter)) * 5 / 12);
+      grid-template-rows: minmax(0, 1fr) auto auto;
+      padding: 0;
+    }
+
+    .servicio__escenario {
+      aspect-ratio: auto;
+      min-block-size: 0;
+    }
+  }
+</style>
