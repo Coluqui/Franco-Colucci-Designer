@@ -38,6 +38,7 @@ const piezasData = await getPiezasDeCaso(caso.slug);
 
 const piezas: Array<PiezaVista & { filtro: string }> = piezasData.map((p) => ({
   slug: p.slug,
+  titulo: p.titulo[lang],
   cliente: caso.cliente,
   formato: t(lang, `formats.${p.formato}`),
   ratio: p.ratio,

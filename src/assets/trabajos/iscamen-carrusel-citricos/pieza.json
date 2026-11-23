@@ -43,8 +43,8 @@
     {
       "src": "./05.jpg",
       "alt": {
-        "es": "Slide con el titular \"Más salud\" sobre la foto de una naranja cortada al medio, con tres líneas que señalan sus beneficios. PENDIENTE: revisar texto del subtítulo (\"Vitaminas C a tu alcance\").",
-        "en": "Slide with the Spanish headline \"Más salud\" (Better health) over a photo of a halved orange, with three callout lines pointing to its benefits."
+        "es": "Slide con el titular \"Más salud\" y el subtítulo \"Vitaminas C a tu alcance\" sobre la foto de una naranja cortada al medio, con tres llamadas: \"Aportan vitamina C y B9. Además, potasio y magnesio\", \"Fuente natural de fibra y antioxidantes\" y \"Baja en calorías y… además te cuidan la piel\".",
+        "en": "Slide with the Spanish headline \"Más salud\" (Better health) and subtitle \"Vitaminas C a tu alcance\" (Vitamin C within reach) over a halved orange, with three callouts: vitamin C and B9 plus potassium and magnesium; a natural source of fiber and antioxidants; low in calories and good for your skin."
       }
     }
   ]

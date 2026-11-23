@@ -29,15 +29,16 @@ const esCarrusel = pieza.slides.length > 1;
 <div class="tile" data-filtro={filtro}>
   <a class="tile__link" href={grande.src} data-abre-visor={pieza.slug} aria-haspopup="dialog">
     <span class="tile__escenario" style={`--aspecto: ${aspecto(pieza.ratio)}`}>
-      <Image src={portada.src} alt={portada.alt} widths={[320, 480, 720]} sizes={sizes} loading="lazy" />
+      <Image src={portada.src} alt="" widths={[320, 480, 720]} sizes={sizes} loading="lazy" />
       <span class="t-ui tile__ver">
         {t(lang, 'tile.view')}
         <Icono nombre="flecha-diag" />
       </span>
     </span>
+    <span class="visually-hidden">{pieza.titulo}</span>
     <span class="t-label tile__meta">
       {esCarrusel && <Icono nombre="carrusel" class="tile__icono" />}
-      <span>
+      <span class="tile__segmentos">
         <span class="tile__segmento">{pieza.cliente} ·</span>
         <span class="tile__segmento">{pieza.formato}{esCarrusel && ' ·'}</span>
         {esCarrusel && <span class="tile__segmento">{tf(lang, 'tile.slides', { n: pieza.slides.length })}</span>}
@@ -53,6 +54,8 @@ const esCarrusel = pieza.slides.length > 1;
 
   .tile__link {
     display: grid;
+    /* La columna nunca crece más que el tile: la meta corta entre segmentos. */
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-3);
     color: var(--color-text-primary);
     text-decoration: none;
@@ -107,6 +110,13 @@ const esCarrusel = pieza.slides.length > 1;
     align-items: flex-start;
     gap: var(--space-2);
     color: var(--color-text-secondary);
+  }
+
+  .tile__segmentos {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.3em; /* el espacio de una palabra */
+    min-inline-size: 0;
   }
 
   .tile__segmento {

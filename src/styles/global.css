@@ -191,11 +191,6 @@ main:focus {
   color: var(--color-text-primary);
 }
 
-/* Menú, panel o visor abiertos: la página de atrás no scrollea. */
-html:has(dialog[open]) {
-  overflow: hidden;
-}
-
 /* ---- Utilidades ---- */
 .visually-hidden:not(:focus):not(:active) {
   position: absolute;

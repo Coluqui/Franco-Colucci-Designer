@@ -15,15 +15,15 @@
     {
       "src": "./01.jpg",
       "alt": {
-        "es": "Portada del carrusel de MoonDesk con el titular \"Nacimos de un error\" sobre una pila ilustrada de cajas marcadas con cruces y un globo con un archivo rechazado.",
-        "en": "MoonDesk carousel cover with the Spanish headline \"Nacimos de un error\" (Born from a mistake) over an illustrated stack of boxes marked with crosses and a rejected file."
+        "es": "Portada del carrusel de MoonDesk con el titular \"Nacimos de un error\" y la bajada \"Un archivo mal enviado a imprenta.\" sobre una pila ilustrada de cajas marcadas con cruces y un globo con un archivo rechazado.",
+        "en": "MoonDesk carousel cover with the Spanish headline \"Nacimos de un error\" (Born from a mistake) and the line \"A file sent to print by mistake.\" over an illustrated stack of boxes marked with crosses and a rejected file."
       }
     },
     {
       "src": "./02.jpg",
       "alt": {
-        "es": "Slide con el titular \"El costo fue alto\" y una lista de consecuencias, junto a un camión que vuelca cajas por un acantilado.",
-        "en": "Slide with the Spanish headline \"El costo fue alto\" (The cost was high) and a list of consequences, next to a truck dumping boxes off a cliff."
+        "es": "Slide con el titular \"El costo fue alto\" y tres consecuencias: \"U$D 50.000 en pérdidas\", \"100.000 etiquetas desperdiciadas\" y \"Pérdida de puestos de trabajo\", junto a un camión que vuelca cajas por un acantilado.",
+        "en": "Slide with the Spanish headline \"El costo fue alto\" (The cost was high) and three consequences: USD 50,000 in losses, 100,000 wasted labels and lost jobs, next to a truck dumping boxes off a cliff."
       }
     },
     {

@@ -15,8 +15,8 @@
     {
       "src": "./01.jpg",
       "alt": {
-        "es": "Anuncio cuadrado de Condimento con el titular \"¿Tu tienda tiene tráfico, pero no ventas?\", dos tarjetas que contrastan visitas y ventas con un emoji enojado, y el botón \"Solicita tu auditoría gratis\".",
-        "en": "Square Condimento ad with the Spanish headline \"¿Tu tienda tiene tráfico, pero no ventas?\" (Your store has traffic but no sales?), two cards contrasting visits and sales with an angry emoji, and a free-audit button."
+        "es": "Anuncio cuadrado de Condimento con el titular \"¿Tu tienda tiene tráfico, pero no ventas?\", dos tarjetas, \"Visitas 2.2M\" y \"Ventas 0\", con un emoji enojado, y el botón \"Solicita tu auditoría gratis\".",
+        "en": "Square Condimento ad with the Spanish headline \"¿Tu tienda tiene tráfico, pero no ventas?\" (Your store has traffic but no sales?), two cards, \"Visitas 2.2M\" (Visits) and \"Ventas 0\" (Sales), with an angry emoji, and a free-audit button."
       }
     }
   ]

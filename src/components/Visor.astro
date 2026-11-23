@@ -75,7 +75,7 @@ const { lang, piezas } = Astro.props;
 
   {
     piezas.map((p) => (
-      <template data-visor-plantilla={p.slug}>
+      <template data-visor-plantilla={p.slug} data-titulo={p.titulo}>
         {p.slides.map((s) => (
           <li class="visor__slide">
             <Image
@@ -107,6 +107,7 @@ const { lang, piezas } = Astro.props;
     const contador = visor.querySelector('[data-visor-contador]')!;
     const estado = visor.querySelector('[data-visor-estado]')!;
     const segmentos = visor.querySelector('[data-visor-segmentos]')!;
+    const escena = visor.querySelector('[data-visor-escena]')!;
     const cerrar = visor.querySelector<HTMLButtonElement>('[data-visor-cerrar]')!;
     const plantillas = [...visor.querySelectorAll<HTMLTemplateElement>('[data-visor-plantilla]')];
     const slugs = plantillas.map((p) => p.dataset['visorPlantilla'] ?? '');
@@ -166,9 +167,10 @@ const { lang, piezas } = Astro.props;
     };
 
     /** "Pieza 2 de 3 · Slide 1 de 5": al abrir y al cambiar de pieza se anuncian las dos cosas. */
+    const titulo = () => plantillas[pieza]?.dataset['titulo'] ?? '';
     const anuncioCompleto = () => {
       const lista = visibles();
-      const p = posPieza(lista.indexOf(pieza) + 1, lista.length);
+      const p = `${titulo()} · ${posPieza(lista.indexOf(pieza) + 1, lista.length)}`;
       return total > 1 ? `${p} · ${posSlide(slide + 1, total)}` : p;
     };
 
@@ -186,9 +188,10 @@ const { lang, piezas } = Astro.props;
       pieza = Math.max(0, Math.min(slugs.length - 1, i));
       pista.replaceChildren(plantillas[pieza]!.content.cloneNode(true));
       total = slides().length;
+      escena.setAttribute('aria-label', titulo());
       const lista = visibles();
       if (lista.indexOf(pieza) < lista.length - 1 && total > 1) pista.append(siguientePanel.content.cloneNode(true));
-      slides().forEach((li, k) => li.setAttribute('aria-label', posSlide(k + 1, total)));
+      if (total > 1) slides().forEach((li, k) => li.setAttribute('aria-label', posSlide(k + 1, total)));
       // El panel final solo es alcanzable cuando el swipe llega a él (no se tabula fuera de vista).
       const panel = panelFinal();
       if (panel) {
@@ -233,9 +236,12 @@ const { lang, piezas } = Astro.props;
     const abrir = (slug: string, s = 0) => {
       const i = slugs.indexOf(slug);
       if (i < 0) return;
-      if (!visor.open) visor.showModal();
+      const recienAbierto = !visor.open;
+      if (recienAbierto) visor.showModal();
       montar(i, s);
-      actualizar(anuncioCompleto());
+      actualizar(null);
+      if (recienAbierto) requestAnimationFrame(() => (estado.textContent = anuncioCompleto()));
+      else estado.textContent = anuncioCompleto();
     };
 
     // Abridores: los tiles (links a la imagen grande, para cuando no hay JS).
@@ -287,6 +293,7 @@ const { lang, piezas } = Astro.props;
       // El foco vuelve al tile de la pieza que se estaba viendo (también al abrir por enlace directo).
       const tile = document.querySelector<HTMLElement>(`[data-abre-visor="${slugs[pieza]}"]`);
       if (tile && tile.offsetParent) tile.focus();
+      else document.querySelector<HTMLElement>('#contenido')?.focus();
       pista.replaceChildren();
       const url = new URL(location.href);
       url.searchParams.delete('pieza');
@@ -499,7 +506,7 @@ const { lang, piezas } = Astro.props;
   .visor__segmentos :global(button)::before {
     content: "";
     block-size: 2px; /* PENDIENTE token (el mismo que la barra de carga, ver docs/pendientes.md) */
-    background: var(--color-border-subtle);
+    background: var(--color-border-strong);
   }
 
   .visor__segmentos :global(li[data-activo] button)::before {

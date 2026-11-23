@@ -3,6 +3,8 @@ import type { ImageMetadata } from 'astro';
 /** Una pieza tal como la muestran el tile y el visor. Un carrusel es UNA pieza con varios slides (PRD §6). */
 export interface PiezaVista {
   slug: string;
+  /** Título de la pieza, ya traducido: nombre del link del tile y del visor. */
+  titulo: string;
   /** Cliente o marca, para la etiqueta del tile ("cliente · formato"). */
   cliente: string;
   /** Nombre visible del formato ("Carrusel", "Post", "Story"…), ya traducido. */
