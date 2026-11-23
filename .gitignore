@@ -1,0 +1,23 @@
+# Dependencias y build
+node_modules/
+dist/
+.astro/
+.vercel/
+
+# Secretos (solo se versiona el ejemplo)
+.env
+.env.*
+!.env.example
+
+# Material de Franco que no va al repo
+_inbox/
+prototipo/
+
+# Logs y sistema
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.idea/
+
+# Ajustes locales de Claude Code
+.claude/settings.local.json
