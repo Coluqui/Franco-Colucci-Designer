@@ -1,0 +1,426 @@
+---
+/**
+ * Visor de piezas · design system §7 · PRD §6 · motion M08–M11.
+ * <dialog> modal a pantalla completa sobre --color-inverse-bg (tokens invertidos con data-invertido).
+ * - Un carrusel es UNA pieza: el contador doble dice "Pieza 03 / 12 · Slide 4 / 7".
+ * - Slides en una pista con scroll-snap nativo (swipe, rueda); indicador segmentado.
+ * - Teclado: ← → recorren slides y siguen a la pieza siguiente al terminar; Re Pág / Av Pág
+ *   saltan de pieza; ESC cierra (nativo) y el foco vuelve al tile.
+ * - Táctil: después del último slide, panel "Pieza siguiente →"; botones de pieza de 44 px.
+ * - URL: ?pieza=<slug>&slide=4 (al cargar con esos parámetros, abre ahí). Sin autoplay.
+ * - aria-live con "Slide 4 de 7"; alt por slide; aria-roledescription "carrusel".
+ * - Performance: cada pieza vive en un <template>; solo se montan los slides de la pieza abierta
+ *   y las imágenes son lazy (carga la actual y la siguiente).
+ * PENDIENTE: el marco de teléfono para carruseles en desktop (PRD §6) necesita definición visual.
+ * Fase 6: tile → visor con FLIP (M08), cierre (M09), segmento (M10) y cambio de pieza (M11).
+ */
+import { Image } from 'astro:assets';
+import Icono from './Icono.astro';
+import { t, type Lang } from '../i18n';
+import type { PiezaVista } from './tipos';
+
+interface Props {
+  lang: Lang;
+  piezas: PiezaVista[];
+}
+
+const { lang, piezas } = Astro.props;
+---
+
+<dialog
+  id="visor"
+  class="visor"
+  data-invertido
+  aria-label={t(lang, 'viewer.label')}
+  data-visor
+  data-t-pieza={t(lang, 'viewer.piece')}
+  data-t-slide={t(lang, 'viewer.slide')}
+  data-t-slide-pos={t(lang, 'viewer.slidePosition')}
+  data-t-pieza-pos={t(lang, 'viewer.piecePosition')}
+>
+  <div class="visor__barra">
+    <p class="t-label visor__contador" aria-hidden="true" data-visor-contador></p>
+    <button class="visor__boton" type="button" data-visor-cerrar autofocus aria-label={t(lang, 'viewer.close')}>
+      <Icono nombre="cerrar" size="1.25rem" />
+    </button>
+  </div>
+
+  <div class="visor__escena" aria-roledescription={t(lang, 'viewer.carousel')} data-visor-escena>
+    <button class="visor__boton visor__lado visor__lado--izq" type="button" data-visor-slide="-1" aria-label={t(lang, 'viewer.prevSlide')}>
+      <Icono nombre="flecha-izq" size="1.25rem" />
+    </button>
+    <ul class="visor__pista" role="list" tabindex="-1" data-visor-pista></ul>
+    <button class="visor__boton visor__lado visor__lado--der" type="button" data-visor-slide="1" aria-label={t(lang, 'viewer.nextSlide')}>
+      <Icono nombre="flecha-der" size="1.25rem" />
+    </button>
+  </div>
+
+  <div class="visor__pie">
+    <ol class="visor__segmentos" role="list" aria-hidden="true" data-visor-segmentos></ol>
+    <div class="visor__piezas">
+      <button class="visor__boton visor__boton--texto" type="button" data-visor-pieza="-1">
+        <Icono nombre="flecha-izq" />
+        {t(lang, 'viewer.prevPiece')}
+      </button>
+      <button class="visor__boton visor__boton--texto" type="button" data-visor-pieza="1">
+        {t(lang, 'viewer.nextPiece')}
+        <Icono nombre="flecha-der" />
+      </button>
+    </div>
+  </div>
+
+  <p class="visually-hidden" aria-live="polite" data-visor-estado></p>
+
+  {
+    piezas.map((p) => (
+      <template data-visor-plantilla={p.slug}>
+        {p.slides.map((s) => (
+          <li class="visor__slide">
+            <Image
+              src={s.src}
+              alt={s.alt}
+              widths={[480, 720, 1080].filter((w) => w <= s.src.width)}
+              sizes="(min-width: 48rem) 60vh, 100vw"
+              loading="lazy"
+            />
+          </li>
+        ))}
+      </template>
+    ))
+  }
+  <template data-visor-siguiente>
+    <li class="visor__slide visor__slide--siguiente">
+      <button class="visor__boton visor__boton--texto" type="button" data-visor-pieza="1">
+        {t(lang, 'viewer.nextPiece')}
+        <Icono nombre="flecha-der" />
+      </button>
+    </li>
+  </template>
+</dialog>
+
+<script>
+  const visor = document.querySelector<HTMLDialogElement>('[data-visor]');
+  if (visor) {
+    const pista = visor.querySelector<HTMLUListElement>('[data-visor-pista]')!;
+    const contador = visor.querySelector('[data-visor-contador]')!;
+    const estado = visor.querySelector('[data-visor-estado]')!;
+    const segmentos = visor.querySelector('[data-visor-segmentos]')!;
+    const plantillas = [...visor.querySelectorAll<HTMLTemplateElement>('[data-visor-plantilla]')];
+    const slugs = plantillas.map((p) => p.dataset['visorPlantilla'] ?? '');
+    const siguientePanel = visor.querySelector<HTMLTemplateElement>('[data-visor-siguiente]')!;
+    const d = visor.dataset;
+    const dos = (n: number) => String(n).padStart(2, '0');
+
+    let pieza = 0;
+    let slide = 0;
+    let total = 0;
+
+    const slides = () => [...pista.querySelectorAll<HTMLElement>('.visor__slide:not(.visor__slide--siguiente)')];
+
+    const actualizar = (anunciar: boolean) => {
+      if (!visor.open) return;
+      const n = slugs.length;
+      let texto = `${d['tPieza']} ${dos(pieza + 1)} / ${dos(n)}`;
+      if (total > 1) texto += ` · ${d['tSlide']} ${slide + 1} / ${total}`;
+      contador.textContent = texto;
+      segmentos.querySelectorAll('li').forEach((li, i) => li.toggleAttribute('data-activo', i === slide));
+      visor.querySelectorAll<HTMLButtonElement>('[data-visor-slide="-1"]').forEach((b) => (b.disabled = slide === 0 && pieza === 0));
+      visor.querySelectorAll<HTMLButtonElement>('[data-visor-slide="1"]').forEach((b) => (b.disabled = slide === total - 1 && pieza === n - 1));
+      visor.querySelectorAll<HTMLButtonElement>('[data-visor-pieza="-1"]').forEach((b) => (b.disabled = pieza === 0));
+      visor.querySelectorAll<HTMLButtonElement>('[data-visor-pieza="1"]').forEach((b) => (b.disabled = pieza === n - 1));
+      visor.toggleAttribute('data-un-slide', total < 2);
+      const url = new URL(location.href);
+      url.searchParams.set('pieza', slugs[pieza] ?? '');
+      url.searchParams.set('slide', String(slide + 1));
+      history.replaceState(history.state, '', url);
+      if (anunciar) {
+        estado.textContent =
+          total > 1
+            ? (d['tSlidePos'] ?? '').replace('{actual}', String(slide + 1)).replace('{total}', String(total))
+            : (d['tPiezaPos'] ?? '').replace('{actual}', String(pieza + 1)).replace('{total}', String(n));
+      }
+    };
+
+    const irSlide = (i: number, anunciar = true) => {
+      const destino = slides()[i];
+      if (!destino) return;
+      slide = i;
+      pista.scrollTo({ left: destino.offsetLeft - pista.offsetLeft });
+      actualizar(anunciar);
+    };
+
+    const montar = (i: number, s = 0) => {
+      pieza = Math.max(0, Math.min(slugs.length - 1, i));
+      pista.replaceChildren(plantillas[pieza]!.content.cloneNode(true));
+      total = slides().length;
+      if (pieza < slugs.length - 1 && total > 1) pista.append(siguientePanel.content.cloneNode(true));
+      pista.querySelectorAll<HTMLElement>('.visor__slide').forEach((li, k) => {
+        if (k < total) li.setAttribute('aria-label', (d['tSlidePos'] ?? '').replace('{actual}', String(k + 1)).replace('{total}', String(total)));
+      });
+      segmentos.replaceChildren(...Array.from({ length: total > 1 ? total : 0 }, () => document.createElement('li')));
+      pista.querySelectorAll<HTMLButtonElement>('[data-visor-pieza]').forEach((b) => b.addEventListener('click', () => cambiarPieza(1)));
+      requestAnimationFrame(() => irSlide(Math.max(0, Math.min(total - 1, s)), false));
+      actualizar(false);
+    };
+
+    const cambiarPieza = (delta: number, alFinal = false) => {
+      const nueva = pieza + delta;
+      if (nueva < 0 || nueva >= slugs.length) return;
+      montar(nueva, alFinal ? Number.MAX_SAFE_INTEGER : 0);
+      requestAnimationFrame(() => actualizar(true));
+    };
+
+    const moverSlide = (delta: number) => {
+      const nuevo = slide + delta;
+      if (nuevo >= total) cambiarPieza(1);
+      else if (nuevo < 0) cambiarPieza(-1, true);
+      else irSlide(nuevo);
+    };
+
+    const abrir = (slug: string, s = 0) => {
+      const i = slugs.indexOf(slug);
+      if (i < 0) return;
+      if (!visor.open) visor.showModal();
+      montar(i, s);
+    };
+
+    // Abridores: los tiles (links a la imagen grande, para cuando no hay JS).
+    document.querySelectorAll<HTMLAnchorElement>('[data-abre-visor]').forEach((a) =>
+      a.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        abrir(a.dataset['abreVisor'] ?? '');
+      }),
+    );
+
+    visor.querySelector('[data-visor-cerrar]')?.addEventListener('click', () => visor.close());
+    visor.querySelectorAll<HTMLButtonElement>('[data-visor-slide]').forEach((b) =>
+      b.addEventListener('click', () => moverSlide(Number(b.dataset['visorSlide']))),
+    );
+    visor.querySelectorAll<HTMLButtonElement>('.visor__piezas [data-visor-pieza]').forEach((b) =>
+      b.addEventListener('click', () => cambiarPieza(Number(b.dataset['visorPieza']))),
+    );
+
+    visor.addEventListener('keydown', (e) => {
+      const map: Record<string, () => void> = {
+        ArrowRight: () => moverSlide(1),
+        ArrowLeft: () => moverSlide(-1),
+        PageDown: () => cambiarPieza(1),
+        PageUp: () => cambiarPieza(-1),
+      };
+      const accion = map[e.key];
+      if (accion) {
+        e.preventDefault();
+        accion();
+      }
+    });
+
+    // Swipe / rueda: el slide más visible pasa a ser el actual.
+    pista.addEventListener('scrollend', () => {
+      const ancho = pista.clientWidth || 1;
+      const i = Math.round(pista.scrollLeft / ancho);
+      if (i !== slide && i < total) {
+        slide = i;
+        actualizar(true);
+      }
+    });
+
+    visor.addEventListener('close', () => {
+      pista.replaceChildren();
+      const url = new URL(location.href);
+      url.searchParams.delete('pieza');
+      url.searchParams.delete('slide');
+      history.replaceState(history.state, '', url);
+    });
+
+    // Enlace directo: ?pieza=<slug>&slide=4
+    const params = new URL(location.href).searchParams;
+    const inicial = params.get('pieza');
+    if (inicial) abrir(inicial, Math.max(0, Number(params.get('slide') ?? 1) - 1));
+  }
+</script>
+
+<style>
+  .visor {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-viewer);
+    inline-size: 100%;
+    max-inline-size: none;
+    block-size: var(--viewport-full);
+    max-block-size: none;
+    margin: 0;
+    padding: calc(var(--safe-top) + var(--space-2)) 0 calc(var(--safe-bottom) + var(--space-3));
+    border: 0;
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    overflow: hidden;
+  }
+
+  .visor:not([open]) {
+    display: none;
+  }
+
+  .visor[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: var(--space-3);
+  }
+
+  .visor::backdrop {
+    background: var(--color-inverse-bg);
+  }
+
+  .visor__barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-inline: var(--grid-margin);
+  }
+
+  .visor__contador {
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .visor__escena {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    min-block-size: 0;
+  }
+
+  .visor__pista {
+    grid-column: 2;
+    grid-row: 1;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    block-size: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .visor__pista::-webkit-scrollbar {
+    display: none;
+  }
+
+  .visor__pista:focus {
+    outline: none;
+  }
+
+  .visor__slide {
+    display: grid;
+    grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+    place-items: center;
+    min-block-size: 0;
+    overflow: hidden;
+    padding-inline: var(--space-2);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+
+  /* La pieza entra entera en su proporción: llena el slide con contain, nunca se recorta ni se deforma. */
+  .visor__slide :global(img) {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+  }
+
+  .visor__boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-inline-size: var(--control-height);
+    min-block-size: var(--control-height);
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--color-text-primary);
+    font-size: var(--text-ui);
+    font-weight: var(--weight-ui);
+    line-height: var(--leading-ui);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .visor__boton--texto {
+    padding-inline: var(--control-pad-x);
+    border: var(--border-control);
+  }
+
+  .visor__boton:disabled {
+    color: var(--color-text-secondary);
+    border-color: transparent;
+    cursor: not-allowed;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .visor__boton:not(:disabled):hover {
+      background: var(--color-surface);
+    }
+  }
+
+  /* Flechas de slide: solo con puntero fino y en carruseles; en táctil manda el swipe. */
+  .visor__lado {
+    display: none;
+    grid-row: 1;
+  }
+
+  .visor__lado--izq {
+    grid-column: 1;
+  }
+
+  .visor__lado--der {
+    grid-column: 3;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .visor:not([data-un-slide]) .visor__lado {
+      display: inline-flex;
+      margin-inline: var(--space-3);
+    }
+  }
+
+  .visor__pie {
+    display: grid;
+    gap: var(--space-3);
+    padding-inline: var(--grid-margin);
+  }
+
+  .visor__segmentos {
+    display: flex;
+    gap: var(--space-1);
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .visor__segmentos li {
+    flex: 0 1 var(--space-7);
+    block-size: 2px;
+    background: var(--color-border-subtle);
+  }
+
+  .visor__segmentos li[data-activo] {
+    background: var(--color-text-primary);
+  }
+
+  .visor__piezas {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+</style>

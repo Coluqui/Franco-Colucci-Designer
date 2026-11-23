@@ -1,0 +1,120 @@
+---
+/**
+ * Tile de pieza · design system §7 · PRD §6.
+ * Portada (slide 1) en su aspect-ratio sobre --color-stage, --radius-sm, sin teñir ni deformar.
+ * Debajo, en label: "cliente · formato"; si es carrusel, ícono + "7 slides".
+ * Hover: aparece "Ver pieza ↗". Táctil: los metadatos están siempre (no dependen del hover).
+ * Es un link a la imagen grande (sin JS abre la imagen); con JS abre el visor en esa pieza.
+ * Tile estático: solo carga la portada. Fase 6: tile → visor con FLIP (M08).
+ */
+import { Image, getImage } from 'astro:assets';
+import Icono from './Icono.astro';
+import { t, tf, type Lang } from '../i18n';
+import { aspecto, type PiezaVista } from './tipos';
+
+interface Props {
+  lang: Lang;
+  pieza: PiezaVista;
+  /** Valores para los filtros (p. ej. "redes carrusel"). */
+  filtro?: string;
+  sizes?: string;
+}
+
+const { lang, pieza, filtro, sizes = '(min-width: 80rem) 20rem, (min-width: 48rem) 30vw, 45vw' } = Astro.props;
+const portada = pieza.slides[0]!;
+const grande = await getImage({ src: portada.src, width: Math.min(1600, portada.src.width) });
+const esCarrusel = pieza.slides.length > 1;
+---
+
+<div class="tile" data-filtro={filtro}>
+  <a class="tile__link" href={grande.src} data-abre-visor={pieza.slug}>
+    <span class="tile__escenario" style={`--aspecto: ${aspecto(pieza.ratio)}`}>
+      <Image src={portada.src} alt={portada.alt} widths={[320, 480, 720]} sizes={sizes} loading="lazy" />
+      <span class="t-ui tile__ver">
+        {t(lang, 'tile.view')}
+        <Icono nombre="flecha-diag" />
+      </span>
+    </span>
+    <span class="t-label tile__meta">
+      <span>{pieza.cliente} · {pieza.formato}</span>
+      {
+        esCarrusel && (
+          <span class="tile__slides">
+            <Icono nombre="carrusel" />
+            {tf(lang, 'tile.slides', { n: pieza.slides.length })}
+          </span>
+        )
+      }
+    </span>
+  </a>
+</div>
+
+<style>
+  .tile[hidden] {
+    display: none;
+  }
+
+  .tile__link {
+    display: grid;
+    gap: var(--space-3);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+  }
+
+  .tile__escenario {
+    position: relative;
+    display: block;
+    aspect-ratio: var(--aspecto);
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: var(--color-stage);
+  }
+
+  .tile__escenario :global(img) {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  .tile__ver {
+    position: absolute;
+    inset-block-end: var(--space-3);
+    inset-inline-start: var(--space-3);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: var(--control-height-sm);
+    padding-inline: var(--control-pad-x);
+    border-radius: var(--radius-xs);
+    background: var(--color-text-primary);
+    color: var(--color-bg);
+    font-weight: var(--weight-ui);
+    opacity: 0;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .tile__link:focus-visible .tile__ver {
+    opacity: 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tile__link:hover .tile__ver {
+      opacity: 1;
+    }
+  }
+
+  .tile__meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-3);
+    color: var(--color-text-secondary);
+  }
+
+  .tile__slides {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+</style>
