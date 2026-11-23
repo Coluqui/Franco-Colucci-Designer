@@ -1,0 +1,306 @@
+/* ==========================================================================
+   Portfolio Franco Colucci — Design tokens · "Formato"
+   v2.1 · 2026-11-23 · Motion "Formato vivo" (Etapa 6). Reemplaza a "Ficha de producción" (v1.x)
+   Modo: <html data-theme="light|dark">. Sin atributo, sigue al sistema.
+   Fuentes: Archivo (variable: wght 100–900, wdth 62–125) + Geist Mono 500.
+   Leer junto con docs/design-system.md y docs/motion.md.
+   ========================================================================== */
+
+:root {
+  /* ---- Paleta base (NO usar directo en componentes) ---- */
+  --cloud-50:  #F8F7F3;
+  --cloud-100: #F1EFEA;   /* fondo, inspirado en Cloud Dancer (Pantone 2026) */
+  --cloud-200: #E8E5DE;
+  --cloud-300: #E5E2DA;
+  --cloud-400: #D6D2C8;
+  --ink-300:   #A3A099;
+  --ink-400:   #8A877F;
+  --ink-500:   #7D7A72;
+  --ink-600:   #57554F;
+  --ink-900:   #191918;
+  --ink-950:   #151514;
+  --night-800: #1E1D1B;
+  --night-700: #201F1D;
+  --night-600: #252422;
+  --night-500: #2E2D2A;
+  --cobalt-300: #AEB8FF;
+  --cobalt-400: #8E9BFF;
+  --cobalt-600: #2E3FE0;
+  --cobalt-700: #2433B8;
+  --cobalt-900: #1B2585;
+  --green-300: #7CC8A6;
+  --green-700: #1F6B4F;
+  --red-300:   #FF8A80;
+  --red-700:   #B3261E;
+
+  /* ---- Color semántico · modo claro ---- */
+  --color-bg: var(--cloud-100);
+  --color-surface: var(--cloud-300);          /* paneles de caso, chips, tarjetas */
+  --color-stage: var(--cloud-200);            /* detrás de piezas y mockups */
+  --color-raised: var(--cloud-50);            /* inputs, panel Hablemos, menú */
+  --color-text-primary: var(--ink-900);
+  --color-text-secondary: var(--ink-600);
+  --color-text-disabled: var(--ink-400);
+  --color-border-subtle: var(--cloud-400);    /* separadores (decorativo) */
+  --color-border-strong: var(--ink-500);      /* bordes de controles: ≥ 3:1 */
+  --color-accent: var(--cobalt-600);          /* cobalto: métricas, glifo, focus, links */
+  --color-accent-hover: var(--cobalt-700);
+  --color-on-accent: #FFFFFF;
+  --color-success: var(--green-700);
+  --color-success-bg: #DCEBE3;
+  --color-danger: var(--red-700);
+  --color-danger-bg: #F6E0DE;
+  /* Secciones invertidas (clientes + testimonios, cierre, siguiente caso) */
+  --color-inverse-bg: var(--ink-900);
+  --color-inverse-surface: var(--night-600);
+  --color-inverse-text: var(--cloud-100);
+  --color-inverse-text-secondary: var(--ink-300);
+  --color-inverse-border: #3A3936;
+  --color-inverse-accent: var(--cobalt-400);
+  /* Duotono (solo fotos propias: retrato, proceso; NUNCA las piezas) */
+  --duotone-shadow: var(--cobalt-900);
+  --duotone-highlight: var(--cloud-200);
+  /* Grano */
+  --grain-opacity: 0.07;
+  --grain-blend: multiply;
+  --color-scrim: rgb(25 25 24 / 0.55);
+  --shadow-mockup: 0 24px 48px -16px rgb(25 25 24 / 0.22);
+  color-scheme: light;
+
+  /* ---- Tipografía ---- */
+  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* Ancho (eje wdth de Archivo): la firma tipográfica es lo expandido */
+  --wdth-wide: 125;      /* wordmark, servicios, h1 */
+  --wdth-semi: 112;      /* display, h2, métricas */
+  --wdth-normal: 100;    /* texto, UI */
+
+  /* Tamaños fluidos (360 → 1440 px) */
+  --text-wordmark: clamp(4rem, 1rem + 16vw, 16.5rem);          /* 64 → 246; ajustar al contenedor */
+  --text-display: clamp(2.5rem, 1.6rem + 4vw, 5.25rem);        /* 40 → 84: frase-problema, cierre */
+  --text-services: clamp(2.25rem, 1.2rem + 4.6vw, 5.5rem);     /* 36 → 85: lista de servicios */
+  --text-h1: clamp(2.25rem, 1.4rem + 3.8vw, 4.75rem);          /* 36 → 76: título de caso */
+  --text-h2: clamp(1.75rem, 1.35rem + 1.8vw, 3rem);            /* 28 → 46 */
+  --text-h3: clamp(1.25rem, 1.13rem + 0.55vw, 1.625rem);       /* 20 → 26 */
+  --text-metric: clamp(2.25rem, 1.8rem + 2vw, 3.75rem);        /* 36 → 60 */
+  --text-lead: clamp(1.125rem, 1.042rem + 0.37vw, 1.375rem);   /* 18 → 22 */
+  --text-body: clamp(1rem, 0.958rem + 0.185vw, 1.0625rem);     /* 16 → 17 */
+  --text-ui: 1rem;                                             /* botones, nav, chips: 16 */
+  --text-small: 0.875rem;                                      /* 14 */
+  --text-label: 0.75rem;                                       /* 12: mono de formatos */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-ui: 600;
+  --weight-title: 750;
+  --weight-heavy: 850;
+
+  --leading-wordmark: 0.86;
+  --leading-display: 1;
+  --leading-heading: 1.05;
+  --leading-lead: 1.45;
+  --leading-body: 1.6;
+  --leading-ui: 1.2;
+
+  --tracking-wordmark: -0.045em;
+  --tracking-display: -0.035em;
+  --tracking-heading: -0.025em;
+  --tracking-body: 0;
+  --tracking-label: 0.02em;
+
+  --measure: 64ch;
+
+  /* ---- Espaciado (base 4 px) ---- */
+  --space-1: 0.25rem;  --space-2: 0.5rem;  --space-3: 0.75rem; --space-4: 1rem;
+  --space-5: 1.5rem;   --space-6: 2rem;    --space-7: 3rem;    --space-8: 4rem;
+  --space-9: 6rem;     --space-10: 8rem;
+  --space-section: clamp(5rem, 3.33rem + 7.4vw, 10rem);        /* 80 → 160 */
+
+  /* ---- Grilla y layout (mobile-first) ---- */
+  --grid-columns: 4;
+  --grid-margin: 1.25rem;     /* 20 */
+  --grid-gutter: 1rem;        /* 16 */
+  --container-max: 82rem;     /* 1312: texto y grillas */
+  --header-height: 4rem;      /* 64 */
+  --bottom-bar-height: 4rem;  /* 64 + safe area */
+  --drawer-width: min(32.5rem, 100vw);   /* panel Hablemos: 520 */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --viewport-full: 100dvh;
+
+  /* ---- Proporciones por formato ---- */
+  --ratio-carousel: 4 / 5;  --ratio-reel: 9 / 16;   --ratio-square: 1 / 1;
+  --ratio-mail-header: 3 / 1; --ratio-ebook: 3 / 4; --ratio-ad-mrec: 6 / 5;
+  --ratio-ad-leaderboard: 8 / 1; --ratio-web: 16 / 10; --ratio-case-hero: 16 / 8;
+
+  /* ---- Radios, bordes, focus ---- */
+  --radius-none: 0;
+  --radius-xs: 2px;          /* botones, chips, inputs */
+  --radius-sm: 4px;          /* paneles, tarjetas, media */
+  --radius-device-phone: 28px;
+  --radius-device-browser: 10px;
+  --radius-full: 999px;      /* solo el pulgar del toggle y puntos de estado */
+  --border-hairline: 1px solid var(--color-border-subtle);
+  --border-control: 1px solid var(--color-border-strong);
+  --border-rule: 2px solid var(--color-text-primary);
+  --focus-ring: 2px solid var(--color-accent);
+  --focus-offset: 3px;
+
+  /* ---- Controles ---- */
+  --control-height: 2.75rem;     /* 44: mínimo táctil */
+  --control-height-sm: 2.25rem;  /* 36: botones del header en desktop (área táctil 44 vía padding) */
+  --control-pad-x: 0.875rem;     /* 14 */
+  --icon-size: 1rem;
+
+  /* ---- Capas ---- */
+  --z-header: 100; --z-bottom-bar: 100; --z-menu: 200; --z-drawer: 300; --z-viewer: 400; --z-grain: 500;
+
+  /* ---- Motion · "Formato vivo" (docs/motion.md v2.0) ----
+     Duraciones y curvas fijas: entradas, salidas, fundidos.
+     Resortes (linear() generado desde física real): todo lo que el usuario mueve
+     o lo que cambia de formato. Sirven igual en CSS y en element.animate(). */
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-base: 300ms;
+  --duration-slow: 500ms;
+  --duration-page: 700ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.1, 1);       /* fallback sin linear(): los marcos "encastran" */
+
+  /* Resortes: rigidez / amortiguación entre paréntesis (masa 1) */
+  --spring-snap: linear(0, 0.023, 0.083, 0.166, 0.261, 0.362, 0.461, 0.555, 0.642, 0.719, 0.786, 0.843, 0.891, 0.929, 0.959, 0.983, 1, 1.012, 1.021, 1.026, 1.028, 1.028, 1.027, 1.026, 1.023, 1.02, 1.017, 1.015, 1.012, 1.01, 1.008, 1.006, 1);   /* (400/30) rebote 2,8 %: cambios de formato, glifo, filtros */
+  --spring-snap-duration: 560ms;
+  --spring-soft: linear(0, 0.024, 0.083, 0.164, 0.256, 0.353, 0.447, 0.536, 0.618, 0.691, 0.754, 0.809, 0.854, 0.892, 0.922, 0.947, 0.966, 0.98, 0.991, 0.999, 1.004, 1.008, 1.01, 1.011, 1.011, 1.011, 1.01, 1.009, 1.008, 1.007, 1.006, 1.005, 1);   /* (180/22) rebote 1 %: menú, panel, testimonios, entradas */
+  --spring-soft-duration: 700ms;
+  --spring-press: linear(0, 0.024, 0.083, 0.167, 0.262, 0.363, 0.462, 0.556, 0.642, 0.719, 0.786, 0.842, 0.889, 0.927, 0.958, 0.981, 0.998, 1.01, 1.019, 1.024, 1.026, 1.027, 1.026, 1.024, 1.022, 1.019, 1.017, 1.014, 1.012, 1.009, 1.007, 1.006, 1);   /* (700/40) rebote 2,7 %: press y suelta de botones, desencastre del glifo */
+  --spring-press-duration: 280ms;
+
+  /* Tipografía que respira (eje wdth de Archivo, animado con font-stretch) */
+  --wdth-rest: 112;            /* servicios y links de menú en reposo */
+  --wdth-active: 125;          /* servicio activo, link en hover */
+  --duration-breathe: 450ms;   /* con --spring-soft */
+
+  /* Lectura: la frase-problema aparece al ritmo de lectura, no con un stagger fijo */
+  --stagger: 60ms;             /* bloques: máx. 4 por grupo */
+  --stagger-fast: 40ms;        /* links del menú, campos del panel */
+  --stagger-words: 35ms;       /* mínimo por palabra */
+  --reveal-per-char: 7ms;      /* se suma por cada letra de la palabra anterior */
+  --reveal-dim: 0.15;          /* opacidad inicial de cada palabra */
+
+  /* Distancias y escalas */
+  --shift-sm: 8px;
+  --shift-md: 24px;
+  --glyph-gap: 1.5px;          /* desencastre del glifo en hover */
+  --scale-media-hover: 1.02;   /* media de la fila de caso (nunca en tiles de pieza) */
+  --scale-press: 0.98;
+
+  /* Tiempos de interacción */
+  --hover-intent: 80ms;        /* servicios: no cambian si el mouse pasa de largo */
+  --loop-hold: 2200ms;         /* cada formato del loop del hero */
+  --hold-feedback: 1800ms;     /* "Copiado ✓", "CV ✓" */
+}
+
+/* ---- Modo oscuro (diseñado, no invertido) ---- */
+:root[data-theme="dark"] {
+  --color-bg: var(--ink-950);
+  --color-surface: var(--night-700);
+  --color-stage: var(--night-600);
+  --color-raised: var(--night-800);
+  --color-text-primary: var(--cloud-100);
+  --color-text-secondary: var(--ink-300);
+  --color-text-disabled: #6F6D67;
+  --color-border-subtle: var(--night-500);
+  --color-border-strong: #75726B;
+  --color-accent: var(--cobalt-400);
+  --color-accent-hover: var(--cobalt-300);
+  --color-on-accent: var(--ink-950);
+  --color-success: var(--green-300);
+  --color-success-bg: #1A2B23;
+  --color-danger: var(--red-300);
+  --color-danger-bg: #36191A;
+  /* En oscuro, la sección invertida pasa a clara */
+  --color-inverse-bg: var(--cloud-200);
+  --color-inverse-surface: var(--cloud-300);
+  --color-inverse-text: var(--ink-900);
+  --color-inverse-text-secondary: var(--ink-600);
+  --color-inverse-border: var(--cloud-400);
+  --color-inverse-accent: var(--cobalt-600);
+  --duotone-shadow: var(--ink-950);
+  --duotone-highlight: var(--cobalt-400);
+  --grain-opacity: 0.05;
+  --grain-blend: screen;
+  --color-scrim: rgb(0 0 0 / 0.6);
+  --shadow-mockup: 0 24px 48px -16px rgb(0 0 0 / 0.6);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: var(--ink-950);
+    --color-surface: var(--night-700);
+    --color-stage: var(--night-600);
+    --color-raised: var(--night-800);
+    --color-text-primary: var(--cloud-100);
+    --color-text-secondary: var(--ink-300);
+    --color-text-disabled: #6F6D67;
+    --color-border-subtle: var(--night-500);
+    --color-border-strong: #75726B;
+    --color-accent: var(--cobalt-400);
+    --color-accent-hover: var(--cobalt-300);
+    --color-on-accent: var(--ink-950);
+    --color-success: var(--green-300);
+    --color-success-bg: #1A2B23;
+    --color-danger: var(--red-300);
+    --color-danger-bg: #36191A;
+    --color-inverse-bg: var(--cloud-200);
+    --color-inverse-surface: var(--cloud-300);
+    --color-inverse-text: var(--ink-900);
+    --color-inverse-text-secondary: var(--ink-600);
+    --color-inverse-border: var(--cloud-400);
+    --color-inverse-accent: var(--cobalt-600);
+    --duotone-shadow: var(--ink-950);
+    --duotone-highlight: var(--cobalt-400);
+    --grain-opacity: 0.05;
+    --grain-blend: screen;
+    --color-scrim: rgb(0 0 0 / 0.6);
+    --shadow-mockup: 0 24px 48px -16px rgb(0 0 0 / 0.6);
+    color-scheme: dark;
+  }
+}
+
+/* ---- Grilla por breakpoint: md 48rem (768) · lg 80rem (1280) · xl 90rem (1440) ---- */
+@media (min-width: 48rem) {
+  :root { --grid-columns: 8; --grid-margin: 2rem; --grid-gutter: 1.25rem; }
+}
+@media (min-width: 80rem) {
+  :root { --grid-columns: 12; --grid-margin: 3rem; --grid-gutter: 1.5rem; --header-height: 5rem; }
+}
+@media (min-width: 90rem) {
+  :root { --grid-margin: 4rem; }
+}
+
+/* ---- Movimiento reducido ---- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms; --duration-base: 120ms; --duration-slow: 120ms; --duration-page: 120ms;
+    --stagger: 0ms; --stagger-fast: 0ms; --stagger-words: 0ms; --reveal-per-char: 0ms; --reveal-dim: 1;
+    --shift-sm: 0px; --shift-md: 0px; --glyph-gap: 0px; --scale-media-hover: 1; --scale-press: 1;
+    /* Resortes → fundido corto sin rebote */
+    --spring-snap: var(--ease-out); --spring-soft: var(--ease-out); --spring-press: var(--ease-out);
+    --spring-snap-duration: 120ms; --spring-soft-duration: 120ms; --spring-press-duration: 0ms;
+    --duration-breathe: 0ms; --wdth-rest: 125;
+  }
+}
+
+/* ---- Menos transparencia: sin grano ---- */
+@media (prefers-reduced-transparency: reduce) {
+  :root { --grain-opacity: 0; }
+}
+
+/* ---- Navegadores sin linear(): resortes → curva propia ---- */
+@supports not (transition-timing-function: linear(0, 1)) {
+  :root { --spring-snap: var(--ease-snap); --spring-soft: var(--ease-out); --spring-press: var(--ease-out); }
+}
