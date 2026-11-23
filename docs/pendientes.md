@@ -48,7 +48,7 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 - Caracteres → ↗ ← ⧉ ✓: no están en el subset `latin` de Archivo. Decidir en la Fase 3 si van como íconos SVG.
 - `astro check`: instalar `@astrojs/check` + `typescript` (dependencias de desarrollo).
 - Cobalto en la home: con 2 filas de caso a la vista (2 chips + "Ver caso →" cada una) y el glifo del header se pasa del máximo de 5 usos (design system §1). Revisarlo al armar la home (Fase 4); si se pasa, "Ver caso →" en `--color-text-primary`.
-- Visor: el PRD §6 pide un "marco de teléfono" para carruseles en desktop. Falta su definición visual (¿mockup de Franco?, ¿marco CSS con tokens?).
+- Visor: el PRD §6 pide un "marco de teléfono" para carruseles en desktop. Falta su definición visual (¿mockup de Franco?, ¿marco CSS con tokens?). Al definirlo, acercar las flechas de slide a la pieza (hoy quedan contra los bordes a 1280–1440).
 - Skills frontend-design y ui-ux-pro-max: no instaladas.
 - Playwright: no instalado; las revisiones se hacen con el navegador integrado.
 

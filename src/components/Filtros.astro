@@ -146,7 +146,8 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
     inline-size: var(--space-2);
     block-size: var(--space-2);
     border-radius: var(--radius-full);
-    background: var(--color-accent);
+    /* Sobre fondo --color-text-primary: el acento inverso (como el chip en secciones invertidas). */
+    background: var(--color-inverse-accent);
   }
 
   @media (hover: hover) and (pointer: fine) {

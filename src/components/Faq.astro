@@ -102,9 +102,12 @@ const { preguntas, id = 'faq' } = Astro.props;
     opacity: 0;
   }
 
+  /* Sin cobalto (no es un link, design system §1): subrayado en el color del texto. */
   @media (hover: hover) and (pointer: fine) {
-    .faq__boton:hover {
-      color: var(--color-accent);
+    .faq__boton:hover span {
+      text-decoration-line: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
     }
   }
 
@@ -124,7 +127,7 @@ const { preguntas, id = 'faq' } = Astro.props;
   }
 
   .faq__interior p {
-    max-inline-size: 60ch;
+    max-inline-size: var(--measure);
     padding-block-end: var(--space-5);
     color: var(--color-text-secondary);
   }

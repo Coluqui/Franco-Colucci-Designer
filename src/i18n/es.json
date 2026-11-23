@@ -115,7 +115,8 @@
     "piece": "Pieza",
     "slide": "Slide",
     "slidePosition": "Slide {actual} de {total}",
-    "piecePosition": "Pieza {actual} de {total}"
+    "piecePosition": "Pieza {actual} de {total}",
+    "nextPanel": "Siguiente pieza"
   },
   "footer": {
     "signature": "{nombre}, {anio}"

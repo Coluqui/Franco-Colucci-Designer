@@ -91,7 +91,7 @@ const { lang, piezas } = Astro.props;
   <template data-visor-siguiente>
     <li class="visor__slide visor__slide--siguiente">
       <button class="visor__boton visor__boton--texto" type="button" data-visor-pieza="1">
-        {t(lang, 'viewer.nextPiece')}
+        {t(lang, 'viewer.nextPanel')}
         <Icono nombre="flecha-der" />
       </button>
     </li>
@@ -159,15 +159,16 @@ const { lang, piezas } = Astro.props;
       });
       segmentos.replaceChildren(...Array.from({ length: total > 1 ? total : 0 }, () => document.createElement('li')));
       pista.querySelectorAll<HTMLButtonElement>('[data-visor-pieza]').forEach((b) => b.addEventListener('click', () => cambiarPieza(1)));
-      requestAnimationFrame(() => irSlide(Math.max(0, Math.min(total - 1, s)), false));
-      actualizar(false);
+      // Síncrono (el <dialog> ya está abierto y offsetLeft fuerza el layout): sin rAF, que no corre
+      // en pestañas en segundo plano y dejaba el enlace directo en el slide 1.
+      irSlide(Math.max(0, Math.min(total - 1, s)), false);
     };
 
     const cambiarPieza = (delta: number, alFinal = false) => {
       const nueva = pieza + delta;
       if (nueva < 0 || nueva >= slugs.length) return;
       montar(nueva, alFinal ? Number.MAX_SAFE_INTEGER : 0);
-      requestAnimationFrame(() => actualizar(true));
+      actualizar(true);
     };
 
     const moverSlide = (delta: number) => {
@@ -355,6 +356,7 @@ const { lang, piezas } = Astro.props;
 
   .visor__boton--texto {
     padding-inline: var(--control-pad-x);
+    white-space: nowrap;
     border: var(--border-control);
   }
 
@@ -408,13 +410,14 @@ const { lang, piezas } = Astro.props;
     list-style: none;
   }
 
-  .visor__segmentos li {
+  /* Los segmentos los crea el script: no llevan el atributo de scope, van con :global. */
+  .visor__segmentos :global(li) {
     flex: 0 1 var(--space-7);
-    block-size: 2px;
+    block-size: 2px; /* PENDIENTE token (el mismo que la barra de carga, ver docs/pendientes.md) */
     background: var(--color-border-subtle);
   }
 
-  .visor__segmentos li[data-activo] {
+  .visor__segmentos :global(li[data-activo]) {
     background: var(--color-text-primary);
   }
 

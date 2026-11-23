@@ -36,15 +36,11 @@ const esCarrusel = pieza.slides.length > 1;
       </span>
     </span>
     <span class="t-label tile__meta">
-      <span>{pieza.cliente} · {pieza.formato}</span>
-      {
-        esCarrusel && (
-          <span class="tile__slides">
-            <Icono nombre="carrusel" />
-            {tf(lang, 'tile.slides', { n: pieza.slides.length })}
-          </span>
-        )
-      }
+      {esCarrusel && <Icono nombre="carrusel" class="tile__icono" />}
+      <span>
+        {pieza.cliente} · {pieza.formato}
+        {esCarrusel && ` · ${tf(lang, 'tile.slides', { n: pieza.slides.length })}`}
+      </span>
     </span>
   </a>
 </div>
@@ -104,17 +100,16 @@ const esCarrusel = pieza.slides.length > 1;
     }
   }
 
+  /* PRD §6: "cliente · Carrusel · 7 slides", con el ícono de carrusel adelante. */
   .tile__meta {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--space-1) var(--space-3);
+    align-items: flex-start;
+    gap: var(--space-2);
     color: var(--color-text-secondary);
   }
 
-  .tile__slides {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-1);
+  .tile__meta :global(.tile__icono) {
+    flex: none;
+    margin-block-start: 0.15em;
   }
 </style>
