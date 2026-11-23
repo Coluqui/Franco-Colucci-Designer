@@ -1,0 +1,75 @@
+---
+/**
+ * /[lang]/hablemos/ · PRD §5: la versión sin JS del panel Hablemos (los [data-abre-panel] apuntan acá).
+ * Fase 4: intro + medios directos. El formulario con envío real (Resend, ruta on-demand) llega en
+ * la Fase 7; hasta entonces no se muestra un formulario que no puede enviarse.
+ */
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import Link from '../../components/Link.astro';
+import { locales, t, type Lang } from '../../i18n';
+import { mailHref, linkedinHref, whatsappHref, cvHref } from '../../config/site';
+
+export const getStaticPaths = (() => locales.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
+
+const lang = Astro.params.lang as Lang;
+const cv = cvHref(lang);
+---
+
+<Base lang={lang} title={`${t(lang, 'pages.talk.title')} · Franco Colucci`} description={t(lang, 'pages.talk.description')} chrome>
+  <div class="container hablemos">
+    <h1>{t(lang, 'talk.title')}</h1>
+    <p class="t-lead">{t(lang, 'form.intro')}</p>
+    <p class="t-body hablemos__nota">{t(lang, 'talk.formPending')}</p>
+    <section class="hablemos__directo" aria-labelledby="hablemos-directo">
+      <h2 id="hablemos-directo" class="t-h3">{t(lang, 'contact.direct')}</h2>
+      <ul role="list">
+        <li><Link href={mailHref()} lang={lang}>{t(lang, 'contact.email')}</Link></li>
+        <li><Link href={linkedinHref()} lang={lang} externo>{t(lang, 'contact.linkedin')}</Link></li>
+        <li><Link href={whatsappHref()} lang={lang} externo>{t(lang, 'contact.whatsapp')}</Link></li>
+        <li><Link href={cv} lang={lang} download={cv ? '' : undefined}>{t(lang, 'contact.downloadCv')}</Link></li>
+      </ul>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .hablemos {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-6) var(--space-section);
+  }
+
+  .hablemos > * {
+    margin: 0;
+    max-inline-size: var(--measure);
+  }
+
+  .hablemos__nota {
+    color: var(--color-text-secondary);
+  }
+
+  .hablemos__directo {
+    display: grid;
+    gap: var(--space-4);
+    padding-block-start: var(--space-6);
+    border-block-start: var(--border-hairline);
+  }
+
+  .hablemos__directo h2 {
+    margin: 0;
+  }
+
+  .hablemos__directo ul {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .hablemos__directo li {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--control-height);
+  }
+</style>

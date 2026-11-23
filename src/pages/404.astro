@@ -1,0 +1,49 @@
+---
+/**
+ * 404 · PRD §5: mensaje corto + links a Trabajos y Hablemos.
+ * Una sola página estática (Vercel sirve /404.html para cualquier ruta): en español,
+ * con una línea en inglés que lleva a la versión EN.
+ */
+import Base from '../layouts/Base.astro';
+import Boton from '../components/Boton.astro';
+import Link from '../components/Link.astro';
+import { t, localizePath } from '../i18n';
+
+const lang = 'es';
+---
+
+<Base lang={lang} title={`${t(lang, 'pages.notFound.title')} · Franco Colucci`} description={t(lang, 'pages.notFound.description')} noindex alternates={false} chrome>
+  <div class="container no-encontrada">
+    <p class="t-label">404</p>
+    <h1>{t(lang, 'notFound.title')}</h1>
+    <p class="t-lead">{t(lang, 'notFound.text')}</p>
+    <div class="no-encontrada__acciones">
+      <Boton href={localizePath(lang, 'trabajos/')}>{t(lang, 'notFound.work')}</Boton>
+      <Boton variante="secundario" glifo href={localizePath(lang, 'hablemos/')} data-abre-panel aria-haspopup="dialog">
+        {t(lang, 'notFound.talk')}
+      </Boton>
+    </div>
+    <p class="t-body" lang="en">
+      {t('en', 'notFound.title')}. <Link href={localizePath('en', 'trabajos/')} lang="en" hreflang="en">{t('en', 'notFound.work')}</Link>
+    </p>
+  </div>
+</Base>
+
+<style>
+  .no-encontrada {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-6);
+    padding-block: var(--space-section);
+  }
+
+  .no-encontrada > * {
+    margin: 0;
+  }
+
+  .no-encontrada__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>
