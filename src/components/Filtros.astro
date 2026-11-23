@@ -1,0 +1,171 @@
+---
+/**
+ * Filtros (Trabajos: por servicio · caso: por formato) · design system §7 · PRD §3, §6 y §7.
+ * Chips de texto con aria-pressed: inactivo con --border-control; activo con fondo
+ * --color-text-primary y un punto cobalto; hover --color-surface. Muestran la cantidad ("Ads · 4";
+ * un carrusel cuenta 1: la cantidad la calcula quien usa el componente).
+ * Filtra los elementos con [data-filtro] dentro de #objetivo (valores separados por espacio)
+ * con `hidden`, guarda el valor en la URL (?param=valor) y anuncia "{n} piezas" (aria-live).
+ * Sin JS no se muestran: todo queda visible. Fase 6: reacomodo FLIP (M12) y punto que encastra.
+ */
+import { t, type Lang } from '../i18n';
+
+interface Opcion {
+  valor: string;
+  nombre: string;
+  cantidad: number;
+}
+
+interface Props {
+  lang: Lang;
+  /** "Filtrar por servicio" / "Filtrar por formato". */
+  etiqueta: string;
+  opciones: Opcion[];
+  /** id del contenedor de los elementos a filtrar. */
+  objetivo: string;
+  /** Parámetro de la URL: servicio | formato. */
+  param: string;
+  total: number;
+}
+
+const { lang, etiqueta, opciones, objetivo, param, total } = Astro.props;
+const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: total };
+---
+
+<div
+  class="filtros"
+  role="group"
+  aria-label={etiqueta}
+  data-filtros
+  data-objetivo={objetivo}
+  data-param={param}
+  data-texto-uno={t(lang, 'filters.resultsOne')}
+  data-texto-varios={t(lang, 'filters.results')}
+>
+  <ul role="list">
+    {
+      [todas, ...opciones].map((o) => (
+        <li>
+          <button class="filtro" type="button" aria-pressed={o.valor === '' ? 'true' : 'false'} data-valor={o.valor}>
+            <span class="filtro__punto" aria-hidden="true" />
+            {o.nombre}
+            <span class="filtro__cantidad">
+              <span aria-hidden="true">·</span> {o.cantidad}
+            </span>
+          </button>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="visually-hidden" aria-live="polite" data-filtros-estado></p>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-filtros]').forEach((grupo) => {
+    const objetivo = document.getElementById(grupo.dataset['objetivo'] ?? '');
+    const param = grupo.dataset['param'] ?? 'filtro';
+    const estado = grupo.querySelector('[data-filtros-estado]');
+    const botones = [...grupo.querySelectorAll<HTMLButtonElement>('.filtro')];
+    if (!objetivo) return;
+    grupo.dataset['listo'] = '';
+
+    const aplicar = (valor: string, anunciar: boolean) => {
+      if (!botones.some((b) => b.dataset['valor'] === valor)) valor = '';
+      botones.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset['valor'] === valor)));
+      let visibles = 0;
+      objetivo.querySelectorAll<HTMLElement>('[data-filtro]').forEach((el) => {
+        const ok = valor === '' || (el.dataset['filtro'] ?? '').split(' ').includes(valor);
+        el.hidden = !ok;
+        if (ok) visibles++;
+      });
+      const url = new URL(location.href);
+      if (valor) url.searchParams.set(param, valor);
+      else url.searchParams.delete(param);
+      history.replaceState(history.state, '', url);
+      if (anunciar && estado) {
+        const plantilla = (visibles === 1 ? grupo.dataset['textoUno'] : grupo.dataset['textoVarios']) ?? '';
+        estado.textContent = plantilla.replace('{n}', String(visibles));
+      }
+    };
+
+    botones.forEach((b) => b.addEventListener('click', () => aplicar(b.dataset['valor'] ?? '', true)));
+    aplicar(new URL(location.href).searchParams.get(param) ?? '', false);
+  });
+</script>
+
+<style>
+  .filtros:not([data-listo]) {
+    display: none;
+  }
+
+  .filtros ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .filtro {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: var(--control-height-sm);
+    padding-inline: var(--control-pad-x);
+    border: var(--border-control);
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--color-text-primary);
+    font-size: var(--text-ui);
+    font-weight: var(--weight-ui);
+    line-height: var(--leading-ui);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out);
+  }
+
+  /* Área táctil de 44 px sobre un chip de 36. */
+  .filtro::before {
+    content: "";
+    position: absolute;
+    inset-block: calc((var(--control-height-sm) - var(--control-height)) / 2);
+    inset-inline: 0;
+  }
+
+  .filtro__cantidad {
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .filtro__punto {
+    display: none;
+    inline-size: var(--space-2);
+    block-size: var(--space-2);
+    border-radius: var(--radius-full);
+    background: var(--color-accent);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .filtro[aria-pressed="false"]:hover {
+      background: var(--color-surface);
+    }
+  }
+
+  .filtro[aria-pressed="true"] {
+    border-color: var(--color-text-primary);
+    background: var(--color-text-primary);
+    color: var(--color-bg);
+  }
+
+  .filtro[aria-pressed="true"] .filtro__cantidad {
+    color: inherit;
+  }
+
+  .filtro[aria-pressed="true"] .filtro__punto {
+    display: block;
+  }
+</style>
