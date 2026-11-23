@@ -14,7 +14,9 @@ export type NombreIcono =
   | 'check'
   | 'mas'
   | 'cerrar'
-  | 'error';
+  | 'error'
+  | 'pausa'
+  | 'play';
 
 interface Props {
   nombre: NombreIcono;
@@ -34,6 +36,8 @@ const trazos: Record<NombreIcono, string> = {
   mas: 'M2.5 8h11M8 2.5v11',
   cerrar: 'M3.5 3.5l9 9M12.5 3.5l-9 9',
   error: 'M8 1.75 14.75 14H1.25zM8 6.5v3.5M8 11.75v.5',
+  pausa: 'M5.5 3v10M10.5 3v10',
+  play: 'M4.5 2.75 12.5 8l-8 5.25z',
 };
 ---
 

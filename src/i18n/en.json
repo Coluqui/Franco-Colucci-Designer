@@ -167,7 +167,9 @@
   "hero": {
     "tagline": "I design pieces your team can publish today and measure tomorrow.",
     "formatsLabel": "One campaign in five formats",
-    "formatPending": "Piece PENDING"
+    "formatPending": "Piece PENDING",
+    "pause": "Pause the format loop",
+    "campaignPending": "PENDING"
   },
   "problem": {
     "text": "A campaign can have the best offer and still lose clicks because the piece doesn’t read in a second."

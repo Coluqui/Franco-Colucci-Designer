@@ -167,7 +167,9 @@
   "hero": {
     "tagline": "Diseño piezas que tu equipo puede publicar hoy y medir mañana.",
     "formatsLabel": "Una campaña en cinco formatos",
-    "formatPending": "Pieza PENDIENTE"
+    "formatPending": "Pieza PENDIENTE",
+    "pause": "Pausar el loop de formatos",
+    "campaignPending": "PENDIENTE"
   },
   "problem": {
     "text": "Una campaña puede tener la mejor oferta y perder clics porque la pieza no se entiende en un segundo."

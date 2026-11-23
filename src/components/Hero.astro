@@ -2,11 +2,19 @@
 /**
  * Hero de la home · PRD §5 · design system §2, §4 y §8.
  * Wordmark "FRANC▣ / COLUCCI" a todo el ancho (H1 real: "Franco Colucci") + bajada + tira de formatos.
- * La tira es la versión estática del loop (M04, Fase 6): la misma campaña en 1:1, 4:5, 9:16, 3:1 y 16:10.
+ * La tira es la versión estática del loop: la misma campaña en 1:1, 4:5, 9:16, 3:1 y 16:10.
  * Mientras Franco no elija la campaña, cada marco es un placeholder PENDIENTE.
  * Nada arranca escondido: todo se ve en el primer frame.
+ *
+ * M04 · loop de formatos: con JS y sin movimiento reducido, una escena del MISMO tamaño que la
+ * tira se monta encima (CLS 0) y la tira se apaga (opacidad: sigue en el árbol de accesibilidad).
+ * El marco es el recorte de una capa fija y pasa por los 5 formatos con --spring-snap; la pieza
+ * nueva entra al 70 %; la etiqueta rueda 8 px; cada formato se queda --loop-hold.
+ * Pausa visible (aria-pressed). Se detiene fuera de pantalla y con la pestaña oculta (WCAG 2.2.2).
+ * Movimiento reducido: no hay loop, queda la tira estática.
  */
 import Glifo from './Glifo.astro';
+import Icono from './Icono.astro';
 import { t, type Lang } from '../i18n';
 
 interface Props {
@@ -38,7 +46,8 @@ const formatos = [
   </div>
 
   <div class="container">
-    <ul class="hero__formatos" role="list" aria-label={t(lang, 'hero.formatsLabel')}>
+    <div class="hero__loop" data-loop data-campana={t(lang, 'hero.campaignPending')}>
+    <ul class="hero__formatos" role="list" aria-label={t(lang, 'hero.formatsLabel')} data-loop-tira>
       {
         formatos.map((f, i) => (
           <>
@@ -53,8 +62,144 @@ const formatos = [
         ))
       }
     </ul>
+
+    <div class="hero__escena" aria-hidden="true" data-loop-escena>
+      <div class="hero__capa" data-loop-capa>
+        {
+          formatos.map((f) => (
+            <span class="hero__pieza" style={`--aspecto: var(--ratio-${f.ratio})`} data-loop-pieza={f.etiqueta}>
+              <span class="t-label">{f.etiqueta}</span>
+            </span>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="hero__controles" data-loop-controles>
+      <p class="t-label hero__etiqueta" aria-hidden="true"><span data-loop-etiqueta></span></p>
+      <button class="hero__pausa" type="button" aria-pressed="false" aria-label={t(lang, 'hero.pause')} data-loop-pausa>
+        <Icono nombre="pausa" class="hero__icono-pausa" />
+        <Icono nombre="play" class="hero__icono-play" />
+      </button>
+    </div>
+    </div>
   </div>
 </section>
+
+<script>
+  import { alCambiarReducido, animar, curva, detener, numero, reducido, resorte, token } from '../scripts/motion/base';
+  import { encastrar, marcoEn, medida, proporcion, recorte } from '../scripts/motion/encastre';
+  import { observar } from '../scripts/motion/observer';
+
+  const loop = document.querySelector<HTMLElement>('[data-loop]');
+  if (loop) {
+    const tira = loop.querySelector<HTMLElement>('[data-loop-tira]')!;
+    const escena = loop.querySelector<HTMLElement>('[data-loop-escena]')!;
+    const capa = loop.querySelector<HTMLElement>('[data-loop-capa]')!;
+    const etiqueta = loop.querySelector<HTMLElement>('[data-loop-etiqueta]')!;
+    const pausa = loop.querySelector<HTMLButtonElement>('[data-loop-pausa]')!;
+    const piezas = [...loop.querySelectorAll<HTMLElement>('[data-loop-pieza]')];
+    const formato = (k: number) => piezas[k]!.dataset['loopPieza'] ?? '';
+    const texto = (k: number) => `${loop.dataset['campana']} · ${formato(k)}`;
+
+    let actual = 0;
+    let activo = false;
+    let visible = false;
+    let pausadoPorUsuario = false;
+    /** El reloj del hold es una animación sin efecto: se pausa y se retoma igual que el resto. */
+    let reloj: Animation | null = null;
+
+    const corre = () => activo && visible && !pausadoPorUsuario && !document.hidden;
+
+    /** Pausa o retoma TODO lo del loop donde está (reloj, marco, piezas, etiqueta). */
+    const sincronizar = () => {
+      const si = corre();
+      [...(reloj ? [reloj] : []), ...loop.getAnimations({ subtree: true })].forEach((a) => {
+        if (si && a.playState === 'paused') a.play();
+        if (!si && a.playState === 'running') a.pause();
+      });
+    };
+
+    const recorteDe = (k: number) => {
+      const caja = medida(capa);
+      return recorte(caja, marcoEn(caja, proporcion(formato(k))), token('--radius-sm'));
+    };
+
+    const esperar = () => {
+      reloj?.cancel();
+      reloj = new Animation(new KeyframeEffect(null, null, { duration: resorte('snap').duration + numero('--loop-hold') }));
+      reloj.play();
+      reloj.finished.then(paso, () => {});
+      sincronizar();
+    };
+
+    const paso = () => {
+      const anterior = actual;
+      actual = (actual + 1) % piezas.length;
+      const alSetenta = { delay: resorte('snap').duration * 0.7 };
+      encastrar(capa, recorteDe(actual));
+      animar(piezas[anterior]!, { opacity: 0 }, { ...curva('out', 'fast'), ...alSetenta });
+      animar(piezas[actual]!, { opacity: 1 }, { ...curva('out', 'fast'), ...alSetenta, fill: 'both', desde: { opacity: 0 } });
+      // La etiqueta rueda: la vieja sube y sale, la nueva entra desde abajo junto con la pieza nueva.
+      const roll = `${numero('--shift-sm')}px`;
+      const salida = curva('in', 'fast');
+      const retraso = Math.max(0, alSetenta.delay - salida.duration);
+      animar(etiqueta, { transform: `translateY(-${roll})`, opacity: 0 }, { ...salida, delay: retraso }).finished.then(() => {
+        etiqueta.textContent = texto(actual);
+        animar(etiqueta, { transform: 'none', opacity: 1 }, { ...curva('out', 'fast'), desde: { transform: `translateY(${roll})`, opacity: 0 } });
+      }, () => {});
+      esperar();
+    };
+
+    const iniciar = () => {
+      if (activo) return;
+      activo = true;
+      actual = 0;
+      piezas.forEach((p, k) => (p.style.opacity = k === 0 ? '1' : '0'));
+      etiqueta.textContent = texto(0);
+      loop.dataset['activo'] = '';
+      capa.style.clipPath = recorteDe(0);
+      // La escena aparece sobre la tira; la tira se apaga (sigue para lectores de pantalla).
+      animar(escena, { opacity: 1 }, { ...curva('out', 'base'), desde: { opacity: 0 } });
+      animar(tira, { opacity: 0 }, curva('out', 'base'));
+      esperar();
+    };
+
+    const terminar = () => {
+      if (!activo) return;
+      activo = false;
+      reloj?.cancel();
+      reloj = null;
+      [capa, tira, escena, etiqueta, ...piezas].forEach((el) => {
+        detener(el);
+        el.style.opacity = '';
+        el.style.transform = '';
+      });
+      delete loop.dataset['activo'];
+    };
+
+    pausa.addEventListener('click', () => {
+      pausadoPorUsuario = !pausadoPorUsuario;
+      pausa.setAttribute('aria-pressed', String(pausadoPorUsuario));
+      sincronizar();
+    });
+    observar(loop, (e) => {
+      visible = e.isIntersecting;
+      sincronizar();
+    });
+    document.addEventListener('visibilitychange', sincronizar);
+    // Si cambia el tamaño, el marco se reacomoda al formato actual sin animar.
+    new ResizeObserver(() => {
+      if (!activo) return;
+      detener(capa);
+      capa.style.clipPath = recorteDe(actual);
+    }).observe(capa);
+
+    // Movimiento reducido: tira estática, sin loop (única rama `reducido` permitida además de FLIP).
+    if (!reducido()) iniciar();
+    alCambiarReducido((r) => (r ? terminar() : iniciar()));
+  }
+</script>
 
 <style>
   .hero {
@@ -140,9 +285,96 @@ const formatos = [
     color: var(--color-text-secondary);
   }
 
+  /* ---- M04: la escena ocupa exactamente la caja de la tira (no mueve nada) ---- */
+  .hero__loop {
+    position: relative;
+  }
+
+  .hero__escena,
+  .hero__controles {
+    display: none;
+  }
+
+  .hero__loop[data-activo] .hero__escena {
+    position: absolute;
+    inset: 0;
+    display: block;
+    container-type: size;
+  }
+
+  .hero__capa {
+    display: grid;
+    place-items: center;
+    inline-size: 100cqi;
+    block-size: 100cqb;
+    background: var(--color-stage);
+  }
+
+  .hero__pieza {
+    grid-area: 1 / 1;
+    display: grid;
+    place-items: center;
+    inline-size: min(100cqi, calc(100cqb * var(--aspecto)));
+    aspect-ratio: var(--aspecto);
+    color: var(--color-text-secondary);
+  }
+
+  /* Etiqueta y pausa debajo, sobre el aire inferior del hero: tampoco mueven el layout. */
+  .hero__loop[data-activo] .hero__controles {
+    position: absolute;
+    inset-block-start: calc(100% + var(--space-2));
+    inset-inline: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .hero__etiqueta {
+    margin: 0;
+    overflow: hidden;
+    color: var(--color-text-secondary);
+  }
+
+  .hero__etiqueta span {
+    display: inline-block;
+  }
+
+  .hero__pausa {
+    display: inline-grid;
+    place-items: center;
+    min-inline-size: var(--control-height);
+    min-block-size: var(--control-height);
+    border: var(--border-control);
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .hero__pausa :global(.icono) {
+    grid-area: 1 / 1;
+  }
+
+  .hero__pausa :global(.hero__icono-play),
+  .hero__pausa[aria-pressed='true'] :global(.hero__icono-pausa) {
+    visibility: hidden;
+  }
+
+  .hero__pausa[aria-pressed='true'] :global(.hero__icono-play) {
+    visibility: visible;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .hero__pausa:hover {
+      background: var(--color-surface);
+    }
+  }
+
   /* ≥ 1280: el loop a 7 columnas, centrado (design system §8). */
   @media (min-width: 80rem) {
-    .hero__formatos {
+    .hero__loop {
       max-inline-size: calc((100% + var(--grid-gutter)) * 7 / 12 - var(--grid-gutter));
       margin-inline: auto;
     }
