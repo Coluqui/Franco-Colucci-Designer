@@ -1,0 +1,57 @@
+---
+/**
+ * Chip de métrica · design system §7 · PRD §3.
+ * Número en caja --color-accent (--text-ui 700, --color-on-accent) + etiqueta sobre --color-surface.
+ * En secciones invertidas el acento pasa solo a --color-inverse-accent (remapeo de global.css).
+ * La etiqueta lleva un filete: dentro de la fila de caso (también --color-surface) no perdería su forma.
+ * Los valores son contenido real: nunca se inventan (PENDIENTE hasta que Franco los pase).
+ */
+interface Props {
+  valor: string;
+  etiqueta: string;
+}
+
+const { valor, etiqueta } = Astro.props;
+---
+
+<span class="chip">
+  <span class="chip__valor">{valor}</span>
+  <span class="chip__etiqueta">{etiqueta}</span>
+</span>
+
+<style>
+  .chip {
+    display: inline-flex;
+    align-items: stretch;
+    max-inline-size: 100%;
+    font-size: var(--text-ui);
+    line-height: var(--leading-ui);
+  }
+
+  .chip__valor,
+  .chip__etiqueta {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--control-height-sm);
+    padding-inline: var(--space-3);
+  }
+
+  .chip__valor {
+    border-radius: var(--radius-xs) 0 0 var(--radius-xs);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: var(--weight-bold);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .chip__etiqueta {
+    min-inline-size: 0;
+    border: var(--border-hairline);
+    border-inline-start: 0;
+    border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    font-weight: var(--weight-ui);
+  }
+</style>
