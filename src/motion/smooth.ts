@@ -29,7 +29,8 @@ export function iniciarSmooth(): () => void {
   // desincronizaría; se vuelve a 0 y el smoother lleva el scroll hasta el elemento.
   const alFoco = (e: FocusEvent) => {
     const el = e.target as HTMLElement;
-    if (!content.contains(el)) return;
+    // <main> recibe el foco desde "Volver arriba" y el salto al contenido, que ya mueven el scroll.
+    if (!content.contains(el) || el === content.querySelector('#contenido')) return;
     wrapper.scrollTop = 0;
     const r = el.getBoundingClientRect();
     if (r.top < 0 || r.bottom > innerHeight) smoother.scrollTo(el, false, 'center center');
