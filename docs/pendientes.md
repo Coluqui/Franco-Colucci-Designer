@@ -176,3 +176,15 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 - **Barra de "Enviando".** No se pudo capturar en pantalla (el envío dura poco). Revisar su visibilidad con el envío real; si se pierde, se ajusta en `--progress-height` / `--progress-opacity`.
 - **Cobalto en el panel (ux-ui).** Con los datos reales puede haber más de 5 links cobalto por pantalla; revisar entonces si "Copiar mail" va en texto primario.
 - **404 en `/es/`** muestra una línea en inglés (fuera de esta fase; para `contenido`).
+
+## Fase 8 · SEO y deploy
+
+- **Producción:** https://franco-colucci-portfolio.vercel.app (Vercel publica `main`; cada rama tiene su preview, protegida por Vercel Authentication). Todo cambio va en una rama y se mergea a `main` con OK de Franco.
+- **QA en producción (24 nov):** PageSpeed mobile 98–100 en Performance, 96–97 en Accesibilidad, 100 en Buenas prácticas; LCP 0,9 s; CLS 0. SEO 66–69 solo por el `noindex` (esperado). 16 URLs del sitemap y 52 enlaces internos sin 404; 128 cargas (4 anchos × modos × idiomas × movimiento) sin errores.
+- **Franco · antes de prender `INDEXAR=true`** (Vercel → Settings → Environment Variables → Production, y redeploy): completar los textos PENDIENTE, en especial la frase de cada caso, que hoy es la `description` y la `og:description` de las 8 páginas de caso.
+- **Franco · imagen para compartir** (Open Graph, 1200 × 630): ponerla en `public/` y su ruta en `site.ogImagen` (`src/config/site.ts`). Sin ella, al compartir el link no hay vista previa con imagen.
+- **Caché de fuentes.** `/fonts/*` sale con `max-age=0` (cada visita revalida). Se agregó `vercel.json` con `immutable`; verificar en producción después del merge. Si Vercel no lo aplica (el adaptador genera la salida y puede ignorarlo), la alternativa es mover las fuentes a `src/assets/` para que salgan con hash por `/_astro/` (cambia la estructura que describe CLAUDE.md: decisión de Franco).
+- **`/xx/hablemos/` en producción da 404 en blanco.** El i18n de Astro corta el idioma inválido dentro de la función, que no puede dibujar la 404 estática. Las demás rutas inválidas muestran la 404. Arreglarlo pide una 404 on-demand (más invocaciones de la función); no vale la pena para una URL que nadie escribe.
+- **CLS de carga con red lenta:** 0,0068 en `/es/` a 1440 (el glifo del hero sigue al ancho del wordmark al llegar Archivo) y 0,00008 en Trabajos. Entra en la decisión abierta de `font-display` (Fase 6).
+- **Lighthouse marca contraste** en las palabras apagadas de M15 antes del scroll (estado previsto) y en el "CV" pendiente de la barra mobile (no es un control). Se resuelve con el CV real; M15 queda como está salvo decisión.
+- **Imágenes de las piezas en el caso:** PageSpeed estima 114 KiB de ahorro a 360 px. Revisar el `sizes` de `TilePieza` con las piezas reales.
