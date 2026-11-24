@@ -14,6 +14,8 @@ export const site = {
   whatsapp: null as string | null,
   /** URL completa del perfil */
   linkedin: null as string | null,
+  /** Imagen para compartir (Open Graph, 1200 × 630) en public/, ej.: '/og.png'. PENDIENTE de Franco. */
+  ogImagen: null as string | null,
   /** PDF del CV por idioma, servidos desde public/cv/ */
   cv: { es: null, en: null } as Record<Lang, string | null>,
 };

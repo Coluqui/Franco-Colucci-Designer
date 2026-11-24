@@ -11,7 +11,9 @@ import Menu from '../components/Menu.astro';
 import PanelHablemos from '../components/PanelHablemos.astro';
 import BarraMobile from '../components/BarraMobile.astro';
 import Footer from '../components/Footer.astro';
-import { t,switchLangPath, locales, defaultLang, type Lang } from '../i18n';
+import { t, switchLangPath, locales, defaultLang, type Lang } from '../i18n';
+import { site } from '../config/site';
+import { indexar } from '../config/indexar';
 
 /** Solo se precarga Archivo (subset latin): es el LCP (wordmark) y cubre todo el español. */
 const archivoLatin = '/fonts/archivo-latin.woff2';
@@ -29,6 +31,10 @@ interface Props {
 }
 
 const { lang, title, description, noindex = false, alternates = true, chrome = false } = Astro.props;
+/** URL absoluta en el dominio público (`site`), sin query: canonical, hreflang y Open Graph. */
+const absoluta = (ruta: string) => new URL(ruta.split('?')[0]!, Astro.site).href;
+const canonica = absoluta(Astro.url.pathname);
+const ogLocale = { es: 'es_AR', en: 'en_US' } satisfies Record<Lang, string>;
 ---
 
 <!doctype html>
@@ -39,7 +45,18 @@ const { lang, title, description, noindex = false, alternates = true, chrome = f
     <meta name="color-scheme" content="light dark" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    {noindex && <meta name="robots" content="noindex" />}
+    {(noindex || !indexar) && <meta name="robots" content="noindex" />}
+    {!noindex && <link rel="canonical" href={canonica} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.nombre} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonica} />
+    <meta property="og:locale" content={ogLocale[lang]} />
+    {alternates && locales.filter((l) => l !== lang).map((l) => <meta property="og:locale:alternate" content={ogLocale[l]} />)}
+    {site.ogImagen && <meta property="og:image" content={absoluta(site.ogImagen)} />}
+    <meta name="twitter:card" content={site.ogImagen ? 'summary_large_image' : 'summary'} />
 
     <!--
       Tema sin parpadeo: corre antes de pintar. Con una elección guardada aplica data-theme;
@@ -67,9 +84,8 @@ const { lang, title, description, noindex = false, alternates = true, chrome = f
 
     <link rel="preload" href={archivoLatin} as="font" type="font/woff2" crossorigin />
 
-    {/* Rutas relativas hasta tener dominio (`site`, Fase 8): ahí pasan a absolutas. */}
-    {alternates && locales.map((l) => <link rel="alternate" hreflang={l} href={switchLangPath(Astro.url, l)} />)}
-    {alternates && <link rel="alternate" hreflang="x-default" href={switchLangPath(Astro.url, defaultLang)} />}
+    {alternates && locales.map((l) => <link rel="alternate" hreflang={l} href={absoluta(switchLangPath(Astro.url, l))} />)}
+    {alternates && <link rel="alternate" hreflang="x-default" href={absoluta(switchLangPath(Astro.url, defaultLang))} />}
 
     <ClientRouter />
     <slot name="head" />
