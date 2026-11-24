@@ -85,13 +85,14 @@ const varios = total > 1;
 
 <script>
   import { enCadaPagina } from '../scripts/pagina';
+  import { ms, numero, resorte, rodarTexto } from '../scripts/motion/base';
 
   enCadaPagina(() => {
     document.querySelectorAll<HTMLElement>('[data-testimonios]').forEach((raiz) => {
       const pista = raiz.querySelector<HTMLElement>('[data-pista]');
       const anterior = raiz.querySelector<HTMLButtonElement>('[data-anterior]');
       const siguiente = raiz.querySelector<HTMLButtonElement>('[data-siguiente]');
-      const contador = raiz.querySelector('[data-contador]');
+      const contador = raiz.querySelector<HTMLElement>('[data-contador]');
       const contadorTexto = raiz.querySelector('[data-contador-texto]');
       if (!pista || !anterior || !siguiente) return;
       const items = [...pista.children] as HTMLElement[];
@@ -99,8 +100,10 @@ const varios = total > 1;
 
       const marcar = (i: number) => {
         if (i === actual) return;
+        const previo = actual;
         actual = i;
-        if (contador) contador.textContent = String(i + 1).padStart(2, '0');
+        // M28 · el número rueda en vertical (700 · soft): hacia arriba al avanzar, hacia abajo al volver.
+        if (contador) rodarTexto(contador, String(i + 1).padStart(2, '0'), resorte('soft'), i > previo ? 1 : -1);
         if (contadorTexto) contadorTexto.textContent = items[i]?.getAttribute('aria-label') ?? '';
         // Si la flecha con foco se deshabilita, el foco pasa a la otra (nunca al body).
         const focoAnterior = document.activeElement === anterior;
@@ -131,6 +134,42 @@ const varios = total > 1;
           ir(actual + 1);
         }
       });
+
+      // M28 · con el mouse, el arrastre sigue 1:1 (en táctil y trackpad ya lo hace el scroll nativo).
+      // Al soltar, va al testimonio más cercano según dónde quedó y la velocidad del gesto.
+      let arrastre: { id: number; x: number; inicio: number; ultX: number; ultT: number; v: number; activo: boolean } | null = null;
+      pista.addEventListener('pointerdown', (e) => {
+        if (e.pointerType !== 'mouse' || e.button !== 0) return;
+        arrastre = { id: e.pointerId, x: e.clientX, inicio: pista.scrollLeft, ultX: e.clientX, ultT: e.timeStamp, v: 0, activo: false };
+      });
+      pista.addEventListener('pointermove', (e) => {
+        if (!arrastre || e.pointerId !== arrastre.id) return;
+        const dx = e.clientX - arrastre.x;
+        if (!arrastre.activo) {
+          if (Math.abs(dx) < numero('--shift-sm')) return;
+          arrastre.activo = true;
+          pista.setPointerCapture(e.pointerId);
+          pista.dataset['arrastrando'] = '';
+        }
+        arrastre.v = (e.clientX - arrastre.ultX) / Math.max(1, e.timeStamp - arrastre.ultT);
+        arrastre.ultX = e.clientX;
+        arrastre.ultT = e.timeStamp;
+        pista.scrollLeft = arrastre.inicio - dx;
+      });
+      const soltar = (e: PointerEvent) => {
+        if (!arrastre || e.pointerId !== arrastre.id) return;
+        const { activo, v } = arrastre;
+        arrastre = null;
+        if (!activo) return;
+        // Proyección: hasta dónde llegaría con esa velocidad en --duration-base.
+        // Se mide antes de devolver el snap: si no, el navegador re-encastra y se lee la posición vieja.
+        const destino = pista.scrollLeft - v * ms('--duration-base');
+        const distancias = items.map((it) => Math.abs(it.offsetLeft - pista.offsetLeft - destino));
+        delete pista.dataset['arrastrando'];
+        ir(distancias.indexOf(Math.min(...distancias)));
+      };
+      pista.addEventListener('pointerup', soltar);
+      pista.addEventListener('pointercancel', soltar);
 
       // Al terminar de desplazarse (dedo, rueda o flechas), el testimonio más cercano es el actual.
       pista.addEventListener('scrollend', () => {
@@ -246,5 +285,24 @@ const varios = total > 1;
     .testimonios__flecha:not(:disabled):hover {
       background: var(--color-surface);
     }
+  }
+
+  /* M28 · el número del contador rueda (rodarTexto necesita una caja). */
+  [data-contador] {
+    display: inline-block;
+  }
+
+  /* Arrastre con mouse: el snap se suelta mientras se arrastra (vuelve al soltar). */
+  @media (hover: hover) and (pointer: fine) {
+    .testimonios__pista[tabindex] {
+      cursor: grab;
+    }
+  }
+
+  .testimonios__pista[data-arrastrando] {
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+    cursor: grabbing;
+    user-select: none;
   }
 </style>

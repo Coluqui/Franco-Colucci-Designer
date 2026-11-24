@@ -114,3 +114,23 @@ export function detener(el: HTMLElement) {
   if (a.playState === 'running') a.commitStyles();
   a.cancel();
 }
+
+const turnosTexto = new WeakMap<HTMLElement, number>();
+
+/**
+ * Roll vertical de un texto (M28 contador, M30 copiar mail, M31 CV): el actual sale --shift-sm y el
+ * nuevo entra desde el otro lado. `sentido` 1: sale hacia arriba; -1: hacia abajo. Si llega otro
+ * cambio mientras sale, manda el último. `el` tiene que ser inline-block o bloque.
+ * Reducido: --shift-sm y --duration-fast valen 0, así que es un cambio de texto.
+ */
+export async function rodarTexto(el: HTMLElement, texto: string, entrada = curva('out', 'fast'), sentido: 1 | -1 = 1) {
+  const turno = (turnosTexto.get(el) ?? 0) + 1;
+  turnosTexto.set(el, turno);
+  const d = numero('--shift-sm') * sentido;
+  await animar(el, { opacity: '0', transform: `translateY(${-d}px)` }, curva('out', 'fast')).finished.catch(() => {});
+  if (turnosTexto.get(el) !== turno) return;
+  el.textContent = texto;
+  el.style.opacity = '';
+  el.style.transform = '';
+  animar(el, { opacity: '1', transform: 'none' }, { ...entrada, desde: { opacity: '0', transform: `translateY(${d}px)` }, soltar: true });
+}
