@@ -69,7 +69,7 @@
   color-scheme: light;
 
   /* ---- Tipografía ---- */
-  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Archivo", "Archivo Respaldo", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   /* Ancho (eje wdth de Archivo): la firma tipográfica es lo expandido */
