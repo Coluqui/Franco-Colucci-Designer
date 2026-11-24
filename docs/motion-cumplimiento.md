@@ -60,9 +60,9 @@ Contra `docs/motion.md` v2.0 §9. Medido el 24 nov 2026 sobre el build de produc
 | M27 | Fila: hover y foco | ✅ | Sin desplazamiento |
 | M28 | Testimonios | ✅ (solo en componentes) | Sin rodar |
 | M29 | FAQ | ✅ | 120 ms (decisión abierta) |
-| M30 | Copiar mail | ✅ (mail PENDIENTE) | Solo el cambio de texto |
+| M30 | Copiar mail | ✅ (mail PENDIENTE); desde la Fase 7 el mail se ve fuera del botón | Solo el cambio de texto |
 | M31 | Descargar CV | Hecho, sin probar (CV PENDIENTE: no hay botón activo) | Solo el cambio de texto |
-| M32 | Formulario | ✅ error y enviando; éxito y error de envío en Fase 7 | Error sin fundido (decisión abierta) |
+| M32 | Formulario | ✅ error por campo, enviando, éxito y error de envío (Fase 7, `tests/fase7-formulario.spec.ts`); M03 espera el SVG | Error sin fundido (decisión abierta) |
 
 ## Accesibilidad de texto (1.4.12)
 

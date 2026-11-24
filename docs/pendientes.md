@@ -146,10 +146,10 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
   - **M31 · en los `Link`.** "Descargar CV" del footer, el menú, el panel y /hablemos son links de texto, no botones: no llevan la animación (sí la barra mobile y Sobre mí). Decisión de Franco: ¿M31 también ahí?
   - **M31 · "cae en una línea".** La flecha baja y se desvanece; falta la línea donde cae. Se suma cuando haya CV para verlo.
   - **M31 · sin anuncio.** "Descargando" y "CV ✓" no tienen región viva (el navegador ya avisa la descarga). En reducido "Descargando" dura 120 ms.
-  - **M30 · sin portapapeles.** El mail se muestra dentro del botón y no se puede seleccionar. Se resuelve con el mail real (Fase 7): mostrarlo fuera del botón.
+  - ~~**M30 · sin portapapeles.**~~ Resuelto en la Fase 7: el mail se muestra como link al lado del botón. El mail se muestra dentro del botón y no se puede seleccionar. Se resuelve con el mail real (Fase 7): mostrarlo fuera del botón.
   - **M32 · reducido.** El error aparece sin fundido (`--duration-fast` vale 0); `docs/motion.md` pide 120 ms. Entra en la decisión abierta de los tokens de reducido.
-  - **M32 · Fase 7.** Al mostrar un error desde JS, sumar `aria-invalid`, `aria-describedby` y mover el foco al primer error.
-  - **M32 · valores sueltos.** La barra de "Enviando" usa `block-size: 2px` y `opacity: 0.6` (de la Fase 3). Deuda: pasarlos a tokens.
+  - ~~**M32 · Fase 7.**~~ Hecho en la Fase 7. Al mostrar un error desde JS, sumar `aria-invalid`, `aria-describedby` y mover el foco al primer error.
+  - ~~**M32 · valores sueltos.**~~ Pasados a `--progress-height` y `--progress-opacity` en la Fase 7. La barra de "Enviando" usa `block-size: 2px` y `opacity: 0.6` (de la Fase 3). Deuda: pasarlos a tokens.
   - **M28 · Safari iOS.** El contador se sincroniza con `scrollend`; hay que probarlo en un iPhone y, si falta, sumar un respaldo con `scroll`.
 
 ## Fase 6 · QA de cierre
@@ -161,3 +161,12 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 - **Decisión de Franco · cambio de fuente en red lenta.** Archivo usa `font-display: swap` con un respaldo de Arial ajustado a sus métricas (`fonts.css`). Con 4G lenta y sin caché queda un CLS de 0,007 en la home a 1440 y 0,03 en `/en/` a 360: Arial no imita el ancho exacto y la bajada o la frase cortan en otro renglón. Para llegar a 0: `font-display: optional` (en una primera visita lenta se queda Arial toda la visita). En Android no hay Arial: ahí el respaldo es el del sistema, sin ajuste.
 - **Lighthouse.** No está instalado; se corre en la Fase 8 sobre el deploy de Vercel (o con permiso para sumarlo).
 - **Loop a 1440 × 900.** El marco del loop asoma 262 de 477 px sin scroll. Cumple el "asoma" del PRD §1; se revisa con las piezas reales de la campaña.
+
+## Fase 7 · formulario
+
+- **Franco · cuenta de Resend.** Crear la cuenta y una API key, y cargar `RESEND_API_KEY` y `CONTACTO_DESTINO` en `.env` (local) y en Vercel (ver `.env.example`). Sin dominio propio verificado, Resend solo manda desde `onboarding@resend.dev` y solo al mail de la cuenta: `CONTACTO_DESTINO` tiene que ser ese mail. Sin clave, el formulario muestra "error de envío".
+- **Probar un envío real** cuando esté la clave (las pruebas automáticas nunca mandan mails).
+- **M03 · glifo como confirmación.** El éxito ya existe; el re-encastre del glifo espera `marca-formato.svg`.
+- **Sin límite de envíos por IP.** En Vercel cada función arranca de cero; un límite real necesita un almacén compartido (Vercel KV o similar). Hoy el anti-spam es el campo trampa y los 3 s mínimos. Revisar si llega spam.
+- **`astro preview` ya no sirve el build** (el adaptador de Vercel genera `.vercel/output`). Las pruebas corren sobre `npm run dev`; el build real se prueba en el deploy de la Fase 8.
+- **`form.intro`** sigue PENDIENTE (bajada del panel Hablemos).
