@@ -6,10 +6,10 @@ Contra `docs/motion.md` v2.0 §9. Medido el 24 nov 2026 sobre el build de produc
 
 | Criterio | Estado | Cómo se comprobó |
 | --- | --- | --- |
-| Cada ID tiene versión reducida, probada | ✅ con 3 pendientes | 27 IDs con prueba en Playwright con `reducedMotion: 'reduce'` y sin él, a 360 y 1440, en claro y oscuro. M01–M03 esperan el SVG; M18 no tiene animación. |
+| Cada ID tiene versión reducida, probada | ⚠️ | 27 IDs con prueba en Playwright con `reducedMotion: 'reduce'` y sin él, a 360 y 1440, en claro y oscuro. Faltan M01–M03 (esperan el SVG) y M31 (CV PENDIENTE); M18 no tiene animación. En M05, M16, M17, M19–M22, M29 y M32 el reducido no coincide con la columna de `docs/motion.md`: decisión abierta de Franco. |
 | Wordmark, bajada y primera fila en el primer frame; LCP < 2,5 s | ✅ | Nada arranca con opacidad 0 (pruebas del paso 3 y barrido de 160 cargas). LCP 0,71–0,80 s con CPU 4× y 4G lenta, igual con y sin movimiento reducido. |
-| 60 fps con CPU 4× en M04, M05, M06, M13 y M28 | ✅ con una salvedad en M06 | Ver el perfil abajo. |
-| CLS = 0 en carga, modo, idioma, filtro y respiración | ✅ | CLS 0 en todos. El filtro mueve sus botones vecinos 0,0001–0,0004 en el mismo clic (`hadRecentInput`, no cuenta para CLS): el punto del activo ensancha el chip. |
+| 60 fps con CPU 4× en M04, M05, M06, M13 y M28 | ⚠️ M06 | M04, M05, M13 y M28 a 60 fps. M06 da 51–57 fps: se confirma en un Android real (ver abajo). |
+| CLS = 0 en carga, modo, idioma, filtro y respiración | ✅ con red rápida · ⚠️ con 4G lenta | **Carga, red rápida:** 0 en las 6 páginas a 360 y 1440. QA encontró 0,12 en `/trabajos/` (los filtros aparecían después del script) y la FAQ se cerraba después del primer cuadro: corregido, ahora se pintan en su estado desde el primer cuadro. **Carga, 4G lenta y sin caché:** 0,007 en la home a 1440 y 0,03 en `/en/` a 360, por el cambio a Archivo; era 0,096 antes del respaldo con métricas. Por debajo del 0,1 de Core Web Vitals, pero no es 0 (decisión en pendientes). **Modo, idioma, respiración:** 0. **Filtro:** 0; el chip activo ensancha y corre a sus vecinos en el mismo clic (`hadRecentInput`). |
 | ESC, segundo clic o arrastre interrumpen sin estados rotos | ✅ | Pruebas de clics seguidos (M12), cierre durante el vuelo (M08/M09), ESC y arrastre (M09, M20, M21), arrastre que corta el rodar (M28) y `animar()` con `cancel()` en todo. |
 | Loop con pausa visible; se detiene fuera de pantalla y con la pestaña oculta | ✅ | `tests/m04-loop.spec.ts`. |
 | Sin grano con transparencia reducida; sin loop con movimiento reducido | ✅ | `--grain-opacity: 0` bajo `prefers-reduced-transparency` en `tokens.css`; M04 pasa a tira estática. |
@@ -61,7 +61,7 @@ Contra `docs/motion.md` v2.0 §9. Medido el 24 nov 2026 sobre el build de produc
 | M28 | Testimonios | ✅ (solo en componentes) | Sin rodar |
 | M29 | FAQ | ✅ | 120 ms (decisión abierta) |
 | M30 | Copiar mail | ✅ (mail PENDIENTE) | Solo el cambio de texto |
-| M31 | Descargar CV | ✅ (CV PENDIENTE) | Solo el cambio de texto |
+| M31 | Descargar CV | Hecho, sin probar (CV PENDIENTE: no hay botón activo) | Solo el cambio de texto |
 | M32 | Formulario | ✅ error y enviando; éxito y error de envío en Fase 7 | Error sin fundido (decisión abierta) |
 
 ## Accesibilidad de texto (1.4.12)

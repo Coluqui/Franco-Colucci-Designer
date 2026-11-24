@@ -55,7 +55,7 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 - Cobalto en la home: con 2 filas de caso a la vista (2 chips + "Ver caso →" cada una) y el glifo del header se pasa del máximo de 5 usos (design system §1). Revisarlo al armar la home (Fase 4); si se pasa, "Ver caso →" en `--color-text-primary`.
 - Visor: el PRD §6 pide un "marco de teléfono" para carruseles en desktop. Falta su definición visual (¿mockup de Franco?, ¿marco CSS con tokens?). Al definirlo, acercar las flechas de slide a la pieza (hoy quedan contra los bordes a 1280–1440).
 - Skills frontend-design y ui-ux-pro-max: no instaladas.
-- Playwright: no instalado; las revisiones se hacen con el navegador integrado.
+- ~~Playwright: no instalado~~ Instalado con OK de Franco (Fase 6): `tests/`, 348 pruebas.
 
 ## Contenido
 
@@ -155,6 +155,9 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 ## Fase 6 · QA de cierre
 
 - **Decisión de Franco · el punto del filtro activo.** Al activarse, el chip suma el punto y se ensancha 8 px: los filtros vecinos se corren en el mismo clic. CLS sigue en 0 (es respuesta al clic), pero se ve. Para evitarlo, todos los chips reservan el lugar del punto (los inactivos quedan un poco más anchos).
-- **M06 en un Android real.** En el Chromium de prueba (sin GPU) la transición rinde ~40 fps incluso sin throttling; el hilo principal está libre. Confirmar en un teléfono de gama media.
+- **M06 en un Android real.** En el Chromium de prueba (sin GPU), con CPU 4×, la transición da 51 fps a 1440 y 57 a 360. Los cuadros alternan 17 y 33 ms igual sin throttling y el hilo principal está ocupado un 38 %: el límite parece la rasterización por software. Confirmar en un teléfono de gama media.
 - **1.4.12 · servicios a 360.** Con el espaciado máximo de WCAG, el servicio más largo sobresale 9 px (M13 lo obliga a una línea). No se pierde contenido.
 - **Tabla de cumplimiento completa:** `docs/motion-cumplimiento.md`.
+- **Decisión de Franco · cambio de fuente en red lenta.** Archivo usa `font-display: swap` con un respaldo de Arial ajustado a sus métricas (`fonts.css`). Con 4G lenta y sin caché queda un CLS de 0,007 en la home a 1440 y 0,03 en `/en/` a 360: Arial no imita el ancho exacto y la bajada o la frase cortan en otro renglón. Para llegar a 0: `font-display: optional` (en una primera visita lenta se queda Arial toda la visita). En Android no hay Arial: ahí el respaldo es el del sistema, sin ajuste.
+- **Lighthouse.** No está instalado; se corre en la Fase 8 sobre el deploy de Vercel (o con permiso para sumarlo).
+- **Loop a 1440 × 900.** El marco del loop asoma 262 de 477 px sin scroll. Cumple el "asoma" del PRD §1; se revisa con las piezas reales de la campaña.
