@@ -89,7 +89,7 @@ const servicios = ordenServicios.map((slug) => {
     <Visor lang={lang} piezas={proyectos.flatMap((p) => p.piezas)} />
   </Seccion>
 
-  <Seccion id="que-hago" titulo={t(lang, 'home.whatIDo')}>
+  <Seccion id="que-hago" titulo={t(lang, 'home.whatIDo')} invertida>
     <ListaServicios lang={lang} servicios={servicios} />
   </Seccion>
 
@@ -97,7 +97,7 @@ const servicios = ordenServicios.map((slug) => {
     <Skills lang={lang} />
   </Seccion>
 
-  <Seccion id="sobre-mi" titulo={t(lang, 'home.aboutTitle')}>
+  <Seccion id="sobre-mi" titulo={t(lang, 'home.aboutTitle')} superficie>
     <ResumenSobreMi lang={lang} />
   </Seccion>
 

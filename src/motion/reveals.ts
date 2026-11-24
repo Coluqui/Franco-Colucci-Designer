@@ -16,6 +16,9 @@ const una = (trigger: Element, start: string = mov.inicio) => ({ trigger, start,
 
 const todos = <T extends Element = HTMLElement>(sel: string) => [...document.querySelectorAll<T & HTMLElement>(sel)];
 
+/** Los hijos directos de una sección con máscara ya entran con ella (4.6): no se animan dos veces. */
+const sinMascara = (el: Element) => !el.parentElement?.matches('[data-mask-content]');
+
 export function revelar(reducido: boolean) {
   if (reducido) {
     todos('[data-split], [data-reveal], [data-mask-content] > *').forEach((el) =>
@@ -49,7 +52,7 @@ export function revelar(reducido: boolean) {
   });
 
   // Bloques y media.
-  todos('[data-reveal]').forEach((el) => {
+  todos('[data-reveal]').filter(sinMascara).forEach((el) => {
     if (el.dataset['reveal'] === 'clip') {
       gsap.set(el, { opacity: 1 });
       const tl = gsap.timeline({ scrollTrigger: una(el) });
