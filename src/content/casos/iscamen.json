@@ -1,6 +1,6 @@
 {
   "slug": "iscamen",
-  "orden": 2,
+  "orden": 1,
   "cliente": "ISCAMEN",
   "rol": {
     "es": "Lead Digital Designer",
@@ -9,5 +9,13 @@
   "descripcion": {
     "es": "ISCAMEN es el organismo de sanidad y calidad agropecuaria de Mendoza. Lidero su diseño digital desde 2021: campañas para redes, ciclos de capacitación y comunicación institucional que traduce información técnica en piezas claras para productores y vecinos.",
     "en": "ISCAMEN is the agricultural health and quality agency of Mendoza, Argentina. I have led its digital design since 2021: social campaigns, training series and institutional communication that turn technical information into clear pieces for growers and the public."
+  },
+  "reel": {
+    "src": "/reels/reel.mp4",
+    "poster": "/reels/reel-poster.jpg",
+    "titulo": {
+      "es": "Inteligencia artificial en el cultivo de vid",
+      "en": "Artificial intelligence in vineyard farming"
+    }
   }
 }

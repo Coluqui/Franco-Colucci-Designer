@@ -12,9 +12,8 @@ import TilePieza from '../../../components/TilePieza.astro';
 import Visor from '../../../components/Visor.astro';
 import SiguienteCaso from '../../../components/SiguienteCaso.astro';
 import Link from '../../../components/Link.astro';
-import type { PiezaVista } from '../../../components/tipos';
 import { locales, t, localizePath, type Lang } from '../../../i18n';
-import { getCasos, getPiezasDeCaso, siguienteCaso, nombreTipo, hrefCaso, type Caso } from '../../../lib/casos';
+import { getCasos, getPiezasDeCaso, siguienteCaso, nombreTipo, hrefCaso, piezaVista, type Caso } from '../../../lib/casos';
 
 export const getStaticPaths = (async () => {
   const casos = await getCasos();
@@ -30,14 +29,7 @@ const { caso } = Astro.props;
 const siguiente = siguienteCaso(await getCasos(), caso.slug);
 const piezasData = await getPiezasDeCaso(caso.slug);
 
-const vista = (p: (typeof piezasData)[number]): PiezaVista => ({
-  slug: p.slug,
-  titulo: p.titulo[lang],
-  cliente: caso.cliente,
-  formato: t(lang, `formats.${p.formato}`),
-  ratio: p.ratio,
-  slides: p.slides.map((s) => ({ src: s.src, alt: s.alt[lang] })),
-});
+const vista = (p: (typeof piezasData)[number]) => piezaVista(lang, caso.cliente, p);
 
 /** Grupos en el orden de `tiposPieza`; el visor recorre las piezas en ese mismo orden. */
 const grupos = caso.tipos.map(({ tipo, cantidad }) => ({
@@ -90,6 +82,14 @@ const piezas = grupos.flatMap((g) => g.piezas);
       </div>
     </div>
 
+    {
+      caso.reel && (
+        <section class="container caso__bloque" aria-labelledby="reel">
+          <h2 id="reel" class="caso__grupo" data-reveal>{t(lang, 'caseDetail.reel')}</h2>
+          <video class="caso__reel" data-reveal="clip" src={caso.reel.src} poster={caso.reel.poster} aria-label={caso.reel.titulo[lang]} controls playsinline preload="none" />
+        </section>
+      )
+    }
     {
       grupos.map((g) => (
         <section class="container caso__bloque" aria-labelledby={`tipo-${g.tipo}`}>
@@ -195,6 +195,14 @@ const piezas = grupos.flatMap((g) => g.piezas);
   .caso__bloque {
     display: grid;
     gap: var(--space-6);
+  }
+
+  /* Reel vertical: entero, sin recortar; los controles nativos permiten pausar. */
+  .caso__reel {
+    inline-size: min(100%, 22rem);
+    aspect-ratio: 9 / 16;
+    border-radius: var(--radius-sm);
+    background: var(--color-stage);
   }
 
   .caso__bloque h2,

@@ -16,7 +16,7 @@ const localized = z.object({
 
 /** Formatos de pieza (filtro "por formato" del caso y etiqueta del tile). */
 /** El orden también es el de la grilla del caso y el de los chips: lo digital primero, impresos al final. */
-export const formatos = ['carrusel', 'post', 'story', 'reel', 'ad', 'branding', 'mail', 'web', 'ebook', 'impreso'] as const;
+export const formatos = ['carrusel', 'post', 'story', 'reel', 'ad', 'branding', 'mail', 'web', 'ebook', 'documento', 'impreso'] as const;
 
 /** Tipos de pieza (PRD v4.0 §8). El orden es el de los grupos en la página del proyecto. */
 export const tiposPieza = ['redes', 'ads', 'documentos', 'lanzamientos', 'identidad'] as const;
@@ -100,6 +100,8 @@ const casos = defineCollection({
       /** Hero opcional (mockup a ancho completo). Sin hero, se usa la portada de la primera pieza. */
       hero: image().optional(),
       heroAlt: localized.optional(),
+      /** Reel del proyecto (video vertical 9:16 en public/), con su título para el lector de pantalla. */
+      reel: z.object({ src: z.string().startsWith('/'), poster: z.string().startsWith('/'), titulo: localized }).optional(),
     }),
 });
 
