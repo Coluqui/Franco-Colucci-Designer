@@ -87,6 +87,49 @@ const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
   )
 }
 
+<script>
+  import { enCadaPagina } from '../scripts/pagina';
+  import { animar, curva, ms, numero, resorte, rodarTexto } from '../scripts/motion/base';
+
+  /**
+   * M31 · descargar (botones con download, p. ej. "CV" en la barra inferior): la flecha baja y cae
+   * (280 · press); "CV" → "Descargando" → "CV ✓" y vuelve a los --hold-feedback.
+   * Reducido: los tokens dejan solo el cambio de texto.
+   */
+  enCadaPagina(() => {
+    const temporizadores: number[] = [];
+    document.querySelectorAll<HTMLAnchorElement>('a.boton[download]').forEach((a) => {
+      const texto = a.querySelector<HTMLElement>('.boton__texto');
+      const flecha = a.querySelector<HTMLElement>('.boton__icono');
+      const original = texto?.textContent ?? '';
+      const descargando = a.dataset['textoDescargando'];
+      if (!texto || !descargando) return;
+      a.addEventListener('click', () => {
+        if (a.dataset['estado']) return;
+        a.dataset['estado'] = 'descargando';
+        const cae = `translateY(${numero('--shift-sm')}px)`;
+        if (flecha) animar(flecha, { opacity: '0', transform: cae }, resorte('press'));
+        rodarTexto(texto, descargando);
+        const paso = ms('--duration-slow');
+        temporizadores.push(
+          window.setTimeout(() => {
+            rodarTexto(texto, original).then(() => (a.dataset['estado'] = 'ok'));
+          }, paso),
+          window.setTimeout(() => {
+            delete a.dataset['estado'];
+            if (flecha) {
+              flecha.style.opacity = '';
+              flecha.style.transform = '';
+              animar(flecha, { opacity: '1', transform: 'none' }, { ...curva('out', 'fast'), desde: { opacity: '0', transform: `translateY(${-numero('--shift-sm')}px)` }, soltar: true });
+            }
+          }, paso + ms('--hold-feedback')),
+        );
+      });
+    });
+    return () => temporizadores.forEach((t) => window.clearTimeout(t));
+  });
+</script>
+
 <style>
   .boton {
     position: relative;
@@ -199,5 +242,28 @@ const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
 
   .boton__texto {
     display: inline-block;
+  }
+
+  /* M32 · enviando: la barra de la base recorre el botón sin parar (indeterminada). Con movimiento
+     reducido queda quieta: el botón sigue diciendo "Enviando". */
+  @media (prefers-reduced-motion: no-preference) {
+    .boton__carga {
+      animation: boton-carga calc(var(--duration-page) * 2) var(--ease-in-out) infinite;
+    }
+  }
+
+  @keyframes boton-carga {
+    from {
+      transform: translateX(-100%) scaleX(0.4);
+    }
+
+    to {
+      transform: translateX(100%) scaleX(0.4);
+    }
+  }
+
+  /* M31 · "CV ✓": la marca es visual. */
+  .boton[data-estado="ok"] .boton__texto::after {
+    content: " ✓" / "";
   }
 </style>

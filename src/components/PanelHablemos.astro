@@ -67,7 +67,7 @@ const { lang } = Astro.props;
 
 <script>
   import { enCadaPagina } from '../scripts/pagina';
-  import { animar, curva, detener, ms, numero, resorte } from '../scripts/motion/base';
+  import { animar, curva, detener, ms, numero, resorte, rodarTexto } from '../scripts/motion/base';
 
   /** Campos que entran escalonados al abrir (M21: máx. 4). */
   const MAX_CAMPOS = 4;
@@ -156,8 +156,11 @@ const { lang } = Astro.props;
     }, { signal });
 
     // Copiar mail (M30 anima el cambio en la Fase 6; acá, el cambio de texto y el aviso).
+    // M30 · "Copiar mail" sale hacia arriba y entra "Copiado ✓" en --color-success; vuelve a los
+    // --hold-feedback. El aria-live anuncia el cambio.
     const copiar = panel.querySelector<HTMLButtonElement>('[data-copiar]');
-    const texto = copiar?.querySelector('[data-copiar-texto]');
+    const texto = copiar?.querySelector<HTMLElement>('[data-copiar-texto]');
+    let volver: number | undefined;
     const aviso = panel.querySelector('[data-copiar-estado]');
     copiar?.addEventListener('click', async () => {
       const mail = copiar.dataset['copiar'];
@@ -167,21 +170,24 @@ const { lang } = Astro.props;
       } catch {
         // Sin permiso de portapapeles: se anuncia y se muestra el mail para copiarlo a mano.
         const error = (copiar.dataset['textoError'] ?? '').replace('{mail}', mail);
-        texto.textContent = error;
+        rodarTexto(texto, error);
         if (aviso) aviso.textContent = error;
         return;
       }
-      texto.textContent = copiar.dataset['textoOk'] ?? '';
+      // El color y la marca llegan con el texto nuevo (no sobre el que sale).
+      rodarTexto(texto, copiar.dataset['textoOk'] ?? '').then(() => (copiar.dataset['estado'] = 'ok'));
       if (aviso) aviso.textContent = copiar.dataset['textoOk'] ?? '';
-      copiar.dataset['estado'] = 'ok';
-      const espera = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hold-feedback')) || 0;
-      setTimeout(() => {
-        texto.textContent = copiar.dataset['texto'] ?? '';
+      window.clearTimeout(volver);
+      volver = window.setTimeout(() => {
+        rodarTexto(texto, copiar.dataset['texto'] ?? '', curva('out', 'fast'), -1);
         delete copiar.dataset['estado'];
         if (aviso) aviso.textContent = '';
-      }, espera);
+      }, ms('--hold-feedback'));
     });
-    return () => ac.abort();
+    return () => {
+      ac.abort();
+      window.clearTimeout(volver);
+    };
   });
 </script>
 
@@ -323,5 +329,14 @@ const { lang } = Astro.props;
 
   .panel__copiar[data-estado="ok"] {
     color: var(--color-success);
+  }
+
+  .panel__copiar [data-copiar-texto] {
+    display: inline-block;
+  }
+
+  /* "Copiado ✓": la marca es visual (el aviso ya dice "Copiado"). */
+  .panel__copiar[data-estado="ok"] [data-copiar-texto]::after {
+    content: " ✓" / "";
   }
 </style>

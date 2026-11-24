@@ -162,4 +162,16 @@ const estado = error ? 'error' : exito ? 'exito' : undefined;
   .campo__error :global(.icono) {
     margin-block-start: 0.1em;
   }
+
+  /* M32 · el mensaje de error baja --shift-xs y aparece (200 · out) cada vez que se muestra. */
+  .campo__error:not([hidden]) {
+    animation: campo-error var(--duration-fast) var(--ease-out);
+  }
+
+  @keyframes campo-error {
+    from {
+      opacity: 0;
+      transform: translateY(calc(-1 * var(--shift-xs)));
+    }
+  }
 </style>

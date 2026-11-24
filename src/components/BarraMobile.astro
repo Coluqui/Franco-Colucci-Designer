@@ -21,7 +21,7 @@ const cv = cvHref(lang);
   <Boton class="barra-mobile__boton" glifo href={localizePath(lang, 'hablemos/')} data-abre-panel>
     {t(lang, 'nav.talk')}
   </Boton>
-  <Boton class="barra-mobile__boton" variante="secundario" icono="flecha-abajo" href={cv} download={cv ? '' : undefined}>
+  <Boton class="barra-mobile__boton" variante="secundario" icono="flecha-abajo" href={cv} download={cv ? '' : undefined} data-texto-descargando={t(lang, 'contact.downloading')}>
     {t(lang, 'contact.cv')}
   </Boton>
 </nav>
