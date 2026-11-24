@@ -5,6 +5,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { t, localizePath, type Lang } from '../i18n';
 import { formatos, tiposPieza } from '../content.config';
+import type { PiezaVista } from '../components/tipos';
 
 type Pieza = CollectionEntry<'piezas'>['data'];
 export type TipoPieza = (typeof tiposPieza)[number];
@@ -62,4 +63,25 @@ export function filaDeCaso(lang: Lang, c: Caso) {
     imagen: c.portada?.src,
     alt: c.portada?.alt[lang],
   };
+}
+
+/** Pieza lista para TilePieza y el Visor. */
+export const piezaVista = (lang: Lang, cliente: string, p: Pieza): PiezaVista => ({
+  slug: p.slug,
+  titulo: p.titulo[lang],
+  cliente,
+  formato: t(lang, `formats.${p.formato}`),
+  ratio: p.ratio,
+  slides: p.slides.map((s) => ({ src: s.src, alt: s.alt[lang] })),
+});
+
+/**
+ * Piezas de la fila del proyecto en la home: solo las de la proporción más repetida (empate: la
+ * primera en aparecer), así todas tienen el mismo alto y se ven enteras. Hasta `max`.
+ */
+export function piezasDeFila(piezas: Pieza[], max = 4): Pieza[] {
+  const cuenta = new Map<string, number>();
+  for (const p of piezas) cuenta.set(p.ratio, (cuenta.get(p.ratio) ?? 0) + 1);
+  const ratio = [...cuenta].reduce((a, b) => (b[1] > a[1] ? b : a), ['', 0])[0];
+  return piezas.filter((p) => p.ratio === ratio).slice(0, max);
 }

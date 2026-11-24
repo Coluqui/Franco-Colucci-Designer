@@ -1,6 +1,6 @@
 ---
 /**
- * Home · PRD v4.0 §5: Hero · Frase-problema · Clientes + Testimonios (invertida) · Trabajos (una card por proyecto)
+ * Home · PRD v4.0 §5: Hero · Frase-problema · Clientes + Testimonios (invertida) · Trabajos (por proyecto, una fila de piezas del mismo alto)
  * · Qué hago (servicios + vista previa) · Skills · Sobre mí (resumen) · Cierre · Footer.
  * Contenido real que falta: PENDIENTE (docs/pendientes.md). Motion (M04, M15, M16, M17): Fase 6.
  */
@@ -10,14 +10,15 @@ import Hero from '../../components/Hero.astro';
 import Seccion from '../../components/Seccion.astro';
 import FraseProblema from '../../components/FraseProblema.astro';
 import GrillaClientes from '../../components/GrillaClientes.astro';
-import FilaCaso from '../../components/FilaCaso.astro';
+import ProyectoFila from '../../components/ProyectoFila.astro';
+import Visor from '../../components/Visor.astro';
 import ListaServicios from '../../components/ListaServicios.astro';
 import ResumenSobreMi from '../../components/ResumenSobreMi.astro';
 import Skills from '../../components/Skills.astro';
 import Cierre from '../../components/Cierre.astro';
 import Link from '../../components/Link.astro';
 import { locales, t, localizePath, type Lang } from '../../i18n';
-import { getCasos, filaDeCaso } from '../../lib/casos';
+import { getCasos, getPiezasDeCaso, piezasDeFila, piezaVista, hrefCaso } from '../../lib/casos';
 import { ordenServicios, ratioServicio, piezaServicio } from '../../config/servicios';
 import { getCollection } from 'astro:content';
 
@@ -25,6 +26,17 @@ export const getStaticPaths = (() => locales.map((lang) => ({ params: { lang } }
 
 const lang = Astro.params.lang as Lang;
 const casos = await getCasos();
+/** Trabajos: por proyecto, una fila de piezas enteras de la misma proporción; un solo visor para todas. */
+const proyectos = await Promise.all(
+  casos.map(async (c) => ({
+    slug: c.slug,
+    href: hrefCaso(lang, c.slug),
+    titulo: c.cliente,
+    rol: c.rol[lang],
+    total: c.tipos.reduce((n, x) => n + x.cantidad, 0),
+    piezas: piezasDeFila(await getPiezasDeCaso(c.slug)).map((p) => piezaVista(lang, c.cliente, p)),
+  })),
+);
 
 /** Clientes del PRD §3; los logos SVG monocromos están PENDIENTE (se muestra el nombre). */
 const clientes = ['ISCAMEN', 'MoonDesk', 'Condimento', 'Carpa', 'RLB', 'Interlink'].map((nombre) => ({ nombre }));
@@ -67,13 +79,14 @@ const servicios = ordenServicios.map((slug) => {
     <Link slot="accion" class="t-ui link--suelto" href={localizePath(lang, 'trabajos/')} lang={lang}>{t(lang, 'home.allWork')}</Link>
     <ul class="filas" role="list">
       {
-        casos.map((c, i) => (
+        proyectos.map((p) => (
           <li>
-            <FilaCaso lang={lang} {...filaDeCaso(lang, c)} prioridad={i === 0} />
+            <ProyectoFila lang={lang} {...p} />
           </li>
         ))
       }
     </ul>
+    <Visor lang={lang} piezas={proyectos.flatMap((p) => p.piezas)} />
   </Seccion>
 
   <Seccion id="que-hago" titulo={t(lang, 'home.whatIDo')}>
@@ -126,7 +139,7 @@ const servicios = ordenServicios.map((slug) => {
 
   .filas {
     display: grid;
-    gap: var(--space-6);
+    gap: var(--space-8);
     margin: 0;
     padding: 0;
     list-style: none;

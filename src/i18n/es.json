@@ -71,7 +71,9 @@
   },
   "case": {
     "view": "Ver proyecto",
-    "piecesLabel": "Piezas:"
+    "piecesLabel": "Piezas:",
+    "viewFull": "Ver caso completo",
+    "piecesInCase": "{n} piezas en el caso"
   },
   "services": {
     "title": "Qué hago",
@@ -165,7 +167,7 @@
     "allWork": "Ver todos los trabajos",
     "whatIDo": "Qué hago",
     "aboutTitle": "Sobre mí",
-    "aboutText": "Soy diseñador gráfico por la Universidad Nacional de Cuyo, con formación en UX/UI. Hace más de 5 años diseño para organismos públicos, empresas y agencias, del brief a la entrega final.",
+    "aboutText": "Soy diseñador gráfico por la Universidad Nacional de Cuyo, con formación en UX/UI. Hace más de 5 años diseño para organismos públicos, empresas y agencias, del brief a la entrega final. Busco solo trabajo remoto.",
     "aboutLink": "Más sobre mí",
     "clientsEmpty": "PENDIENTE: logos de clientes en SVG monocromo.",
     "testimonialsEmpty": "PENDIENTE: testimonios de clientes."
@@ -213,12 +215,13 @@
     "pieces": "Piezas",
     "piecesEmpty": "Este proyecto todavía no tiene piezas cargadas.",
     "next": "Siguiente proyecto",
-    "back": "Todos los trabajos"
+    "back": "Todos los trabajos",
+    "reel": "Reel"
   },
   "about": {
     "title": "Sobre mí",
     "portraitAlt": "Retrato de Franco Colucci",
-    "bio": "Soy diseñador gráfico por la Universidad Nacional de Cuyo, con formación en UX/UI (Coderhouse y Codo a Codo). Hace más de 5 años diseño para organismos públicos, empresas y agencias.",
+    "bio": "Soy diseñador gráfico por la Universidad Nacional de Cuyo, con formación en UX/UI (Coderhouse y Codo a Codo). Hace más de 5 años diseño para organismos públicos, empresas y agencias. Busco solo trabajo remoto.",
     "data": "Datos",
     "base": "Base",
     "languages": "Idiomas",
@@ -228,7 +231,7 @@
     "cv": "CV",
     "baseValue": "Mendoza, Argentina",
     "languagesValue": "Español nativo · Inglés B2 · Italiano A2",
-    "workModeValue": "Remoto o presencial · GMT-3",
+    "workModeValue": "Solo remoto · GMT-3",
     "experienceText": "Diseñé para ISCAMEN (Lead Digital Designer desde 2021), Grupo Nexia y Sette Agency, y para marcas como MoonDesk, Condimento, Carpa, RLB e Interlink: redes sociales, ads de performance, email marketing, ebooks, webs en WordPress y sistemas en Figma.",
     "aiText": "Trabajo cerca de los equipos, del brief a la entrega final, y uso la IA para producir más rápido sin resignar criterio: ChatGPT para ideas y textos de prueba, Nano Banana para generar y editar imágenes, Claude Code para sitios y design systems, y ElevenLabs para voces."
   },
@@ -251,6 +254,7 @@
     "web": "Web",
     "ebook": "Ebook",
     "branding": "Branding",
+    "documento": "Documento digital",
     "impreso": "Impreso"
   },
   "pieceTypes": {

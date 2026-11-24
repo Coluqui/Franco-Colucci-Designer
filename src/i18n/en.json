@@ -71,7 +71,9 @@
   },
   "case": {
     "view": "View project",
-    "piecesLabel": "Pieces:"
+    "piecesLabel": "Pieces:",
+    "viewFull": "See full case",
+    "piecesInCase": "{n} pieces in the case"
   },
   "services": {
     "title": "What I do",
@@ -165,7 +167,7 @@
     "allWork": "See all work",
     "whatIDo": "What I do",
     "aboutTitle": "About",
-    "aboutText": "I studied Graphic Design at Universidad Nacional de Cuyo and trained in UX/UI. For 5+ years I have designed for public institutions, companies and agencies, from brief to final delivery.",
+    "aboutText": "I studied Graphic Design at Universidad Nacional de Cuyo and trained in UX/UI. For 5+ years I have designed for public institutions, companies and agencies, from brief to final delivery. I'm looking for remote work only.",
     "aboutLink": "More about me",
     "clientsEmpty": "PENDING: client logos as monochrome SVG.",
     "testimonialsEmpty": "PENDING: client testimonials."
@@ -213,12 +215,13 @@
     "pieces": "Pieces",
     "piecesEmpty": "This project has no pieces loaded yet.",
     "next": "Next project",
-    "back": "All work"
+    "back": "All work",
+    "reel": "Reel"
   },
   "about": {
     "title": "About",
     "portraitAlt": "Portrait of Franco Colucci",
-    "bio": "I studied Graphic Design at Universidad Nacional de Cuyo and trained in UX/UI (Coderhouse and Codo a Codo). For 5+ years I have designed for public institutions, companies and agencies.",
+    "bio": "I studied Graphic Design at Universidad Nacional de Cuyo and trained in UX/UI (Coderhouse and Codo a Codo). For 5+ years I have designed for public institutions, companies and agencies. I'm looking for remote work only.",
     "data": "Details",
     "base": "Based in",
     "languages": "Languages",
@@ -228,7 +231,7 @@
     "cv": "CV",
     "baseValue": "Mendoza, Argentina",
     "languagesValue": "Spanish (native) · English B2 · Italian A2",
-    "workModeValue": "Remote or on-site · GMT-3",
+    "workModeValue": "Remote only · GMT-3",
     "experienceText": "I have designed for ISCAMEN (Lead Digital Designer since 2021), Grupo Nexia and Sette Agency, and for brands such as MoonDesk, Condimento, Carpa, RLB and Interlink: social media, performance ads, email marketing, ebooks, WordPress websites and Figma systems.",
     "aiText": "I work closely with teams, from brief to final delivery, and use AI to produce faster without giving up design judgement: ChatGPT for ideas and draft copy, Nano Banana to generate and edit images, Claude Code for websites and design systems, and ElevenLabs for voices."
   },
@@ -251,6 +254,7 @@
     "web": "Web",
     "ebook": "Ebook",
     "branding": "Branding",
+    "documento": "Digital document",
     "impreso": "Print"
   },
   "pieceTypes": {
