@@ -2,14 +2,11 @@
   "slug": "iscamen-story-dia-del-trabajador",
   "caso": "iscamen",
   "formato": "story",
+  "tipo": "redes",
   "ratio": "9:16",
   "titulo": {
     "es": "Story: Día del Trabajador",
     "en": "Story: Labor Day"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

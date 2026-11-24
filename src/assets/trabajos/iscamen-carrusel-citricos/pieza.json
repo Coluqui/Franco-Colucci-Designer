@@ -2,14 +2,11 @@
   "slug": "iscamen-carrusel-citricos",
   "caso": "iscamen",
   "formato": "carrusel",
+  "tipo": "redes",
   "ratio": "4:5",
   "titulo": {
     "es": "Carrusel: Cosechá tus cítricos",
     "en": "Carousel: Harvest your citrus"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

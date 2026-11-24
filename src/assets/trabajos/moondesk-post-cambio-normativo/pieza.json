@@ -2,14 +2,11 @@
   "slug": "moondesk-post-cambio-normativo",
   "caso": "moondesk",
   "formato": "post",
+  "tipo": "redes",
   "ratio": "4:5",
   "titulo": {
     "es": "Post: Un cambio normativo",
     "en": "Post: A regulatory change"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

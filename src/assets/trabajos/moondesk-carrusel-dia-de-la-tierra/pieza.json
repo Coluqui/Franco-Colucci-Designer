@@ -2,14 +2,11 @@
   "slug": "moondesk-carrusel-dia-de-la-tierra",
   "caso": "moondesk",
   "formato": "carrusel",
+  "tipo": "redes",
   "ratio": "4:5",
   "titulo": {
     "es": "Carrusel: Día de la Tierra",
     "en": "Carousel: Earth Day"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

@@ -2,51 +2,12 @@
   "slug": "moondesk",
   "orden": 1,
   "cliente": "MoonDesk",
-  "titulo": {
-    "es": "MoonDesk",
-    "en": "MoonDesk"
-  },
-  "frase": {
-    "es": "PENDIENTE: frase del caso (qué se resolvió, en una línea).",
-    "en": "PENDING: case sentence (what was solved, in one line)."
-  },
-  "tipo": {
-    "es": "PENDIENTE: tipo de trabajo",
-    "en": "PENDING: type of work"
+  "rol": {
+    "es": "Diseñador gráfico y digital",
+    "en": "Graphic & Digital Designer"
   },
   "descripcion": {
-    "es": "PENDIENTE: descripción corta del caso para la fila.",
-    "en": "PENDING: short case description for the row."
-  },
-  "rol": {
-    "es": "PENDIENTE: rol",
-    "en": "PENDING: role"
-  },
-  "servicios": [
-    "redes"
-  ],
-  "herramientas": [],
-  "problema": {
-    "es": "PENDIENTE: el problema del caso.",
-    "en": "PENDING: the case problem."
-  },
-  "pasos": [
-    {
-      "es": "PENDIENTE: paso 1 de lo que hice.",
-      "en": "PENDING: step 1 of what I did."
-    },
-    {
-      "es": "PENDIENTE: paso 2.",
-      "en": "PENDING: step 2."
-    },
-    {
-      "es": "PENDIENTE: paso 3.",
-      "en": "PENDING: step 3."
-    }
-  ],
-  "resultado": {
-    "es": "PENDIENTE: resultado del caso.",
-    "en": "PENDING: case result."
-  },
-  "metricas": []
+    "es": "MoonDesk es una plataforma para gestionar y aprobar artes de packaging. Diseñé su comunicación digital: carruseles y posteos para redes, ebooks y one-pagers comerciales, con un estilo ilustrado que explica el producto a partir de historias simples.",
+    "en": "MoonDesk is a platform to manage and approve packaging artwork. I designed its digital communication: social carousels and posts, ebooks and sales one-pagers, with an illustrated style that explains the product through simple stories."
+  }
 }

@@ -2,14 +2,11 @@
   "slug": "moondesk-carrusel-nacimos-de-un-error",
   "caso": "moondesk",
   "formato": "carrusel",
+  "tipo": "redes",
   "ratio": "4:5",
   "titulo": {
     "es": "Carrusel: Nacimos de un error",
     "en": "Carousel: Born from a mistake"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

@@ -2,14 +2,11 @@
   "slug": "moondesk-story-testimonio",
   "caso": "moondesk",
   "formato": "story",
+  "tipo": "redes",
   "ratio": "9:16",
   "titulo": {
     "es": "Story: Testimonio de cliente",
     "en": "Story: Customer testimonial"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

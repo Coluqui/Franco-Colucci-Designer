@@ -2,14 +2,11 @@
   "slug": "carpa-mockup-producto",
   "caso": "carpa",
   "formato": "ebook",
+  "tipo": "lanzamientos",
   "ratio": "1337:1600",
   "titulo": {
     "es": "Mockup del Método Carpa",
     "en": "Carpa Method mockup"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

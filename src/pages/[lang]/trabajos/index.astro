@@ -1,24 +1,24 @@
 ---
 /**
- * Trabajos · PRD §5 y §7: "Filtrar por servicio" + filas de caso (métrica destacada, descripción y servicios).
- * Sin JS se ven todos los casos; con JS el filtro oculta los que no tienen el servicio y escribe ?servicio=.
- * Solo se ofrecen los servicios que tienen al menos un caso.
+ * Trabajos · PRD v4.0 §5: "Filtrar por tipo" + una card por proyecto (empresa, rol, descripción, piezas por tipo).
+ * Sin JS se ven todos; con JS el filtro oculta los proyectos sin piezas de ese tipo y escribe ?tipo=.
+ * Solo se ofrecen los tipos que tienen al menos un proyecto.
  */
 import type { GetStaticPaths } from 'astro';
 import Base from '../../../layouts/Base.astro';
 import Filtros from '../../../components/Filtros.astro';
 import FilaCaso from '../../../components/FilaCaso.astro';
 import { locales, t, type Lang } from '../../../i18n';
-import { getCasos, filaDeCaso } from '../../../lib/casos';
-import { ordenServicios } from '../../../config/servicios';
+import { getCasos, filaDeCaso, nombreTipo } from '../../../lib/casos';
+import { tiposPieza } from '../../../content.config';
 
 export const getStaticPaths = (() => locales.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
 
 const lang = Astro.params.lang as Lang;
 const casos = await getCasos();
 
-const opciones = ordenServicios
-  .map((s) => ({ valor: s, nombre: t(lang, `serviceItems.${s}.short`), cantidad: casos.filter((c) => c.servicios.includes(s)).length }))
+const opciones = tiposPieza
+  .map((tipo) => ({ valor: tipo, nombre: nombreTipo(lang, tipo), cantidad: casos.filter((c) => c.tipos.some((x) => x.tipo === tipo)).length }))
   .filter((o) => o.cantidad > 0);
 ---
 
@@ -31,10 +31,10 @@ const opciones = ordenServicios
 
     <Filtros
       lang={lang}
-      etiqueta={t(lang, 'filters.byService')}
+      etiqueta={t(lang, 'filters.byType')}
       opciones={opciones}
       objetivo="lista-casos"
-      param="servicio"
+      param="tipo"
       total={casos.length}
       unidad="casos"
     />
@@ -42,7 +42,7 @@ const opciones = ordenServicios
     <ul class="trabajos__lista" id="lista-casos" role="list">
       {
         casos.map((c, i) => (
-          <li data-filtro={c.servicios.join(' ')}>
+          <li data-filtro={c.tipos.map((x) => x.tipo).join(' ')}>
             <FilaCaso lang={lang} {...filaDeCaso(lang, c)} nivel="h2" prioridad={i === 0} />
           </li>
         ))

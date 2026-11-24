@@ -2,14 +2,11 @@
   "slug": "condimento-ad-anuncios",
   "caso": "condimento",
   "formato": "ad",
+  "tipo": "ads",
   "ratio": "1:1",
   "titulo": {
     "es": "Ad: Una auditoría, no otra promesa",
     "en": "Ad: An audit, not another promise"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

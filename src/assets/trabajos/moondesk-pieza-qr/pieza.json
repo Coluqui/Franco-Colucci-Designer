@@ -2,14 +2,11 @@
   "slug": "moondesk-pieza-qr",
   "caso": "moondesk",
   "formato": "impreso",
+  "tipo": "documentos",
   "ratio": "596:842",
   "titulo": {
     "es": "¿Tu marca está preparada?",
     "en": "Is your brand ready?"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

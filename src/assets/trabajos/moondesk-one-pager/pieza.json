@@ -2,14 +2,11 @@
   "slug": "moondesk-one-pager",
   "caso": "moondesk",
   "formato": "impreso",
+  "tipo": "documentos",
   "ratio": "596:842",
   "titulo": {
     "es": "One pager de MoonDesk",
     "en": "MoonDesk one-pager"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

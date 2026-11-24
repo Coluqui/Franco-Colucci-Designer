@@ -1,29 +1,43 @@
 /**
- * Acceso a los casos y sus piezas, ya localizados para las páginas.
- * El orden sale del campo `orden`; el "Siguiente caso" vuelve al primero después del último.
+ * Acceso a los proyectos y sus piezas, ya localizados para las páginas (PRD v4.0).
+ * El orden sale del campo `orden`; el "Siguiente proyecto" vuelve al primero después del último.
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { t, localizePath, type Lang } from '../i18n';
-import { formatos } from '../content.config';
-import type { ServicioSlug } from '../config/servicios';
+import { formatos, tiposPieza } from '../content.config';
 
-export type Caso = CollectionEntry<'casos'>['data'];
+type Pieza = CollectionEntry<'piezas'>['data'];
+export type TipoPieza = (typeof tiposPieza)[number];
 
-export async function getCasos(): Promise<Caso[]> {
-  const casos = await getCollection('casos');
-  return casos.map((c) => c.data).sort((a, b) => a.orden - b.orden);
+export type Caso = CollectionEntry<'casos'>['data'] & {
+  /** Tipos de pieza del proyecto con su cantidad, en el orden de `tiposPieza` (un carrusel cuenta 1). */
+  tipos: Array<{ tipo: TipoPieza; cantidad: number }>;
+  /** Portada para la card y el hero: el hero propio o el slide 1 de la primera pieza. */
+  portada?: Pieza['slides'][number] | undefined;
+};
+
+const ordenar = (a: Pieza, b: Pieza) =>
+  (a.orden ?? Infinity) - (b.orden ?? Infinity) ||
+  formatos.indexOf(a.formato) - formatos.indexOf(b.formato) ||
+  a.slug.localeCompare(b.slug);
+
+export async function getPiezasDeCaso(slug: string): Promise<Pieza[]> {
+  const piezas = await getCollection('piezas', (p) => p.data.caso === slug);
+  return piezas.map((p) => p.data).sort(ordenar);
 }
 
-export async function getPiezasDeCaso(slug: string) {
-  const piezas = await getCollection('piezas', (p) => p.data.caso === slug);
-  const clave = (p: (typeof piezas)[number]['data']) => [p.orden ?? Infinity, formatos.indexOf(p.formato)] as const;
-  return piezas
-    .map((p) => p.data)
-    .sort((a, b) => {
-      const [oa, fa] = clave(a);
-      const [ob, fb] = clave(b);
-      return oa - ob || fa - fb || a.slug.localeCompare(b.slug);
-    });
+export async function getCasos(): Promise<Caso[]> {
+  const casos = (await getCollection('casos')).map((c) => c.data).sort((a, b) => a.orden - b.orden);
+  return Promise.all(
+    casos.map(async (c) => {
+      const piezas = await getPiezasDeCaso(c.slug);
+      const tipos = tiposPieza
+        .map((tipo) => ({ tipo, cantidad: piezas.filter((p) => p.tipo === tipo).length }))
+        .filter((x) => x.cantidad > 0);
+      const portada = c.hero && c.heroAlt ? { src: c.hero, alt: c.heroAlt } : piezas[0]?.slides[0];
+      return { ...c, tipos, portada };
+    }),
+  );
 }
 
 export function siguienteCaso(casos: Caso[], slug: string): Caso | undefined {
@@ -32,21 +46,20 @@ export function siguienteCaso(casos: Caso[], slug: string): Caso | undefined {
   return casos[(i + 1) % casos.length];
 }
 
-export const nombreServicio = (lang: Lang, s: ServicioSlug) => t(lang, `serviceItems.${s}.name`);
+export const nombreTipo = (lang: Lang, tipo: TipoPieza) => t(lang, `pieceTypes.${tipo}`);
 
 export const hrefCaso = (lang: Lang, slug: string) => localizePath(lang, `trabajos/${slug}/`);
 
-/** Props de FilaCaso para un caso. */
+/** Props de FilaCaso (card de proyecto) para un proyecto. */
 export function filaDeCaso(lang: Lang, c: Caso) {
   return {
     slug: c.slug,
     href: hrefCaso(lang, c.slug),
-    titulo: c.titulo[lang],
-    tipo: c.tipo[lang],
-    metricas: c.metricas.slice(0, 2).map((m) => ({ valor: m.valor, etiqueta: m.etiqueta[lang] })),
+    titulo: c.cliente,
+    tipo: c.rol[lang],
     descripcion: c.descripcion[lang],
-    servicios: c.servicios.map((s) => nombreServicio(lang, s)),
-    imagen: c.hero,
-    alt: c.heroAlt?.[lang],
+    servicios: c.tipos.map((x) => `${nombreTipo(lang, x.tipo)} ${x.cantidad}`),
+    imagen: c.portada?.src,
+    alt: c.portada?.alt[lang],
   };
 }

@@ -2,14 +2,11 @@
   "slug": "moondesk-post-validaciones",
   "caso": "moondesk",
   "formato": "post",
+  "tipo": "redes",
   "ratio": "4:5",
   "titulo": {
     "es": "Post: Validaciones en segundos",
     "en": "Post: Approvals in seconds"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

@@ -2,14 +2,11 @@
   "slug": "condimento-ad-otra-campana",
   "caso": "condimento",
   "formato": "ad",
+  "tipo": "ads",
   "ratio": "1:1",
   "titulo": {
     "es": "Ad: No necesitás otra campaña",
     "en": "Ad: You don't need another campaign"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

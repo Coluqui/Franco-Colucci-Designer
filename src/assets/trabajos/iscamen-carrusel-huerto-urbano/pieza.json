@@ -2,14 +2,11 @@
   "slug": "iscamen-carrusel-huerto-urbano",
   "caso": "iscamen",
   "formato": "carrusel",
+  "tipo": "redes",
   "ratio": "4:5",
   "titulo": {
     "es": "Carrusel: Huerto urbano",
     "en": "Carousel: Urban garden"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

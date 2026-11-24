@@ -2,14 +2,11 @@
   "slug": "condimento-ad-trafico-sin-ventas",
   "caso": "condimento",
   "formato": "ad",
+  "tipo": "ads",
   "ratio": "1:1",
   "titulo": {
     "es": "Ad: Tráfico sin ventas",
     "en": "Ad: Traffic without sales"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {
