@@ -20,3 +20,27 @@ export function flip(el: HTMLElement, antes: DOMRect, opciones: OpcionesAnimar):
   el.style.transformOrigin = '0 0';
   return animar(el, { transform: 'none' }, { ...opciones, desde: { transform: `translate(${dx}px, ${dy}px) scale(${s})` } });
 }
+
+/** La caja que ocupa de verdad una imagen con object-fit: contain dentro de su elemento (visor). */
+export function cajaContenida(img: HTMLImageElement): DOMRect {
+  const caja = img.getBoundingClientRect();
+  const w = img.naturalWidth || Number(img.getAttribute('width')) || caja.width;
+  const h = img.naturalHeight || Number(img.getAttribute('height')) || caja.height;
+  const s = Math.min(caja.width / w, caja.height / h);
+  const ancho = w * s;
+  const alto = h * s;
+  return new DOMRect(caja.left + (caja.width - ancho) / 2, caja.top + (caja.height - alto) / 2, ancho, alto);
+}
+
+/**
+ * La transformación (origen 0 0, escala uniforme) que lleva `contenido`, una caja dentro de `el`,
+ * a ocupar `destino`. Para el visor: la pieza (no su caja) viaja al tile y vuelve (M08, M09).
+ * Mide `el` sin la transformación que tenga ahora.
+ */
+export function hacia(el: HTMLElement, contenido: DOMRect, destino: DOMRect) {
+  const caja = el.getBoundingClientRect();
+  const s = destino.width / contenido.width;
+  const tx = destino.left - caja.left - s * (contenido.left - caja.left);
+  const ty = destino.top - caja.top - s * (contenido.top - caja.top);
+  return `translate(${tx}px, ${ty}px) scale(${s})`;
+}

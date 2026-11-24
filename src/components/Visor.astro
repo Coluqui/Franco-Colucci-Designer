@@ -102,6 +102,12 @@ const { lang, piezas } = Astro.props;
 
 <script>
   import { alSalir, enCadaPagina } from '../scripts/pagina';
+  import { animar, curva, detener, ms, numero, reducido, resorte } from '../scripts/motion/base';
+  import { cajaContenida, hacia } from '../scripts/motion/flip';
+  import { enPantalla } from '../scripts/motion/observer';
+
+  /** Arrastre vertical que cierra el visor (M09): fracción del alto de la pantalla. */
+  const UMBRAL_CIERRE = 0.2;
 
   enCadaPagina(() => {
     const visor = document.querySelector<HTMLDialogElement>('[data-visor]');
@@ -123,6 +129,10 @@ const { lang, piezas } = Astro.props;
       let pieza = 0;
       let slide = 0;
       let total = 0;
+      /** Pieza hacia la que se va: se adelanta a `pieza` mientras la anterior sale (M11). */
+      let objetivo = 0;
+      let turno = 0;
+      let cerrando = false;
 
       const slides = () => [...pista.querySelectorAll<HTMLElement>('.visor__slide:not(.visor__slide--siguiente)')];
       const panelFinal = () => pista.querySelector<HTMLElement>('.visor__slide--siguiente');
@@ -177,11 +187,12 @@ const { lang, piezas } = Astro.props;
         return total > 1 ? `${p} · ${posSlide(slide + 1, total)}` : p;
       };
 
-      const irSlide = (i: number, anunciar = true) => {
+      /** `suave`: desliza (M10, según el CSS de la pista); al montar una pieza se salta sin animar. */
+      const irSlide = (i: number, anunciar = true, suave = true) => {
         const destino = slides()[i];
         if (!destino) return;
         slide = i;
-        pista.scrollTo({ left: destino.offsetLeft - pista.offsetLeft });
+        pista.scrollTo({ left: destino.offsetLeft - pista.offsetLeft, behavior: suave ? 'auto' : 'instant' });
         actualizar(anunciar ? posSlide(slide + 1, total) : null);
       };
 
@@ -189,6 +200,7 @@ const { lang, piezas } = Astro.props;
         // Si el foco estaba en la pista (panel final), se reubica después de reemplazarla.
         const focoEnPista = pista.contains(document.activeElement);
         pieza = Math.max(0, Math.min(slugs.length - 1, i));
+        objetivo = pieza;
         pista.replaceChildren(plantillas[pieza]!.content.cloneNode(true));
         total = slides().length;
         escena.setAttribute('aria-label', titulo());
@@ -214,19 +226,36 @@ const { lang, piezas } = Astro.props;
             return li;
           }),
         );
-        irSlide(Math.max(0, Math.min(total - 1, s)), false);
+        irSlide(Math.max(0, Math.min(total - 1, s)), false, false);
         if (focoEnPista) {
           const sig = boton('.visor__piezas [data-visor-pieza="1"]');
           (sig && !sig.disabled ? sig : cerrar).focus();
         }
       };
 
-      const cambiarPieza = (delta: number, alFinal = false) => {
+      /**
+       * M11 · otra pieza: la actual sale --shift-md hacia arriba (200 · in) y la nueva entra desde abajo
+       * (--spring-snap). Vertical = otra pieza; horizontal = otro slide. Si llega otro pedido mientras
+       * sale, el último manda. Reducido: los tokens lo dejan en un fundido de 120 ms.
+       */
+      const cambiarPieza = async (delta: number, alFinal = false) => {
         const lista = visibles();
-        const nueva = lista[lista.indexOf(pieza) + delta];
+        const nueva = lista[lista.indexOf(objetivo) + delta];
         if (nueva === undefined) return;
+        objetivo = nueva;
+        const mio = ++turno;
+        const shift = numero('--shift-md');
+        await animar(pista, { opacity: '0', transform: `translateY(${-shift}px)` }, curva('in', 'fast')).finished.catch(() => {});
+        if (mio !== turno || !visor.open) return;
         montar(nueva, alFinal ? Number.MAX_SAFE_INTEGER : 0);
         actualizar(anuncioCompleto());
+        pista.style.opacity = '';
+        pista.style.transform = '';
+        animar(pista, { opacity: '1', transform: 'none' }, {
+          ...resorte('snap'),
+          desde: { opacity: '0', transform: `translateY(${shift}px)` },
+          soltar: true,
+        });
       };
 
       const moverSlide = (delta: number) => {
@@ -236,13 +265,98 @@ const { lang, piezas } = Astro.props;
         else irSlide(nuevo);
       };
 
+      // ---- M08 / M09: la pieza viaja entre su tile y el visor ----
+      const cromoTodo = [...visor.querySelectorAll<HTMLButtonElement | HTMLElement>('.visor__barra, .visor__pie, .visor__lado')];
+      // Las flechas deshabilitadas ya son invisibles (CSS): no se animan, así no parpadean.
+      const cromo = () => cromoTodo.filter((el) => !(el instanceof HTMLButtonElement && el.disabled));
+      const imgActual = () => slides()[slide]?.querySelector('img') ?? null;
+      const imgTile = () => document.querySelector<HTMLImageElement>(`[data-abre-visor="${slugs[pieza]}"] img`);
+      let fondo: Animation | null = null;
+      let tileOculto: HTMLImageElement | null = null;
+
+      /** El fondo (--color-inverse-bg, en ::before) aparece o se va desde donde esté. */
+      const fundirFondo = (hasta: number, opciones: { easing: string; duration: number }) => {
+        const desde = fondo ? Number(getComputedStyle(visor, '::before').opacity) : 1 - hasta;
+        fondo?.cancel();
+        fondo = visor.animate({ opacity: [desde, hasta] }, { ...opciones, pseudoElement: '::before', fill: 'forwards' });
+        return fondo;
+      };
+
+      /** El tile queda vacío mientras su pieza está en el visor: nunca hay dos copias a la vista. */
+      const ocultarTile = (img: HTMLImageElement | null) => {
+        if (tileOculto && tileOculto !== img) tileOculto.style.opacity = '';
+        tileOculto = img;
+        if (img) img.style.opacity = '0';
+      };
+
+      /** ¿Hay un tile a la vista al que la pieza pueda volver (o del que pueda salir)? */
+      const tileVisible = () => {
+        const t = imgTile();
+        return t && t.offsetParent && enPantalla(t) ? t : null;
+      };
+
+      /** La pieza (no su caja: el visor la muestra con contain) se lleva a `destino`. */
+      const hastaTile = (img: HTMLImageElement, destino: DOMRect) => {
+        img.style.transform = '';
+        img.style.transformOrigin = '0 0';
+        return hacia(img, cajaContenida(img), destino);
+      };
+
+      /** M08 · 560 · snap. Fondo en 300 · out; contador y controles 200 ms después. Reducido: fundido de 120 ms. */
+      const entrarVisor = () => {
+        cerrando = false;
+        fundirFondo(1, curva('out', 'base'));
+        cromo().forEach((el) =>
+          animar(el, { opacity: '1' }, { ...curva('out', 'fast'), delay: ms('--duration-fast'), desde: { opacity: '0' }, soltar: true }),
+        );
+        const img = imgActual();
+        const tile = tileVisible();
+        if (!img) return;
+        if (tile && !reducido()) {
+          detener(img);
+          const actual = img.style.transform;
+          const desde = hastaTile(img, tile.getBoundingClientRect());
+          animar(img, { transform: 'none' }, { ...resorte('snap'), desde: { transform: actual || desde }, soltar: true });
+        } else {
+          animar(img, { opacity: '1' }, { ...curva('out', 'base'), desde: { opacity: '0' }, soltar: true });
+        }
+        ocultarTile(imgTile());
+      };
+
+      /**
+       * M09 · cerrar (ESC, ×, arrastre vertical): la pieza vuelve a su tile si está a la vista
+       * (700 · soft); si no, el visor se funde. El fondo se va en 300 · in. Después, el foco vuelve al tile.
+       */
+      const cerrarVisor = async () => {
+        if (!visor.open || cerrando) return;
+        cerrando = true;
+        turno++;
+        fundirFondo(0, curva('in', 'base'));
+        cromo().forEach((el) => animar(el, { opacity: '0' }, curva('in', 'fast')));
+        const img = imgActual();
+        const tile = tileVisible();
+        let principal: Animation;
+        if (img && tile && !reducido()) {
+          detener(img);
+          const actual = img.style.transform || 'none';
+          const destino = hastaTile(img, tile.getBoundingClientRect());
+          principal = animar(img, { transform: destino }, { ...resorte('soft'), desde: { transform: actual } });
+        } else {
+          ocultarTile(null);
+          principal = animar(pista, { opacity: '0' }, curva('in', 'base'));
+        }
+        await principal.finished.catch(() => {});
+        if (cerrando && visor.open) visor.close();
+      };
+
       const abrir = (slug: string, s = 0) => {
         const i = slugs.indexOf(slug);
         if (i < 0) return;
-        const recienAbierto = !visor.open;
-        if (recienAbierto) visor.showModal();
+        const recienAbierto = !visor.open || cerrando;
+        if (!visor.open) visor.showModal();
         montar(i, s);
         actualizar(null);
+        if (recienAbierto) entrarVisor();
         if (recienAbierto) requestAnimationFrame(() => (estado.textContent = anuncioCompleto()));
         else estado.textContent = anuncioCompleto();
       };
@@ -256,7 +370,59 @@ const { lang, piezas } = Astro.props;
         }),
       );
 
-      cerrar.addEventListener('click', () => visor.close());
+      cerrar.addEventListener('click', cerrarVisor);
+      // ESC: el visor se cierra con su animación (si el navegador igual lo cierra, el evento close limpia).
+      visor.addEventListener('cancel', (e) => {
+        e.preventDefault();
+        cerrarVisor();
+      });
+
+      // Táctil: arrastrar la pieza hacia arriba o abajo la cierra; si no llega, vuelve (el dedo manda).
+      let arrastre: { id: number; x: number; y: number; activo: boolean; dy: number } | null = null;
+      escena.addEventListener('pointerdown', (e) => {
+        const ev = e as PointerEvent;
+        if (ev.pointerType !== 'touch' || cerrando) return;
+        arrastre = { id: ev.pointerId, x: ev.clientX, y: ev.clientY, activo: false, dy: 0 };
+      });
+      escena.addEventListener('pointermove', (e) => {
+        const ev = e as PointerEvent;
+        const img = imgActual();
+        if (!arrastre || ev.pointerId !== arrastre.id || !img) return;
+        const dx = ev.clientX - arrastre.x;
+        const dy = ev.clientY - arrastre.y;
+        if (!arrastre.activo) {
+          if (Math.abs(dy) < numero('--shift-sm') || Math.abs(dy) < Math.abs(dx)) return;
+          arrastre.activo = true;
+          detener(img);
+          fondo?.cancel();
+          // El fondo sigue al dedo: una animación en pausa que se recorre con currentTime (0 a 1).
+          fondo = visor.animate({ opacity: [1, 0] }, { duration: 1, pseudoElement: '::before', fill: 'both' });
+          fondo.pause();
+        }
+        arrastre.dy = dy;
+        img.style.transform = `translateY(${dy}px)`;
+        if (fondo) fondo.currentTime = Math.min(1, Math.abs(dy) / innerHeight);
+      });
+      const soltarArrastre = (e: Event) => {
+        const ev = e as PointerEvent;
+        if (!arrastre || ev.pointerId !== arrastre.id) return;
+        const { activo, dy } = arrastre;
+        arrastre = null;
+        if (!activo) return;
+        if (e.type === 'pointerup' && Math.abs(dy) > innerHeight * UMBRAL_CIERRE) cerrarVisor();
+        else {
+          const img = imgActual();
+          if (img) {
+            // Vuelve desde donde la dejó el dedo y termina en su CSS (sin estilo en línea).
+            const desde = { transform: img.style.transform || 'none' };
+            img.style.transform = '';
+            animar(img, { transform: 'none' }, { ...resorte('soft'), desde, soltar: true });
+          }
+          fundirFondo(1, resorte('soft'));
+        }
+      };
+      escena.addEventListener('pointerup', soltarArrastre);
+      escena.addEventListener('pointercancel', soltarArrastre);
       visor.querySelectorAll<HTMLButtonElement>('[data-visor-slide]').forEach((b) =>
         b.addEventListener('click', () => moverSlide(Number(b.dataset['visorSlide']))),
       );
@@ -295,6 +461,16 @@ const { lang, piezas } = Astro.props;
       });
 
       visor.addEventListener('close', () => {
+        cerrando = false;
+        turno++;
+        fondo?.cancel();
+        fondo = null;
+        ocultarTile(null);
+        [...cromoTodo, pista].forEach((el) => {
+          detener(el);
+          el.style.opacity = '';
+          el.style.transform = '';
+        });
         // El foco vuelve al tile de la pieza que se estaba viendo (también al abrir por enlace directo).
         const tile = document.querySelector<HTMLElement>(`[data-abre-visor="${slugs[pieza]}"]`);
         if (tile && tile.offsetParent) tile.focus();
@@ -326,9 +502,19 @@ const { lang, piezas } = Astro.props;
     margin: 0;
     padding: calc(var(--safe-top) + var(--space-2)) 0 calc(var(--safe-bottom) + var(--space-3));
     border: 0;
-    background: var(--color-bg);
+    background: transparent;
     color: var(--color-text-primary);
     overflow: hidden;
+  }
+
+  /* El fondo (--color-inverse-bg por data-invertido) es una capa propia: aparece en 300 ms (M08)
+     sin tocar la pieza ni los controles, y se recorre con el dedo al arrastrar (M09). */
+  .visor::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-bg);
   }
 
   .visor:not([open]) {
@@ -344,7 +530,7 @@ const { lang, piezas } = Astro.props;
   }
 
   .visor::backdrop {
-    background: var(--color-inverse-bg);
+    background: transparent;
   }
 
   .visor__barra {
@@ -383,6 +569,15 @@ const { lang, piezas } = Astro.props;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
+    /* El navegador se queda con el gesto horizontal (slides); el vertical es del visor (cerrar, M09). */
+    touch-action: pan-x;
+  }
+
+  /* M10 · con botones y teclado la pista desliza; con el dedo manda la inercia del sistema. */
+  @media (prefers-reduced-motion: no-preference) {
+    .visor__pista {
+      scroll-behavior: smooth;
+    }
   }
 
   .visor__pista::-webkit-scrollbar {
@@ -509,14 +704,24 @@ const { lang, piezas } = Astro.props;
     cursor: pointer;
   }
 
-  .visor__segmentos :global(button)::before {
+  .visor__segmentos :global(button)::before,
+  .visor__segmentos :global(button)::after {
     content: "";
+    grid-area: 1 / 1;
     block-size: 2px; /* PENDIENTE token (el mismo que la barra de carga, ver docs/pendientes.md) */
     background: var(--color-border-strong);
   }
 
-  .visor__segmentos :global(li[data-activo] button)::before {
+  /* M10 · el segmento activo se llena (scaleX, 300 · out) y el que deja de serlo se vacía. */
+  .visor__segmentos :global(button)::after {
     background: var(--color-text-primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .visor__segmentos :global(li[data-activo] button)::after {
+    transform: scaleX(1);
   }
 
   .visor__piezas {
