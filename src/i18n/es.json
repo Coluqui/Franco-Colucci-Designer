@@ -13,7 +13,8 @@
   "theme": {
     "label": "Modo",
     "light": "Claro",
-    "dark": "Oscuro"
+    "dark": "Oscuro",
+    "darkMode": "Modo oscuro"
   },
   "redirect": {
     "title": "Franco Colucci",
@@ -22,7 +23,8 @@
   "a11y": {
     "skipToContent": "Saltar al contenido",
     "newTab": "(se abre en otra pestaña)",
-    "pending": "(pendiente)"
+    "pending": "(pendiente)",
+    "backToTop": "Volver arriba"
   },
   "nav": {
     "label": "Navegación principal",
@@ -35,7 +37,8 @@
     "closeMenu": "Cerrar menú",
     "talk": "Hablemos",
     "contact": "Contacto",
-    "quickActions": "Acciones rápidas"
+    "quickActions": "Acciones rápidas",
+    "role": "Diseñador gráfico y digital"
   },
   "contact": {
     "email": "Mail",

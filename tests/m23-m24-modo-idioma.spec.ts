@@ -23,8 +23,8 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     test('M23 · el modo cambia con un fundido cruzado de toda la página, sin salto de layout', async ({ page }) => {
       await page.goto('/es/');
       const otro = (await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches)) ? 'light' : 'dark';
-      const boton = page.locator(`footer [data-toggle-modo] [data-tema="${otro}"]`);
-      await boton.scrollIntoViewIfNeeded();
+      // El switch del header (24 nov): idioma y modo viven arriba.
+      const boton = page.locator('[data-header] [data-switch-tema]');
       const antes = await page.evaluate(() => [scrollY, document.documentElement.scrollHeight]);
       await boton.evaluate((b) => (b as HTMLElement).click());
       await expect(page.locator('html')).toHaveAttribute('data-theme', otro);
@@ -35,7 +35,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       }
       await expect(page.locator('html')).not.toHaveAttribute('data-vt', 'tema');
       expect(await page.evaluate(() => [scrollY, document.documentElement.scrollHeight])).toEqual(antes);
-      await expect(boton).toHaveAttribute('aria-pressed', 'true');
+      await expect(boton).toHaveAttribute('aria-checked', String(otro === 'dark'));
     });
 
     test('M24 · el idioma cambia con un fundido (200 · out), sin entrada de bloques y en la misma posición', async ({ page }) => {
@@ -54,7 +54,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
           }),
         );
       });
-      await page.locator('footer [data-toggle-idioma] a:not([aria-current])').evaluate((a) => (a as HTMLElement).click());
+      await page.locator('[data-header] [data-toggle-idioma] a:not([aria-current])').evaluate((a) => (a as HTMLElement).click());
       await page.waitForURL('**/en/trabajos/iscamen/');
       await expect.poll(() => page.evaluate(() => (window as unknown as { __raiz: unknown[] }).__raiz.length)).toBeGreaterThan(reducido ? -1 : 0);
       const { r, entran } = await page.evaluate(() => {

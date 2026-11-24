@@ -51,6 +51,8 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       await page.goto('/es/dev/componentes/');
       const raiz = page.locator('[data-testimonios]');
       await raiz.scrollIntoViewIfNeeded();
+      // Con ScrollSmoother (motion 4.1) el contenido llega con retraso: se espera a que quede quieto.
+      await page.waitForTimeout(1500);
       const contador = raiz.locator('[data-contador]');
       await raiz.locator('[data-siguiente]').click();
       if (!reducido) expect(await contador.evaluate((e) => e.getAnimations().length)).toBeGreaterThan(0);
