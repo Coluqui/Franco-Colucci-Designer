@@ -2,8 +2,8 @@
 /**
  * Hero de la home · PRD §5 · design system §2, §4 y §8.
  * Wordmark "FRANC▣ / COLUCCI" a todo el ancho (H1 real: "Franco Colucci") + bajada + tira de formatos.
- * La tira es la versión estática del loop: la misma campaña en 1:1, 4:5, 9:16, 3:1 y 16:10.
- * Mientras Franco no elija la campaña, cada marco es un placeholder PENDIENTE.
+ * La tira muestra las mejores piezas (src/config/hero.ts, PRD v4.0), cada una en su proporción.
+ * Se rehace con GSAP en la Fase 10.3 (motion v3.0, efectos 4.2 y 4.3).
  * Nada arranca escondido: todo se ve en el primer frame.
  *
  * M04 · loop de formatos: con JS y sin movimiento reducido, una escena del MISMO tamaño que la
@@ -13,8 +13,12 @@
  * Pausa visible (aria-pressed). Se detiene fuera de pantalla y con la pestaña oculta (WCAG 2.2.2).
  * Movimiento reducido: no hay loop, queda la tira estática.
  */
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import Glifo from './Glifo.astro';
 import Icono from './Icono.astro';
+import { aspecto } from './tipos';
+import { piezasHero } from '../config/hero';
 import { t, type Lang } from '../i18n';
 
 interface Props {
@@ -23,14 +27,15 @@ interface Props {
 
 const { lang } = Astro.props;
 
-/** Formatos del loop (PRD §8): token --ratio-* y su etiqueta. */
-const formatos = [
-  { ratio: 'square', etiqueta: '1:1' },
-  { ratio: 'carousel', etiqueta: '4:5' },
-  { ratio: 'reel', etiqueta: '9:16' },
-  { ratio: 'mail-header', etiqueta: '3:1' },
-  { ratio: 'web', etiqueta: '16:10' },
-] as const;
+const coleccion = await getCollection('piezas');
+const casos = await getCollection('casos');
+const formatos = piezasHero.map((slug) => {
+  const p = coleccion.find((x) => x.id === slug)?.data;
+  if (!p) throw new Error(`hero: no existe la pieza "${slug}" (src/config/hero.ts)`);
+  const cliente = casos.find((c) => c.id === p.caso)?.data.cliente ?? p.caso;
+  return { aspecto: aspecto(p.ratio), etiqueta: `${cliente} · ${t(lang, `formats.${p.formato}`)}`, slide: p.slides[0]!, titulo: p.titulo[lang] };
+});
+const sizes = '(min-width: 82rem) 18rem, (min-width: 48rem) 22vw, 30vw';
 ---
 
 <section class="hero">
@@ -46,16 +51,15 @@ const formatos = [
   </div>
 
   <div class="container">
-    <div class="hero__loop" data-loop data-campana={t(lang, 'hero.campaignPending')}>
+    <div class="hero__loop" data-loop>
     <ul class="hero__formatos" role="list" aria-label={t(lang, 'hero.formatsLabel')} data-loop-tira>
       {
         formatos.map((f, i) => (
           <>
           {i === 3 && <li class="hero__corte" aria-hidden="true" />}
-          <li class="hero__formato" style={`--aspecto: var(--ratio-${f.ratio})`}>
+          <li class="hero__formato" style={`--aspecto: ${f.aspecto}`}>
             <span class="hero__marco">
-              <span class="t-label">{f.etiqueta}</span>
-              <span class="visually-hidden">· {t(lang, 'hero.formatPending')}</span>
+              <Image src={f.slide.src} alt={`${f.etiqueta}: ${f.titulo}`} widths={[240, 400, 640]} sizes={sizes} loading="eager" />
             </span>
           </li>
           </>
@@ -67,8 +71,8 @@ const formatos = [
       <div class="hero__capa" data-loop-capa>
         {
           formatos.map((f) => (
-            <span class="hero__pieza" style={`--aspecto: var(--ratio-${f.ratio})`} data-loop-pieza={f.etiqueta}>
-              <span class="t-label">{f.etiqueta}</span>
+            <span class="hero__pieza" style={`--aspecto: ${f.aspecto}`} data-loop-pieza={f.etiqueta}>
+              <Image src={f.slide.src} alt="" widths={[400, 640, 960]} sizes="(min-width: 82rem) 40rem, 90vw" loading="lazy" />
             </span>
           ))
         }
@@ -102,7 +106,7 @@ const formatos = [
       const pausa = loop.querySelector<HTMLButtonElement>('[data-loop-pausa]')!;
       const piezas = [...loop.querySelectorAll<HTMLElement>('[data-loop-pieza]')];
       const formato = (k: number) => piezas[k]!.dataset['loopPieza'] ?? '';
-      const texto = (k: number) => `${loop.dataset['campana']} · ${formato(k)}`;
+      const texto = (k: number) => formato(k);
 
       let actual = 0;
       let activo = false;
@@ -301,9 +305,8 @@ const formatos = [
     min-inline-size: 0;
   }
 
-  /* Dos filas a todos los anchos (1:1 · 4:5 · 9:16 arriba; 3:1 · 16:10 abajo): en una sola fila
-     los marcos quedaban de ~85 px de alto. El corte es un ítem vacío de ancho completo, oculto
-     para lectores de pantalla. */
+  /* Angosto: dos filas (3 + 2) para que las piezas no queden diminutas. El corte es un ítem vacío
+     de ancho completo, oculto para lectores de pantalla. */
   .hero__corte {
     flex-basis: 100%;
     block-size: 0;
@@ -318,9 +321,21 @@ const formatos = [
     margin-block-start: var(--grid-gutter);
   }
 
+  /* ≥ 48rem: las cinco piezas en una fila (todas son verticales o cuadradas). */
+  @media (min-width: 48rem) {
+    .hero__corte {
+      display: none;
+    }
+
+    .hero__corte ~ .hero__formato {
+      margin-block-start: 0;
+    }
+  }
+
   .hero__marco {
     display: grid;
     place-items: center;
+    overflow: hidden;
     aspect-ratio: var(--aspecto);
     border-radius: var(--radius-sm);
     background: var(--color-stage);
@@ -363,8 +378,9 @@ const formatos = [
     color: var(--color-text-secondary);
   }
 
-  /* Cuando llegue la campaña: la pieza llena su marco sin estirarse. */
-  .hero__pieza :is(img, video) {
+  /* La pieza llena su marco sin estirarse. */
+  .hero__marco :global(img),
+  .hero__pieza :global(:is(img, video)) {
     grid-area: 1 / 1;
     inline-size: 100%;
     block-size: 100%;
@@ -425,10 +441,10 @@ const formatos = [
     }
   }
 
-  /* ≥ 1280: el loop a 7 columnas, centrado (design system §8). */
+  /* ≥ 1280: la tira a 10 columnas, centrada (5 piezas verticales en una fila; deja lugar a la pausa). */
   @media (min-width: 80rem) {
     .hero__loop {
-      max-inline-size: calc((100% + var(--grid-gutter)) * 7 / 12 - var(--grid-gutter));
+      max-inline-size: calc((100% + var(--grid-gutter)) * 10 / 12 - var(--grid-gutter));
       margin-inline: auto;
     }
 

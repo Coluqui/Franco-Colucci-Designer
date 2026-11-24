@@ -20,6 +20,14 @@ export const ratioServicio: Record<ServicioSlug, RatioServicio> = {
   branding: 'carousel',
 };
 
+/** Tipo de pieza que filtra Trabajos desde cada servicio (PRD v4.0); sin tipo, Trabajos sin filtro. */
+export const tipoDeServicio: Partial<Record<ServicioSlug, 'redes' | 'ads' | 'identidad'>> = {
+  ads: 'ads',
+  redes: 'redes',
+  reels: 'redes',
+  branding: 'identidad',
+};
+
 export const ordenServicios: readonly ServicioSlug[] = ['ads', 'redes', 'reels', 'mail', 'web', 'branding'];
 
 /**
