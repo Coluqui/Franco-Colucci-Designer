@@ -32,7 +32,7 @@ interface Props {
 
 const { lang, title, description, noindex = false, alternates = true, chrome = false } = Astro.props;
 /** URL absoluta en el dominio público (`site`), sin query: canonical, hreflang y Open Graph. */
-const absoluta = (ruta: string) => new URL(ruta.split('?')[0]!, Astro.site).href;
+const absoluta = (ruta: string) => new URL(ruta.split("?")[0]!, Astro.site ?? Astro.url).href;
 const canonica = absoluta(Astro.url.pathname);
 const ogLocale = { es: 'es_AR', en: 'en_US' } satisfies Record<Lang, string>;
 ---
