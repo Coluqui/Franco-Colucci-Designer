@@ -1,7 +1,7 @@
 ---
 /**
  * Sobre mí · PRD §5: retrato (duotono), bio, datos con etiqueta (base, idiomas, modalidad),
- * experiencia con fechas, cómo uso la IA y CV. Todo el texto real está PENDIENTE (docs/pendientes.md).
+ * experiencia, cómo uso la IA y CV. Textos de portfolio2026-twhh.vercel.app; fechas de experiencia PENDIENTE.
  */
 import type { GetStaticPaths } from 'astro';
 import Base from '../../layouts/Base.astro';
@@ -14,12 +14,11 @@ export const getStaticPaths = (() => locales.map((lang) => ({ params: { lang } }
 
 const lang = Astro.params.lang as Lang;
 const cv = cvHref(lang);
-const pendiente = t(lang, 'placeholder.pending');
 
 const datos = [
-  { etiqueta: t(lang, 'about.base'), valor: pendiente },
-  { etiqueta: t(lang, 'about.languages'), valor: pendiente },
-  { etiqueta: t(lang, 'about.workMode'), valor: pendiente },
+  { etiqueta: t(lang, 'about.base'), valor: t(lang, 'about.baseValue') },
+  { etiqueta: t(lang, 'about.languages'), valor: t(lang, 'about.languagesValue') },
+  { etiqueta: t(lang, 'about.workMode'), valor: t(lang, 'about.workModeValue') },
 ];
 ---
 
@@ -48,12 +47,12 @@ const datos = [
 
     <section class="sobre__bloque" aria-labelledby="experiencia">
       <h2 id="experiencia">{t(lang, 'about.experience')}</h2>
-      <p class="t-body">{t(lang, 'about.experiencePending')}</p>
+      <p class="t-body">{t(lang, 'about.experienceText')}</p>
     </section>
 
     <section class="sobre__bloque" aria-labelledby="ia">
       <h2 id="ia">{t(lang, 'about.ai')}</h2>
-      <p class="t-body">{t(lang, 'about.aiPending')}</p>
+      <p class="t-body">{t(lang, 'about.aiText')}</p>
     </section>
   </div>
 </Base>
