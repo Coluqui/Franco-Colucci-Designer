@@ -1,3 +1,5 @@
+> **OBSOLETO (24 nov 2026).** Corresponde a motion v2.0 "Formato vivo", reemplazado por `docs/motion.md` v3.0 "Desglose". Se conserva como historial; propuesto para borrar.
+
 # Prompt 07 · Motion "Formato vivo"
 
 Antes de pegarlo: copiá los archivos de este kit a la raíz de "Portfolio 2", reemplazando los que ya existen. Son `docs/motion.md`, `docs/design-system.md`, `docs/PRD-Portfolio-Franco-Colucci.md`, `design-system/tokens.css`, `design-system/tokens.json` y `.claude/rules/motion.md`.
