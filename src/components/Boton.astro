@@ -116,7 +116,8 @@ const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
             rodarTexto(texto, original).then(() => (a.dataset['estado'] = 'ok'));
           }, paso),
           window.setTimeout(() => {
-            delete a.dataset['estado'];
+            // "CV ✓" sale rodando y entra "CV" (la ✓ se va con el texto, no de golpe).
+            rodarTexto(texto, original, curva('out', 'fast'), -1).then(() => delete a.dataset['estado']);
             if (flecha) {
               flecha.style.opacity = '';
               flecha.style.transform = '';

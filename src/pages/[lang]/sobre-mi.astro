@@ -39,7 +39,7 @@ const datos = [
             ))
           }
         </dl>
-        <Boton variante="secundario" icono="flecha-abajo" href={cv} download={cv ? '' : undefined}>
+        <Boton variante="secundario" icono="flecha-abajo" href={cv} download={cv ? '' : undefined} data-texto-descargando={t(lang, 'contact.downloading')}>
           {t(lang, 'contact.downloadCv')}
         </Boton>
       </div>

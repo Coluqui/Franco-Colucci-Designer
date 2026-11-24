@@ -142,3 +142,12 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 - **M31 · tiempo de "Descargando".** El navegador no avisa cuando termina una descarga: "Descargando" dura `--duration-slow` y después pasa a "CV ✓". El CV es PENDIENTE, así que hoy no se ve.
 - **M32 · lo que falta.** Están el error del campo (baja `--shift-xs`) y la barra de "Enviando" (quieta en reducido). El éxito, el error de envío y M03 se conectan con el formulario real en la Fase 7.
 - **Token nuevo.** `--shift-xs: 4px` (0 en reducido), para la flecha de M27 y el error de M32. Agregado a `tokens.css` y `tokens.json`.
+- **Revisiones del paso 5: lo que quedó sin corregir.**
+  - **M31 · en los `Link`.** "Descargar CV" del footer, el menú, el panel y /hablemos son links de texto, no botones: no llevan la animación (sí la barra mobile y Sobre mí). Decisión de Franco: ¿M31 también ahí?
+  - **M31 · "cae en una línea".** La flecha baja y se desvanece; falta la línea donde cae. Se suma cuando haya CV para verlo.
+  - **M31 · sin anuncio.** "Descargando" y "CV ✓" no tienen región viva (el navegador ya avisa la descarga). En reducido "Descargando" dura 120 ms.
+  - **M30 · sin portapapeles.** El mail se muestra dentro del botón y no se puede seleccionar. Se resuelve con el mail real (Fase 7): mostrarlo fuera del botón.
+  - **M32 · reducido.** El error aparece sin fundido (`--duration-fast` vale 0); `docs/motion.md` pide 120 ms. Entra en la decisión abierta de los tokens de reducido.
+  - **M32 · Fase 7.** Al mostrar un error desde JS, sumar `aria-invalid`, `aria-describedby` y mover el foco al primer error.
+  - **M32 · valores sueltos.** La barra de "Enviando" usa `block-size: 2px` y `opacity: 0.6` (de la Fase 3). Deuda: pasarlos a tokens.
+  - **M28 · Safari iOS.** El contador se sincroniza con `scrollend`; hay que probarlo en un iPhone y, si falta, sumar un respaldo con `scroll`.

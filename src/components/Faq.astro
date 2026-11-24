@@ -61,6 +61,9 @@ const { preguntas, id = 'faq' } = Astro.props;
           boton.setAttribute('aria-expanded', String(boton.getAttribute('aria-expanded') !== 'true'));
         });
       });
+      // Se aplica el cierre sin transición y recién después se habilita M29 (solo anima el clic).
+      void faq.offsetHeight;
+      faq.dataset['listo'] = '';
     });
   });
 </script>
@@ -138,6 +141,11 @@ const { preguntas, id = 'faq' } = Astro.props;
     transition:
       grid-template-rows var(--spring-soft-duration) var(--spring-soft),
       visibility 0s linear var(--spring-soft-duration);
+  }
+
+  /* Hasta que el script cierra las respuestas, nada se anima (ver el script). */
+  .faq:not([data-listo]) .faq__respuesta {
+    transition: none;
   }
 
   .faq__interior {

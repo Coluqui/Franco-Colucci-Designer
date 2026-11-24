@@ -80,6 +80,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
         w.__vacio = false;
         new MutationObserver(() => el.textContent === '' && (w.__vacio = true)).observe(el, { childList: true, characterData: true, subtree: true });
       });
+      await expect(page.locator('[data-filtros-estado]')).not.toHaveText('');
       const texto = await page.locator('[data-filtros-estado]').textContent();
       await page.locator('.filtro').nth(1).click();
       await page.locator('.filtro').nth(0).click();

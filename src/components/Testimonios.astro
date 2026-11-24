@@ -62,8 +62,8 @@ const varios = total > 1;
     varios && (
       <div class="testimonios__nav">
         <p class="visually-hidden" id="testimonios-ayuda">{t(lang, 'testimonials.hint')}</p>
-        <p class="t-label testimonios__contador" aria-live="polite" aria-atomic="true">
-          <span class="visually-hidden" data-contador-texto>
+        <p class="t-label testimonios__contador">
+          <span class="visually-hidden" aria-live="polite" aria-atomic="true" data-contador-texto>
             {tf(lang, 'testimonials.position', { actual: 1, total })}
           </span>
           <span aria-hidden="true">
@@ -146,7 +146,9 @@ const varios = total > 1;
         if (!arrastre || e.pointerId !== arrastre.id) return;
         const dx = e.clientX - arrastre.x;
         if (!arrastre.activo) {
-          if (Math.abs(dx) < numero('--shift-sm')) return;
+          // Umbral en espacio (no un token de movimiento, que vale 0 en reducido): un clic no es un arrastre.
+          const umbral = numero('--space-2') * parseFloat(getComputedStyle(document.documentElement).fontSize);
+          if (Math.abs(dx) < umbral) return;
           arrastre.activo = true;
           pista.setPointerCapture(e.pointerId);
           pista.dataset['arrastrando'] = '';
@@ -173,6 +175,7 @@ const varios = total > 1;
 
       // Al terminar de desplazarse (dedo, rueda o flechas), el testimonio más cercano es el actual.
       pista.addEventListener('scrollend', () => {
+        if (arrastre?.activo) return;
         const posiciones = items.map((it) => Math.abs(it.offsetLeft - pista.offsetLeft - pista.scrollLeft));
         marcar(posiciones.indexOf(Math.min(...posiciones)));
       });

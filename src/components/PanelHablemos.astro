@@ -176,11 +176,13 @@ const { lang } = Astro.props;
       }
       // El color y la marca llegan con el texto nuevo (no sobre el que sale).
       rodarTexto(texto, copiar.dataset['textoOk'] ?? '').then(() => (copiar.dataset['estado'] = 'ok'));
-      if (aviso) aviso.textContent = copiar.dataset['textoOk'] ?? '';
+      if (aviso) {
+        aviso.textContent = '';
+        requestAnimationFrame(() => (aviso.textContent = copiar.dataset['textoOk'] ?? ''));
+      }
       window.clearTimeout(volver);
       volver = window.setTimeout(() => {
-        rodarTexto(texto, copiar.dataset['texto'] ?? '', curva('out', 'fast'), -1);
-        delete copiar.dataset['estado'];
+        rodarTexto(texto, copiar.dataset['texto'] ?? '', curva('out', 'fast'), -1).then(() => delete copiar.dataset['estado']);
         if (aviso) aviso.textContent = '';
       }, ms('--hold-feedback'));
     });

@@ -51,6 +51,8 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       const boton = page.locator('[data-faq-boton]').first();
       await boton.scrollIntoViewIfNeeded();
       const respuesta = page.locator('.faq__respuesta').first();
+      // Al cargar, el cierre inicial no se anima (solo el clic).
+      expect(await page.locator('.faq__respuesta').evaluateAll((els) => els.flatMap((e) => e.getAnimations()).length)).toBe(0);
       expect(await respuesta.evaluate((e) => getComputedStyle(e).transitionProperty)).toContain('grid-template-rows');
       await boton.click();
       await expect(boton).toHaveAttribute('aria-expanded', 'true');
