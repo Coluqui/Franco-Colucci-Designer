@@ -82,14 +82,21 @@ const { lang, tipo } = Astro.props;
     document.querySelectorAll<HTMLButtonElement>('[data-toggle-modo] [data-tema]').forEach((b) => {
       b.addEventListener('click', () => {
         const tema = b.dataset['tema'];
-        if (tema !== 'light' && tema !== 'dark') return;
-        document.documentElement.dataset['theme'] = tema;
-        try {
-          localStorage.setItem('tema', tema);
-        } catch {
-          /* sin storage: el modo vale solo para esta página */
-        }
-        pintar();
+        if ((tema !== 'light' && tema !== 'dark') || tema === temaActual()) return;
+        const cambiar = () => {
+          document.documentElement.dataset['theme'] = tema;
+          try {
+            localStorage.setItem('tema', tema);
+          } catch {
+            /* sin storage: el modo vale solo para esta página */
+          }
+          pintar();
+        };
+        // M23 · fundido cruzado de toda la página (300 · in-out); sin View Transitions, cambio directo.
+        if (!document.startViewTransition) return cambiar();
+        const html = document.documentElement;
+        html.dataset['vt'] = 'tema';
+        document.startViewTransition(cambiar).finished.finally(() => delete html.dataset['vt']);
       });
     });
     pintar();

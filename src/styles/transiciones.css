@@ -9,6 +9,9 @@
  *   (700 · snap) y la pieza se recorta adentro, nunca se estira (object-fit: cover). Un encastre.
  * - Nombre de la fila → H1 del caso (y "Siguiente caso" → H1 del siguiente): viaja con la media.
  * Los nombres los pone transition:name (caso-<slug>-media / -titulo); la clase agrupa a todos.
+ * - M23 · cambio de modo (html[data-vt="tema"]): fundido cruzado 300 · in-out.
+ * - M24 · cambio de idioma (tipo "idioma"): fundido cruzado 200 · out; el header no se mueve y la
+ *   posición se conserva (Toggle.astro).
  */
 
 .fila__media,
@@ -70,6 +73,44 @@
   }
 }
 
+@keyframes vt-entra {
+  from {
+    opacity: 0;
+  }
+}
+
+/* M23 · modo claro / oscuro: todo se funde a la vez; nada se mueve. */
+:root[data-vt="tema"]::view-transition-old(root) {
+  animation: vt-sale var(--duration-base) var(--ease-in-out) both;
+}
+
+:root[data-vt="tema"]::view-transition-new(root) {
+  animation: vt-entra var(--duration-base) var(--ease-in-out) both;
+}
+
+:root[data-vt="tema"]::view-transition-group(*),
+:root[data-vt="tema"]::view-transition-old(*),
+:root[data-vt="tema"]::view-transition-new(*) {
+  animation-duration: var(--duration-base);
+  animation-timing-function: var(--ease-in-out);
+}
+
+/* M24 · idioma: los textos se funden (200 · out). Lo que tiene nombre queda en su lugar y se funde igual. */
+:root:active-view-transition-type(idioma)::view-transition-old(root) {
+  animation: vt-sale var(--duration-fast) var(--ease-out) both;
+}
+
+:root:active-view-transition-type(idioma)::view-transition-new(root) {
+  animation: vt-entra var(--duration-fast) var(--ease-out) both;
+}
+
+:root:active-view-transition-type(idioma)::view-transition-group(*),
+:root:active-view-transition-type(idioma)::view-transition-old(*),
+:root:active-view-transition-type(idioma)::view-transition-new(*) {
+  animation-duration: var(--duration-fast);
+  animation-timing-function: var(--ease-out);
+}
+
 /*
  * Movimiento reducido: fundido cruzado de 120 ms y nada viaja. Astro apaga todas las animaciones de
  * la transición con !important bajo (prefers-reduced-motion); acá se recupera solo el fundido.
@@ -91,9 +132,15 @@
     animation: vt-entra var(--duration-base) var(--ease-out) both !important;
   }
 
-  @keyframes vt-entra {
-    from {
-      opacity: 0;
-    }
+  /* M23 y M24 en reducido: instantáneos. (Reglas separadas: un navegador sin
+     :active-view-transition-type descartaría la lista entera.) */
+  :root[data-vt="tema"]::view-transition-old(root),
+  :root[data-vt="tema"]::view-transition-new(root) {
+    animation: none !important;
+  }
+
+  :root:active-view-transition-type(idioma)::view-transition-old(root),
+  :root:active-view-transition-type(idioma)::view-transition-new(root) {
+    animation: none !important;
   }
 }
