@@ -98,3 +98,30 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 - **Decisión de Franco · entradas con movimiento reducido (M16, M17).** `docs/motion.md` dice "Sin entrada"; con los tokens queda un fundido de 120 ms sin desplazamiento. Es el mismo caso que M05 (ver arriba): un token de duración que valga 0 en reducido lo resolvería en los tres.
 - **1.4.12 (espaciado de texto) en servicios a 360.** Los nombres son de una línea (`nowrap`, la respiración lo necesita). Con un espaciado de letras de 0,12 em el nombre activo desborda hacia la derecha sin cortarse ni taparse; verificar con el bookmarklet de espaciado de texto en la QA de cierre.
 
+## Fase 6 · motion (paso 4: navegación, M06–M12 y M19–M24)
+
+- **Decisión de Franco · movimiento reducido en M19–M22.** Es el mismo caso que M05, M16 y M17. `docs/motion.md` pide lo siguiente y, con los tokens, hoy queda otra cosa:
+
+  | ID | Pide `docs/motion.md` | Hoy, con los tokens |
+  | --- | --- | --- |
+  | M19 | Instantáneo | Fundido de 120 ms |
+  | M20 | Fundido de 120 ms | El recorte crece desde el botón en 120 ms |
+  | M21 | Fundido de 120 ms | El panel se desliza en 120 ms |
+  | M22 | Instantáneo | La barra baja en 120 ms |
+
+  Un token de duración que valga 0 en reducido, o actualizar la columna "Reducido", lo resuelve en los siete.
+- **Decisión de Franco · header persistente y cambio de idioma (M24).** El header lleva `transition:persist` por idioma:
+  - **Mismo idioma:** al navegar es el mismo nodo (no parpadea y conserva su estado).
+  - **Cambio de idioma:** se reemplaza, porque sus textos y links son de cada idioma ("Hablemos" / "Let's talk"). No se mueve: se funde con el resto (200 · out).
+
+  Si lo aprobás, conviene aclarar M24 en `docs/motion.md`: "header en su lugar; sus textos se funden con la página".
+- **M19 · detección de secciones invertidas.** `docs/motion.md` dice IntersectionObserver. Se usa una lectura por cuadro del scroll (una sola, con `requestAnimationFrame`), porque lo que importa es la franja exacta debajo del header. El fondo es una capa con opacidad: no se anima ningún color.
+- **M08 · agregado.** Mientras su pieza está en el visor, el tile queda vacío, para que no haya dos copias a la vista durante el viaje. Al cerrar, la pieza vuelve a ese lugar.
+- **M09 · umbral del arrastre.** Cierra si el dedo recorre más del 20 % del alto de la pantalla; si no, la pieza vuelve con `--spring-soft`. Es una constante del gesto, no un token.
+- **M12 · tiempos no especificados.** Lo que sale se desvanece en 200 · in, fuera del flujo. Lo que entra aparece con `--spring-soft` y `--stagger-fast`.
+- **Compatibilidad.** En los navegadores sin `view-transition-class` o sin tipos de View Transition, se ve el fundido de página común:
+  - la media viaja igual, pero con la curva del navegador;
+  - el idioma usa la salida de página (200 · in).
+- **Astro y movimiento reducido.** El `<ClientRouter />` apaga todas las animaciones de la transición con `!important`. `src/styles/transiciones.css` recupera el fundido de 120 ms que pide M06/M07.
+- **QA de cierre.** El perfil de rendimiento de M06 con CPU 4× va en la QA de cierre: la transición captura la página entera.
+
