@@ -1,7 +1,7 @@
 {
   "meta": {
     "siteName": "Franco Colucci",
-    "siteTitle": "Franco Colucci · Diseñador gráfico y digital",
+    "siteTitle": "Franco Colucci · Diseñador digital y UX-UI",
     "siteDescription": "PENDIENTE: descripción del sitio en español."
   },
   "lang": {
@@ -38,7 +38,7 @@
     "talk": "Hablemos",
     "contact": "Contacto",
     "quickActions": "Acciones rápidas",
-    "role": "Diseñador gráfico y digital"
+    "role": "Diseñador digital y UX-UI"
   },
   "contact": {
     "email": "Mail",
@@ -136,7 +136,7 @@
   },
   "pages": {
     "home": {
-      "title": "Diseñador gráfico y digital",
+      "title": "Diseñador digital y UX-UI",
       "description": "Portfolio de Franco Colucci: piezas de redes, ads de performance, mails, ebooks y webs que se entienden en un segundo y se pueden medir."
     },
     "work": {
@@ -145,7 +145,7 @@
     },
     "about": {
       "title": "Sobre mí",
-      "description": "Quién es Franco Colucci, diseñador gráfico y digital: experiencia, forma de trabajo y uso de IA."
+      "description": "Quién es Franco Colucci, diseñador digital y UX-UI: experiencia, forma de trabajo y uso de IA."
     },
     "talk": {
       "title": "Hablemos",

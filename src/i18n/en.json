@@ -1,7 +1,7 @@
 {
   "meta": {
     "siteName": "Franco Colucci",
-    "siteTitle": "Franco Colucci · Graphic & Digital Designer",
+    "siteTitle": "Franco Colucci · Digital & UX/UI Designer",
     "siteDescription": "PENDING: site description in English."
   },
   "lang": {
@@ -38,7 +38,7 @@
     "talk": "Let's talk",
     "contact": "Contact",
     "quickActions": "Quick actions",
-    "role": "Graphic & Digital Designer"
+    "role": "Digital & UX/UI Designer"
   },
   "contact": {
     "email": "Email",
@@ -136,7 +136,7 @@
   },
   "pages": {
     "home": {
-      "title": "Graphic & Digital Designer",
+      "title": "Digital & UX/UI Designer",
       "description": "Franco Colucci’s portfolio: social, performance ads, emails, ebooks and websites that read in a second and can be measured."
     },
     "work": {
@@ -145,7 +145,7 @@
     },
     "about": {
       "title": "About",
-      "description": "Who Franco Colucci is, graphic and digital designer: experience, way of working and use of AI."
+      "description": "Who Franco Colucci is, digital & UX/UI designer: experience, way of working and use of AI."
     },
     "talk": {
       "title": "Let’s talk",

@@ -4,8 +4,9 @@
  * Wordmark "FRANCO / COLUCCI" a todo el ancho (H1 real: "Franco Colucci") + bajada. Sin piezas:
  * Franco prefiere que el trabajo aparezca al scrollear (24 nov).
  * Ocupa la primera pantalla; el resto de la home se descubre al bajar (motion v3.0).
- * Motion: 4.2 (el wordmark se arma por letras en su máscara) y 4.3 (al scrollear se achica y se va).
- * Hooks: data-hero, data-hero-linea, data-hero-bajada (src/motion/hero.ts).
+ * Motion: 4.2 (entra "FC" y se despliega en "FRANCO / COLUCCI", como el logo del header; Franco, 24 nov)
+ * y 4.3 (al scrollear se achica y se va). Sin JS o con movimiento reducido: el nombre completo.
+ * Hooks: data-hero, data-hero-linea, data-hero-resto, data-hero-bajada (src/motion/hero.ts).
  */
 import { t, type Lang } from '../i18n';
 
@@ -21,11 +22,14 @@ const { lang } = Astro.props;
     <h1 class="hero__titulo">
       <span class="visually-hidden">Franco Colucci</span>
       <span class="t-wordmark hero__wordmark" aria-hidden="true" data-hero-wordmark>
-        <span class="hero__mascara"><span class="hero__linea" data-hero-linea>Franco</span></span>
-        <span class="hero__mascara"><span class="hero__linea" data-hero-linea>Colucci</span></span>
+        <span class="hero__mascara"><span class="hero__linea" data-hero-linea>F<span class="hero__resto" data-hero-resto>ranco</span></span></span>
+        <span class="hero__mascara"><span class="hero__linea" data-hero-linea>C<span class="hero__resto" data-hero-resto>olucci</span></span></span>
       </span>
     </h1>
-    <p class="t-lead hero__bajada" data-hero-bajada>{t(lang, 'hero.tagline')}</p>
+    <div class="hero__bajada" data-hero-bajada>
+      <p class="t-h3 hero__puesto">{t(lang, 'nav.role')}</p>
+      <p class="t-lead hero__frase">{t(lang, 'hero.tagline')}</p>
+    </div>
   </div>
 </section>
 
@@ -70,10 +74,28 @@ const { lang } = Astro.props;
     white-space: nowrap;
   }
 
+  /* Con motion, arranca plegado en "FC" (sin parpadeo): hero.ts abre el ancho de lo que falta. */
+  :global(html.motion) .hero__resto {
+    display: inline-block;
+    inline-size: 0;
+    overflow: clip;
+    vertical-align: bottom;
+  }
+
+  /* Puesto (Franco, 24 nov: "Diseñador digital y UX-UI") + bajada. */
   .hero__bajada {
+    display: grid;
+    gap: var(--space-3);
     max-inline-size: var(--measure);
+  }
+
+  .hero__puesto,
+  .hero__frase {
     margin: 0;
-    color: var(--color-text-secondary);
     text-wrap: balance;
+  }
+
+  .hero__frase {
+    color: var(--color-text-secondary);
   }
 </style>
