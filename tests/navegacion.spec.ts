@@ -41,6 +41,8 @@ test('navegar sin recargar: el header persiste y todo vuelve a arrancar', async 
   // Nadie quedó "leyendo" de la página anterior (el loop no espera de más).
   await expect(page.locator('html')).not.toHaveAttribute('data-leyendo', '');
   // El header reacciona al scroll en la página nueva.
+  // Tras el swap, el smoother fija el alto de la página un cuadro después.
+  await page.waitForFunction(() => document.documentElement.scrollHeight > innerHeight * 2);
   await page.evaluate(() => scrollTo(0, 400));
   await expect(page.locator('[data-header]')).toHaveAttribute('data-scrolled', '');
   expect(errs).toEqual([]);
@@ -64,7 +66,7 @@ test('cambiar de idioma: el header pasa al otro idioma y la posición se conserv
   await page.locator('[data-header] [data-toggle-idioma] a:not([aria-current])').evaluate((a) => (a as HTMLElement).click());
   await page.waitForURL('**/en/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page.locator('[data-header] [data-abre-menu]')).toHaveText(/menu/i);
+  await expect(page.locator('[data-header] [data-abre-menu]')).toHaveAttribute('aria-label', /menu/i);
   await expect(page.locator('[data-header] [data-abre-panel]')).not.toContainText('Hablemos');
   // Con ScrollSmoother el alto de la página llega un cuadro después del swap.
   await expect

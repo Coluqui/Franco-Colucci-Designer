@@ -3,7 +3,7 @@
  * Header · design system §7 y §8.
  * Monograma "FC" (inicio) a la izquierda: al scrollear se despliega en "Franco Colucci" + puesto
  * (Franco, 24 nov; motion en src/motion/logo.ts; desde 48rem). A la derecha: idioma ES / EN, switch de
- * modo, "Hablemos" (primario) y "Menú" (secundario).
+ * modo, "Hablemos" (primario) y el menú como ícono (burger). Todos los controles a la misma altura.
  * - Transparente arriba; con scroll > 8 px, --color-bg + filete (data-scrolled). M19: el fondo es una
  *   capa (::before) que aparece con opacidad (300 · in-out), así no se anima ningún color.
  * - Sobre una sección invertida, reasigna los tokens (data-invertido).
@@ -12,6 +12,7 @@
  */
 import Boton from './Boton.astro';
 import Toggle from './Toggle.astro';
+import Icono from './Icono.astro';
 import { t, localizePath, type Lang } from '../i18n';
 
 interface Props {
@@ -41,17 +42,17 @@ const { lang } = Astro.props;
       >
         {t(lang, 'nav.talk')}
       </Boton>
-      <Boton
-        class="header__menu"
-        variante="secundario"
-        size="sm"
+      <button
+        class="header__icono header__menu"
+        type="button"
         data-abre-menu
         aria-haspopup="dialog"
         aria-expanded="false"
         aria-controls="menu"
+        aria-label={t(lang, 'nav.menu')}
       >
-        {t(lang, 'nav.menu')}
-      </Boton>
+        <Icono nombre="menu" />
+      </button>
     </div>
   </div>
 </header>
@@ -171,14 +172,54 @@ const { lang } = Astro.props;
   }
 
   .header__acciones {
+    --alto-control: var(--control-height);
     display: flex;
     align-items: center;
     gap: var(--space-2);
   }
 
+  /* Misma altura para todo: 44 en táctil/angosto; 36 desde 48rem, como el botón "Hablemos" (sm). */
   @media (min-width: 48rem) {
     .header__acciones {
+      --alto-control: var(--control-height-sm);
       gap: var(--space-3);
+    }
+  }
+
+  .header__acciones :global(.segmentado) {
+    padding: 0;
+  }
+
+  .header__acciones :global(.segmentado__opcion) {
+    min-block-size: calc(var(--alto-control) - 2px);
+    min-inline-size: calc(var(--alto-control) - 2px);
+  }
+
+  .header__acciones :global(.tema-switch),
+  .header__icono {
+    inline-size: var(--alto-control);
+    block-size: var(--alto-control);
+  }
+
+  .header__icono {
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    border: var(--border-control);
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--color-text-primary);
+    cursor: pointer;
+  }
+
+  .header__icono:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .header__icono:hover {
+      background: var(--color-surface);
     }
   }
 
