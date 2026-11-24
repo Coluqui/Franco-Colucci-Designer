@@ -62,6 +62,7 @@
     "retry": "Reintentar",
     "required": "Completá este campo.",
     "invalidEmail": "Revisá el email: parece que falta algo.",
+    "tooLong": "Es demasiado largo: acortalo un poco.",
     "closePanel": "Cerrar panel",
     "requiredMark": "(obligatorio)",
     "titleError": "Error",

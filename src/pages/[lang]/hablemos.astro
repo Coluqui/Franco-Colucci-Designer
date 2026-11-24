@@ -6,6 +6,7 @@
  * formulario envía sin recargar (FormHablemos).
  */
 import { actions, isInputError } from 'astro:actions';
+import { LARGO_MAX } from '../../actions';
 import Base from '../../layouts/Base.astro';
 import Link from '../../components/Link.astro';
 import FormHablemos from '../../components/FormHablemos.astro';
@@ -29,14 +30,18 @@ if (resultado?.error) {
   // Lo escrito vuelve a los campos (PRD §11: error sin perder lo escrito).
   const datos = await Astro.request.formData().catch(() => null);
   momento = Number(datos?.get('t')) || momento;
-  valores = Object.fromEntries(['nombre', 'email', 'mensaje'].map((c) => [c, String(datos?.get(c) ?? '')]));
+  // Recortado al máximo: un cuerpo enorme no vuelve entero en el HTML.
+  valores = Object.fromEntries(Object.entries(LARGO_MAX).map(([c, max]) => [c, String(datos?.get(c) ?? '').slice(0, max + 1)]));
   if (isInputError(resultado.error)) errores = Object.fromEntries(Object.entries(resultado.error.fields).map(([c, m]) => [c, String(m?.[0] ?? '')]));
   else estado = 'error';
 } else if (resultado) {
+  // Éxito: POST → redirect → GET, así F5 no vuelve a enviar el mensaje.
+  return Astro.redirect(`${Astro.url.pathname}?enviado`, 303);
+} else if (Astro.url.searchParams.has('enviado')) {
   estado = 'exito';
 }
 // El título dice qué pasó: es lo primero que lee un lector de pantalla en la página nueva.
-const prefijo = resultado?.error ? `${t(lang, 'form.titleError')}: ` : resultado ? `${t(lang, 'form.titleSent')}: ` : '';
+const prefijo = resultado?.error ? `${t(lang, 'form.titleError')}: ` : estado === 'exito' ? `${t(lang, 'form.titleSent')}: ` : '';
 ---
 
 <Base lang={lang} title={`${prefijo}${t(lang, 'pages.talk.title')} · Franco Colucci`} description={t(lang, 'pages.talk.description')} chrome>

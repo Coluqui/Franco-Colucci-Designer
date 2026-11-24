@@ -320,10 +320,9 @@ const { lang } = Astro.props;
     cursor: not-allowed;
   }
 
-  /* Pendiente: punteado fino como .link--pendiente (el subrayado de button.link es un ::after). */
+  /* Pendiente: punteado como .link--pendiente (el subrayado de button.link es un ::after). */
   .panel__copiar:disabled::after {
-    border-block-end: 1px dotted currentColor;
-    transform: none;
+    border-block-end-style: dotted;
   }
 
   .panel__copiar[data-estado="ok"] {

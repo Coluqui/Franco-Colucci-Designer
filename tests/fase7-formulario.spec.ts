@@ -126,6 +126,23 @@ test.describe('página sin JS', () => {
     await expect(page.locator('main [data-exito]')).toBeFocused();
     await expect(page.locator('main [data-exito]')).toBeVisible();
     await expect(page.locator('main [data-exito]')).toContainText('Thanks');
+    // POST → redirect → GET: recargar no vuelve a enviar.
+    expect(new URL(page.url()).search).toBe('?enviado');
+    let envios = 0;
+    page.on('request', (r) => r.method() === 'POST' && envios++);
+    await page.reload();
+    await expect(page.locator('main [data-exito]')).toBeVisible();
+    expect(envios).toBe(0);
+  });
+
+  test('largo máximo: avisa que es largo (no que falta) y no devuelve más de lo permitido', async ({ page }) => {
+    await page.goto('/es/hablemos/');
+    await page.fill('#pagina-nombre', 'Ana');
+    await page.fill('#pagina-email', 'ana@ejemplo.com');
+    await page.fill('#pagina-mensaje', 'x'.repeat(5001));
+    await page.locator('main button[type="submit"]').click();
+    await expect(page.locator('#pagina-mensaje-error')).toContainText('demasiado largo');
+    expect((await page.locator('#pagina-mensaje').inputValue()).length).toBe(5001);
   });
 
   test('idioma inválido: 404', async ({ page }) => {

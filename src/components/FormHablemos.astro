@@ -23,7 +23,7 @@ interface Props {
   /** Prefijo de los id (el panel y la página pueden estar en el mismo documento). */
   id: string;
   valores?: Partial<Record<NombreCampo, string>>;
-  /** Claves de error que devuelve la acción: 'required' | 'invalidEmail'. */
+  /** Claves de error que devuelve la acción: 'required' | 'invalidEmail' | 'tooLong'. */
   errores?: Partial<Record<NombreCampo, string>>;
   estado?: 'exito' | 'error';
   /** Momento en que se mostró (lo pone el servidor; en páginas estáticas, el script). */
@@ -42,6 +42,7 @@ const primerError = (['nombre', 'email', 'mensaje'] as const).find((c) => errore
   data-estado={estado}
   data-msg-required={t(lang, 'form.required')}
   data-msg-invalid-email={t(lang, 'form.invalidEmail')}
+  data-msg-too-long={t(lang, 'form.tooLong')}
   data-texto-enviar={t(lang, 'form.send')}
   data-texto-reintentar={t(lang, 'form.retry')}
   data-texto-enviando={t(lang, 'form.sending')}
@@ -89,7 +90,7 @@ const primerError = (['nombre', 'email', 'mensaje'] as const).find((c) => errore
   import { animar, curva } from '../scripts/motion/base';
 
   type Control = HTMLInputElement | HTMLTextAreaElement;
-  type Clave = 'required' | 'invalidEmail';
+  type Clave = 'required' | 'invalidEmail' | 'tooLong';
 
   /** M32 · el formulario de verdad: valida, envía con la acción y muestra cada estado sin perder lo escrito. */
   enCadaPagina(() => {
@@ -108,6 +109,7 @@ const primerError = (['nombre', 'email', 'mensaje'] as const).find((c) => errore
       const mensajes: Record<Clave, string> = {
         required: raiz.dataset['msgRequired'] ?? '',
         invalidEmail: raiz.dataset['msgInvalidEmail'] ?? '',
+        tooLong: raiz.dataset['msgTooLong'] ?? '',
       };
 
       const validar = (c: Control): Clave | null =>
