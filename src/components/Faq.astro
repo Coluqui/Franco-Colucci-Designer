@@ -143,9 +143,15 @@ const { preguntas, id = 'faq' } = Astro.props;
       visibility 0s linear var(--spring-soft-duration);
   }
 
-  /* Hasta que el script cierra las respuestas, nada se anima (ver el script). */
+  /* Hasta que el script cierra las respuestas, nada se anima (ver el script). Con JS ya se pintan
+     cerradas (data-js se pone antes de pintar): no se ven abiertas ni se cierran después (CLS). */
   .faq:not([data-listo]) .faq__respuesta {
     transition: none;
+  }
+
+  :global(:root[data-js]) .faq:not([data-listo]) .faq__respuesta {
+    grid-template-rows: 0fr;
+    visibility: hidden;
   }
 
   .faq__interior {

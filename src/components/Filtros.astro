@@ -228,7 +228,9 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
 </script>
 
 <style>
-  .filtros:not([data-listo]) {
+  /* Sin JS no hay filtros. Con JS ocupan su lugar desde el primer cuadro (data-js se pone antes de
+     pintar, en Base.astro): si esperaran al script, empujarían la lista al aparecer (CLS). */
+  :global(:root:not([data-js])) .filtros {
     display: none;
   }
 
