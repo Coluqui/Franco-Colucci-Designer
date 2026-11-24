@@ -18,6 +18,8 @@ Reglas que nunca se rompen:
 
 ## 2. Glifo y marca
 
+> **24 nov 2026 · Franco cambia la marca:** el glifo de marcos encastrados queda en pausa. La firma es el **monograma "FC"** (letras reales, Archivo 800 a `wdth` 125, `Glifo.astro`): logo del header, menú y footer. En el header, "FC" se despliega en "Franco Colucci" + puesto al scrollear (desde 48rem; `src/motion/logo.ts`). El wordmark del hero vuelve a tener la O. El botón "Hablemos" va sin glifo. Idioma (ES / EN) y modo (switch sol / luna) viven en el header; el footer ya no los lleva. Botón flotante "Volver arriba". Lo que sigue en esta sección queda como referencia hasta que se defina si vuelve el glifo.
+
 | Uso | Cómo |
 | --- | --- |
 | Logo en el header | `public/brand/marca-formato.svg` inline, 24–28 px, `color: var(--color-text-primary)`; el marco 4:5 en `var(--color-accent)` |
@@ -119,11 +121,11 @@ Todo interactivo tiene: default, hover (solo con `@media (hover: hover) and (poi
 | **Menú (pantalla completa)** | Crece desde el botón "Menú" hasta cubrir la pantalla (M20), con `--color-raised`; links en `--text-services` con `wdth` 112; a la derecha mail, LinkedIn, WhatsApp, CV y toggles ES/EN y modo | Link en hover: color primario y `wdth` 125 (M14); activo: color primario | Foco atrapado; ESC cierra y devuelve el foco a "Menú" |
 | **Panel Hablemos** | Panel lateral derecho, ancho `--drawer-width`, fondo `--color-raised`, velo `--color-scrim`; formulario (nombre, email, mensaje) + links directos | — | Estados de envío: enviando, éxito (mensaje en `--color-success-bg`), error (con "Reintentar" y el mail como alternativa); sin JS, el botón lleva a `/[lang]/hablemos` |
 | **Chip de métrica** | Caja `--color-accent` con el número (`--text-ui` 700, `--color-on-accent`) + etiqueta sobre `--color-surface`, `--radius-xs` | — | En secciones invertidas: `--color-inverse-accent` |
-| **Fila de caso (home y Trabajos)** | Panel `--color-surface`, `--radius-sm`: media 16:10 a la izquierda (7 col), a la derecha nombre (h3), tipo, 2 chips de métrica, descripción y servicios | Hover: la media escala `--scale-media-hover` dentro de su caja con `--spring-soft` y aparece "Ver caso →" (M27) | Focus: anillo en todo el panel y "Ver caso →" visible. Clic: la media se convierte en el hero del caso (M06) |
+| **Card de proyecto (home y Trabajos)** | Panel `--color-surface`, `--radius-sm`: media 16:10 a la izquierda (7 col), a la derecha empresa (h3), rol, descripción corta y cantidad de piezas por tipo (v4.0: sin chips de métrica) | Hover: la media escala `--scale-media-hover` dentro de su caja con `--spring-soft` y aparece "Ver caso →" (M27) | Focus: anillo en todo el panel y "Ver caso →" visible. Clic: la media se convierte en el hero del caso (M06) |
 | **Lista de servicios** | Items con alto fijo; activo en `--color-text-primary` y `wdth` 125, inactivos en `--color-text-secondary` y `wdth` 112; vista previa fija a la derecha (caja `--color-stage`) | Hover (con intención de 80 ms) o focus: el activo respira (M13) y el marco de la vista previa cambia al formato de la pieza de ese servicio (M05) | Mobile: acordeón con `+` / `−`; la vista previa va dentro del ítem abierto |
 | **Grilla de clientes** | En sección invertida: celdas con borde `--color-inverse-border`, logos SVG monocromos en `--color-inverse-text` | Logo a opacidad 1 (resto 0,7) | — |
 | **Testimonios** | Cita en `--text-h2` (wdth 100, 600), autor en `--text-small`, contador `01/03` en label, flechas ← → | — | Arrastrable con inercia y resorte (M28); `aria-live="polite"` en el contador |
-| **FAQ** | Acordeón: pregunta en h3, `+` / `−`, filete `--border-hairline` | — | `aria-expanded`; animación de alto con `grid-template-rows` |
+| **Skills** (v4.0, reemplaza a la FAQ) | Grupos (Diseño, Video y motion, Web, IA) con logo del software en un solo color (`currentColor`, 32 px), nombre en h3 y para qué lo usa en `--text-body` | Hover: el logo pasa a opacidad 1 (resto 0,7) | Los logos son `aria-hidden`; el nombre es texto real |
 | **Filtro (Trabajos y caso)** | Chips de texto: inactivo con `--border-control`; activo con fondo `--color-text-primary` y un punto cobalto | Fondo `--color-surface` | Muestra la cantidad: "Ads · 4" (un carrusel cuenta 1) |
 | **Tile de pieza** | Pieza en su `aspect-ratio` sobre `--color-stage`, `--radius-sm`; debajo `cliente · formato` en label; carrusel: ícono ⧉ + "7 slides" | Aparece "Ver pieza ↗" | Táctil: metadatos siempre visibles |
 | **Visor** | Fondo `--color-inverse-bg`; pieza en su ratio; contador doble `Pieza 03 / 12 · Slide 4 / 7` | — | Reglas de navegación del PRD (sección "Carruseles") |
@@ -149,11 +151,11 @@ Reglas: `100dvh` en vez de `100vh`; `env(safe-area-inset-*)` en header, barra y 
 
 ## 9. Motion
 
-Especificación completa en `docs/motion.md` v2.0 ("Formato vivo"): concepto, principios, tokens, 32 interacciones (M01–M32) con su versión reducida y criterios de aceptación. Reemplaza a `motion.md` v1.1, que queda obsoleto.
+Especificación completa en `docs/motion.md` **v3.0 ("Desglose", GSAP, 24 nov)**: efectos 4.1–4.13, versión reducida y criterios de aceptación. Reemplaza a v2.0 ("Formato vivo") y a v1.1, que quedan obsoletos. **Los IDs M01–M32 que aparecen en las tablas de componentes de este documento son de v2.0**: el comportamiento de motion de cada componente lo define ahora `docs/motion.md` v3.0 (cards 4.8, botones 4.9, menú 4.10, servicios 4.7, acordeón 4.12).
 
 Resumen: **los marcos cambian de formato** (encastre, con `--spring-snap`), **la letra respira** en su eje de ancho (112 ↔ 125, con `--spring-soft`) y **el texto aparece al ritmo de lectura**. Todo lo que responde a un gesto usa resortes (`--spring-*`); lo que solo informa usa curvas cortas. Nada del primer viewport arranca escondido salvo el encastre del glifo.
 
-Fuera: marquee, parallax o tilt en piezas, cursor custom, botones magnéticos, scroll-jacking, preloader, letras del wordmark que se arman, grano animado, contadores que suben, "fade-up" en todos los elementos.
+Motion: `docs/motion.md` v3.0 "Desglose" (GSAP). Fuera: marquee, cursor custom, preloader, grano animado, contadores que suben, "fade-up" en todos los elementos.
 
 ## 10. Prohibido
 

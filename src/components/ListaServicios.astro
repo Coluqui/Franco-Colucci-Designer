@@ -15,6 +15,7 @@
  */
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import { tipoDeServicio, type ServicioSlug } from '../config/servicios';
 import Icono from './Icono.astro';
 import { t, tf, localizePath, type Lang } from '../i18n';
 
@@ -28,6 +29,8 @@ interface Servicio {
   ratio: Ratio;
   imagen?: ImageMetadata;
   alt?: string;
+  /** Video de vista previa (reels): reemplaza a la imagen; se reproduce solo mientras el ítem está abierto. */
+  video?: { src: string; poster: string; etiqueta: string };
 }
 
 interface Props {
@@ -40,7 +43,7 @@ interface Props {
 const { lang, servicios, grupo = 'servicios' } = Astro.props;
 ---
 
-<div class="servicios-caja">
+<div class="servicios-caja" data-reveal>
   <ul class="servicios" role="list" data-servicios>
     {
       servicios.map((s, i) => (
@@ -54,7 +57,9 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
               <div class="servicio__escenario">
                 <div class="servicio__capa" data-servicio-capa>
                   <figure class="servicio__marco" data-servicio-marco>
-                    {s.imagen ? (
+                    {s.video ? (
+                      <video class="servicio__video" src={s.video.src} poster={s.video.poster} aria-label={s.video.etiqueta} muted loop playsinline controls preload="none" data-servicio-video />
+                    ) : s.imagen ? (
                       <Image src={s.imagen} alt={s.alt ?? ''} widths={[400, 720]} sizes="(min-width: 80rem) 32rem, 90vw" loading="lazy" />
                     ) : (
                       <figcaption class="t-label servicio__pendiente">{t(lang, 'services.pendingPreview')}</figcaption>
@@ -63,7 +68,7 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
                 </div>
               </div>
               <p class="t-body servicio__descripcion">{s.descripcion}</p>
-              <a class="link t-ui servicio__link" href={localizePath(lang, `trabajos/?servicio=${s.slug}`)}>
+              <a class="link t-ui servicio__link" href={localizePath(lang, tipoDeServicio[s.slug as ServicioSlug] ? `trabajos/?tipo=${tipoDeServicio[s.slug as ServicioSlug]}` : 'trabajos/')}>
                 {tf(lang, 'services.seeWork', { servicio: s.nombre })}
                 <Icono nombre="flecha-der" />
               </a>
@@ -82,6 +87,17 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
   import { alSalir, enCadaPagina } from '../scripts/pagina';
 
   enCadaPagina(() => {
+    /* Reel: suena solo con el ítem abierto y sin movimiento reducido; los controles nativos permiten pausar (WCAG 2.2.2). */
+    document.querySelectorAll<HTMLVideoElement>('[data-servicio-video]').forEach((video) => {
+      const item = video.closest('details')!;
+      const sincronizar = () => {
+        if (item.open && !matchMedia('(prefers-reduced-motion: reduce)').matches) void video.play().catch(() => {});
+        else video.pause();
+      };
+      item.addEventListener('toggle', sincronizar);
+      sincronizar();
+    });
+
     /* Solo en el modo ancho: hover con intención o foco abren el ítem; el clic no lo cierra. */
     document.querySelectorAll<HTMLElement>('[data-servicios]').forEach((lista) => {
       const ancho = () => getComputedStyle(lista).getPropertyValue('--servicios-fijo').trim() === '1';
@@ -323,7 +339,8 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
     pointer-events: none;
   }
 
-  .servicio__marco :global(img) {
+  .servicio__marco :global(img),
+  .servicio__video {
     inline-size: 100%;
     block-size: 100%;
     object-fit: cover;

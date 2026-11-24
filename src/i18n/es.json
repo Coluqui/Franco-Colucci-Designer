@@ -1,7 +1,7 @@
 {
   "meta": {
     "siteName": "Franco Colucci",
-    "siteTitle": "Franco Colucci · Diseñador gráfico y digital",
+    "siteTitle": "Franco Colucci · Diseñador digital y UX-UI",
     "siteDescription": "PENDIENTE: descripción del sitio en español."
   },
   "lang": {
@@ -13,7 +13,8 @@
   "theme": {
     "label": "Modo",
     "light": "Claro",
-    "dark": "Oscuro"
+    "dark": "Oscuro",
+    "darkMode": "Modo oscuro"
   },
   "redirect": {
     "title": "Franco Colucci",
@@ -22,7 +23,8 @@
   "a11y": {
     "skipToContent": "Saltar al contenido",
     "newTab": "(se abre en otra pestaña)",
-    "pending": "(pendiente)"
+    "pending": "(pendiente)",
+    "backToTop": "Volver arriba"
   },
   "nav": {
     "label": "Navegación principal",
@@ -35,7 +37,8 @@
     "closeMenu": "Cerrar menú",
     "talk": "Hablemos",
     "contact": "Contacto",
-    "quickActions": "Acciones rápidas"
+    "quickActions": "Acciones rápidas",
+    "role": "Diseñador digital y UX-UI"
   },
   "contact": {
     "email": "Mail",
@@ -70,16 +73,17 @@
     "honeypot": "Si sos una persona, dejá este campo vacío."
   },
   "case": {
-    "view": "Ver caso",
-    "services": "Servicios",
-    "metrics": "Métricas",
-    "servicesLabel": "Servicios:"
+    "view": "Ver proyecto",
+    "piecesLabel": "Piezas:",
+    "viewFull": "Ver caso completo",
+    "piecesInCase": "{n} piezas en el caso"
   },
   "services": {
     "title": "Qué hago",
     "preview": "Vista previa",
     "seeWork": "Ver trabajos de {servicio}",
-    "pendingPreview": "Vista previa PENDIENTE"
+    "pendingPreview": "Vista previa PENDIENTE",
+    "reelLabel": "Reel: Inteligencia artificial en el cultivo de vid"
   },
   "clients": {
     "title": "Clientes"
@@ -94,29 +98,13 @@
     "slide": "testimonio",
     "hint": "Usá las flechas ← → para pasar de testimonio."
   },
-  "faq": {
-    "title": "Preguntas frecuentes",
-    "q1": "¿Qué tipo de piezas diseñás?",
-    "a1": "PENDIENTE: respuesta de Franco.",
-    "q2": "¿Buscás un puesto fijo, trabajo freelance o ambos?",
-    "a2": "PENDIENTE: respuesta de Franco.",
-    "q3": "¿Trabajás de forma remota?",
-    "a3": "PENDIENTE: respuesta de Franco.",
-    "q4": "¿Cómo usás la IA en tu proceso?",
-    "a4": "PENDIENTE: respuesta de Franco.",
-    "q5": "¿Con qué herramientas trabajás?",
-    "a5": "PENDIENTE: respuesta de Franco.",
-    "q6": "¿Cuánto tarda una pieza o una campaña?",
-    "a6": "PENDIENTE: respuesta de Franco."
-  },
   "filters": {
-    "byService": "Filtrar por servicio",
-    "byFormat": "Filtrar por formato",
     "all": "Todos",
     "results": "{n} piezas",
     "resultsOne": "1 pieza",
-    "resultsCases": "{n} casos",
-    "resultsCasesOne": "1 caso"
+    "resultsCases": "{n} proyectos",
+    "resultsCasesOne": "1 proyecto",
+    "byType": "Filtrar por tipo de pieza"
   },
   "tile": {
     "view": "Ver pieza",
@@ -148,16 +136,16 @@
   },
   "pages": {
     "home": {
-      "title": "Diseñador gráfico y digital",
+      "title": "Diseñador digital y UX-UI",
       "description": "Portfolio de Franco Colucci: piezas de redes, ads de performance, mails, ebooks y webs que se entienden en un segundo y se pueden medir."
     },
     "work": {
       "title": "Trabajos",
-      "description": "Casos de Franco Colucci, filtrables por servicio: ads, redes, reels, mail, web y branding."
+      "description": "Proyectos de Franco Colucci por empresa (MoonDesk, ISCAMEN, Condimento y Carpa), con sus piezas de redes, ads, documentos y lanzamientos."
     },
     "about": {
       "title": "Sobre mí",
-      "description": "Quién es Franco Colucci, diseñador gráfico y digital: experiencia, forma de trabajo y uso de IA."
+      "description": "Quién es Franco Colucci, diseñador digital y UX-UI: experiencia, forma de trabajo y uso de IA."
     },
     "talk": {
       "title": "Hablemos",
@@ -169,11 +157,7 @@
     }
   },
   "hero": {
-    "tagline": "Diseño piezas que tu equipo puede publicar hoy y medir mañana.",
-    "formatsLabel": "Una campaña en cinco formatos",
-    "formatPending": "Pieza PENDIENTE",
-    "pause": "Pausar la animación de formatos",
-    "campaignPending": "PENDIENTE"
+    "tagline": "Diseño piezas que tu equipo puede publicar hoy y medir mañana."
   },
   "problem": {
     "text": "Una campaña puede tener la mejor oferta y perder clics porque la pieza no se entiende en un segundo."
@@ -182,13 +166,11 @@
     "text": "Si tu equipo necesita piezas que se entiendan en un segundo, hablemos."
   },
   "home": {
-    "featured": "Trabajos destacados",
+    "featured": "Trabajos",
     "allWork": "Ver todos los trabajos",
     "whatIDo": "Qué hago",
-    "tools": "Herramientas e IA",
-    "toolsText": "PENDIENTE: herramientas y cómo uso la IA en el proceso.",
     "aboutTitle": "Sobre mí",
-    "aboutText": "PENDIENTE: bio corta.",
+    "aboutText": "Soy diseñador gráfico por la Universidad Nacional de Cuyo, con formación en UX/UI. Hace más de 5 años diseño para organismos públicos, empresas y agencias, del brief a la entrega final. Busco solo trabajo remoto.",
     "aboutLink": "Más sobre mí",
     "clientsEmpty": "PENDIENTE: logos de clientes en SVG monocromo.",
     "testimonialsEmpty": "PENDIENTE: testimonios de clientes."
@@ -227,39 +209,34 @@
   },
   "work": {
     "title": "Trabajos",
-    "intro": "PENDIENTE: bajada de la página de trabajos.",
-    "empty": "No hay casos con este servicio."
+    "intro": "Una selección por empresa. Cada carrusel cuenta como una pieza.",
+    "empty": "No hay proyectos con este tipo de pieza."
   },
   "caseDetail": {
-    "client": "Cliente",
     "role": "Rol",
-    "year": "Año",
-    "services": "Servicios",
-    "tools": "Herramientas",
-    "heroPending": "Hero del caso PENDIENTE (16:8)",
-    "metrics": "Resultados",
-    "problem": "El problema",
-    "whatIDid": "Lo que hice",
+    "heroPending": "Hero del proyecto PENDIENTE (16:8)",
     "pieces": "Piezas",
-    "piecesEmpty": "Piezas PENDIENTE: se cargan en la Fase 5.",
-    "result": "Resultado",
-    "testimonial": "Testimonio",
-    "next": "Siguiente caso",
-    "back": "Todos los trabajos"
+    "piecesEmpty": "Este proyecto todavía no tiene piezas cargadas.",
+    "next": "Siguiente proyecto",
+    "back": "Todos los trabajos",
+    "reel": "Reel"
   },
   "about": {
     "title": "Sobre mí",
     "portraitAlt": "Retrato de Franco Colucci",
-    "bio": "PENDIENTE: bio de Sobre mí.",
+    "bio": "Soy diseñador gráfico por la Universidad Nacional de Cuyo, con formación en UX/UI (Coderhouse y Codo a Codo). Hace más de 5 años diseño para organismos públicos, empresas y agencias. Busco solo trabajo remoto.",
     "data": "Datos",
     "base": "Base",
     "languages": "Idiomas",
     "workMode": "Modalidad",
     "experience": "Experiencia",
-    "experiencePending": "PENDIENTE: experiencia con fechas.",
     "ai": "Cómo uso la IA",
-    "aiPending": "PENDIENTE: cómo uso la IA en el proceso.",
-    "cv": "CV"
+    "cv": "CV",
+    "baseValue": "Mendoza, Argentina",
+    "languagesValue": "Español nativo · Inglés B2 · Italiano A2",
+    "workModeValue": "Solo remoto · GMT-3",
+    "experienceText": "Diseñé para ISCAMEN (Lead Digital Designer desde 2021), Grupo Nexia y Sette Agency, y para marcas como MoonDesk, Condimento, Carpa, RLB e Interlink: redes sociales, ads de performance, email marketing, ebooks, webs en WordPress y sistemas en Figma.",
+    "aiText": "Trabajo cerca de los equipos, del brief a la entrega final, y uso la IA para producir más rápido sin resignar criterio: ChatGPT para ideas y textos de prueba, Nano Banana para generar y editar imágenes, Claude Code para sitios y design systems, y ElevenLabs para voces."
   },
   "talk": {
     "title": "Hablemos"
@@ -280,6 +257,38 @@
     "web": "Web",
     "ebook": "Ebook",
     "branding": "Branding",
+    "documento": "Documento digital",
     "impreso": "Impreso"
+  },
+  "pieceTypes": {
+    "redes": "Redes",
+    "ads": "Ads",
+    "documentos": "Documentos",
+    "lanzamientos": "Lanzamientos",
+    "identidad": "Identidad"
+  },
+  "skills": {
+    "title": "Skills",
+    "groups": {
+      "design": "Diseño",
+      "video": "Video y motion",
+      "web": "Web",
+      "ai": "IA y vibe coding"
+    },
+    "items": {
+      "illustrator": "Identidad, ilustración y piezas vectoriales.",
+      "photoshop": "Retoque, composición y piezas para redes y ads.",
+      "indesign": "Ebooks, one-pagers y documentos editoriales.",
+      "figma": "Interfaces, sistemas de diseño y plantillas.",
+      "canva": "Plantillas editables para equipos de marketing.",
+      "aftereffects": "Motion graphics y animación de piezas.",
+      "premiere": "Edición de video y reels.",
+      "capcut": "Reels y edición rápida para redes.",
+      "wordpress": "Sitios con Elementor, responsive y fáciles de mantener.",
+      "chatgpt": "Ideas, textos de prueba y apoyo en la producción.",
+      "nanobanana": "Generación y edición de imágenes.",
+      "claudecode": "Vibe coding: sitios, design systems y video.",
+      "elevenlabs": "Voces, locuciones y audio."
+    }
   }
 }

@@ -2,14 +2,11 @@
   "slug": "iscamen-story-mujer-en-la-ciencia",
   "caso": "iscamen",
   "formato": "story",
+  "tipo": "redes",
   "ratio": "9:16",
   "titulo": {
     "es": "Story: La mujer en la ciencia",
     "en": "Story: Women in science"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

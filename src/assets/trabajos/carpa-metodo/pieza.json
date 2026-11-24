@@ -2,14 +2,11 @@
   "slug": "carpa-metodo",
   "caso": "carpa",
   "formato": "ebook",
+  "tipo": "lanzamientos",
   "ratio": "1374:1600",
   "titulo": {
     "es": "Método Carpa: portadas",
     "en": "Carpa Method: covers"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

@@ -2,7 +2,8 @@ import { test, expect, type Page } from '@playwright/test';
 
 /** M12 · filtros: el activo viaja (FLIP) y la grilla se reacomoda. docs/motion.md §3. */
 
-const CASO = '/es/trabajos/moondesk/';
+/** Desde PRD v4.0 los filtros (por tipo) viven en Trabajos; el caso agrupa por tipo sin filtrar. */
+const CASO = '/es/trabajos/';
 
 const quieto = (page: Page) =>
   expect
@@ -35,7 +36,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     });
 
     test('la grilla: salen, se reacomodan y entran; aria-live con la cantidad', async ({ page }) => {
-      const items = page.locator('#piezas-caso [data-filtro]');
+      const items = page.locator('#lista-casos [data-filtro]');
       const total = await items.count();
       const filtro = page.locator('.filtro').nth(1);
       const n = Number(/(\d+)/.exec((await filtro.locator('.filtro__cantidad').textContent()) ?? '')?.[1]);
@@ -58,7 +59,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     });
 
     test('clics seguidos: manda el último y nada queda a medias', async ({ page }) => {
-      const items = page.locator('#piezas-caso [data-filtro]');
+      const items = page.locator('#lista-casos [data-filtro]');
       await page.locator('.filtro').nth(1).click();
       await page.locator('.filtro').nth(2).click();
       await page.locator('.filtro').nth(0).click();
@@ -68,7 +69,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     });
 
     test('lo que sale no se puede tocar; un anuncio igual al anterior se vuelve a escribir', async ({ page }) => {
-      const items = page.locator('#piezas-caso [data-filtro]');
+      const items = page.locator('#lista-casos [data-filtro]');
       await page.locator('.filtro').nth(1).click();
       if (!reducido) expect(await items.evaluateAll((els) => els.filter((e) => (e as HTMLElement).inert).length)).toBeGreaterThan(0);
       await quieto(page);

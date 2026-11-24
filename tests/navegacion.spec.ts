@@ -15,7 +15,8 @@ const errores = (page: Page) => {
 /** Navega con un clic y comprueba que fue sin recargar (la marca en window sobrevive). */
 const navegar = async (page: Page, href: string) => {
   await page.evaluate(() => ((window as unknown as { __sinRecarga: boolean }).__sinRecarga = true));
-  await page.locator(`footer a[href="${href}"]`).first().click();
+  // Clic por JS: con ScrollSmoother, el clic de Playwright no siempre llega a bajar hasta el footer.
+  await page.locator(`footer a[href="${href}"]`).first().evaluate((a) => (a as HTMLElement).click());
   await page.waitForURL(`**${href}`);
   await page.waitForFunction(() => document.readyState === 'complete');
   expect(await page.evaluate(() => (window as unknown as { __sinRecarga?: boolean }).__sinRecarga)).toBe(true);
@@ -40,6 +41,8 @@ test('navegar sin recargar: el header persiste y todo vuelve a arrancar', async 
   // Nadie quedó "leyendo" de la página anterior (el loop no espera de más).
   await expect(page.locator('html')).not.toHaveAttribute('data-leyendo', '');
   // El header reacciona al scroll en la página nueva.
+  // Tras el swap, el smoother fija el alto de la página un cuadro después.
+  await page.waitForFunction(() => document.documentElement.scrollHeight > innerHeight * 2);
   await page.evaluate(() => scrollTo(0, 400));
   await expect(page.locator('[data-header]')).toHaveAttribute('data-scrolled', '');
   expect(errs).toEqual([]);
@@ -55,31 +58,25 @@ test('el modo elegido sobrevive a la navegación', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('data-js', '');
 });
 
-test('el loop del hero vuelve a correr después de ir y volver', async ({ page }) => {
-  test.skip(test.info().project.name.startsWith('360'), 'el loop se prueba en ancho');
-  await page.goto('/es/');
-  await navegar(page, '/es/trabajos/');
-  await navegar(page, '/es/');
-  await expect(page.locator('[data-loop]')).toHaveAttribute('data-activo', '');
-});
-
 test('cambiar de idioma: el header pasa al otro idioma y la posición se conserva', async ({ page }) => {
   await page.goto('/es/');
   await page.evaluate(() => scrollTo(0, (document.documentElement.scrollHeight - innerHeight) / 2));
   const antes = await page.evaluate(() => scrollY / (document.documentElement.scrollHeight - innerHeight));
-  // Clic sin scrollear hasta el footer (el clic de Playwright movería la posición que se guarda).
-  await page.locator('footer [data-toggle-idioma] a:not([aria-current])').evaluate((a) => (a as HTMLElement).click());
+  // Clic por JS: el clic de Playwright podría mover la posición que se guarda.
+  await page.locator('[data-header] [data-toggle-idioma] a:not([aria-current])').evaluate((a) => (a as HTMLElement).click());
   await page.waitForURL('**/en/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page.locator('[data-header] [data-abre-menu]')).toHaveText(/menu/i);
+  await expect(page.locator('[data-header] [data-abre-menu]')).toHaveAttribute('aria-label', /menu/i);
   await expect(page.locator('[data-header] [data-abre-panel]')).not.toContainText('Hablemos');
-  const despues = await page.evaluate(() => scrollY / (document.documentElement.scrollHeight - innerHeight));
-  expect(Math.abs(despues - antes)).toBeLessThan(0.05);
+  // Con ScrollSmoother el alto de la página llega un cuadro después del swap.
+  await expect
+    .poll(() => page.evaluate((a) => Math.abs(scrollY / (document.documentElement.scrollHeight - innerHeight) - a), antes))
+    .toBeLessThan(0.05);
 });
 
 test('después de cambiar de idioma, el foco queda en el toggle (no vuelve al principio)', async ({ page }) => {
   await page.goto('/es/');
-  await page.locator('footer [data-toggle-idioma] a:not([aria-current])').evaluate((a) => (a as HTMLElement).click());
+  await page.locator('[data-header] [data-toggle-idioma] a:not([aria-current])').evaluate((a) => (a as HTMLElement).click());
   await page.waitForURL('**/en/');
-  await expect(page.locator('footer [data-toggle-idioma] [aria-current]')).toBeFocused();
+  await expect(page.locator('[data-header] [data-toggle-idioma] [aria-current]')).toBeFocused();
 });

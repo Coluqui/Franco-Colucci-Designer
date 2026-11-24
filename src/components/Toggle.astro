@@ -4,21 +4,30 @@
  * - idioma: links ES / EN a la misma página; conserva la posición del scroll (PRD §5).
  * - modo: claro / oscuro. Respeta el sistema hasta que se elige; la elección se recuerda (localStorage 'tema').
  *   Varios toggles en la misma página se mantienen sincronizados.
+ * - compacto (header, 24 nov): idioma como "ES / EN" y el modo como un switch con sol / luna.
+ *   El header persiste entre páginas: los links de idioma se ponen al día en cada página.
  * M23 (View Transition del modo) y M24 (fundido del idioma) llegan en la Fase 6.
  */
+import Icono from './Icono.astro';
 import { t, locales, switchLangPath, localizePath, type Lang } from '../i18n';
 
 interface Props {
   lang: Lang;
   tipo: 'idioma' | 'modo';
+  compacto?: boolean;
 }
 
-const { lang, tipo } = Astro.props;
+const { lang, tipo, compacto = false } = Astro.props;
 ---
 
 {
-  tipo === 'idioma' ? (
-    <nav class="segmentado" aria-label={t(lang, 'lang.label')} data-toggle-idioma>
+  tipo === 'modo' && compacto ? (
+    <button class="tema-switch" type="button" role="switch" aria-checked="false" aria-label={t(lang, 'theme.darkMode')} data-switch-tema>
+      <Icono nombre="luna" class="tema-switch__luna" />
+      <Icono nombre="sol" class="tema-switch__sol" />
+    </button>
+  ) : tipo === 'idioma' ? (
+    <nav class:list={['segmentado', { 'segmentado--compacto': compacto }]} aria-label={t(lang, 'lang.label')} data-toggle-idioma>
       {locales.map((l) => (
         <a
           class="segmentado__opcion"
@@ -27,7 +36,14 @@ const { lang, tipo } = Astro.props;
           lang={l}
           aria-current={l === lang ? 'true' : undefined}
         >
-          {t(l, `lang.${l}`)}
+          {compacto ? (
+            <>
+              <span aria-hidden="true">{l.toUpperCase()}</span>
+              <span class="visually-hidden">{t(l, `lang.${l}`)}</span>
+            </>
+          ) : (
+            t(l, `lang.${l}`)
+          )}
         </a>
       ))}
     </nav>
@@ -45,6 +61,7 @@ const { lang, tipo } = Astro.props;
 
 <script>
   import { enCadaPagina } from '../scripts/pagina';
+  import { ScrollSmoother } from '../motion/gsap';
 
   // ---- Modo ----
   const sistema = matchMedia('(prefers-color-scheme: dark)');
@@ -54,6 +71,33 @@ const { lang, tipo } = Astro.props;
     const actual = temaActual();
     document.querySelectorAll<HTMLButtonElement>('[data-toggle-modo] [data-tema]').forEach((b) => {
       b.setAttribute('aria-pressed', String(b.dataset['tema'] === actual));
+    });
+    document.querySelectorAll('[data-switch-tema]').forEach((b) => b.setAttribute('aria-checked', String(actual === 'dark')));
+  };
+
+  const cambiarTema = (tema: 'light' | 'dark') => {
+    if (tema === temaActual()) return;
+    const cambiar = () => {
+      document.documentElement.dataset['theme'] = tema;
+      try {
+        localStorage.setItem('tema', tema);
+      } catch {
+        /* sin storage: el modo vale solo para esta página */
+      }
+      pintar();
+    };
+    // M23 · fundido cruzado de toda la página (300 · in-out); sin View Transitions, cambio directo.
+    if (!document.startViewTransition) return cambiar();
+    const html = document.documentElement;
+    html.dataset['vt'] = 'tema';
+    document.startViewTransition(cambiar).finished.finally(() => delete html.dataset['vt']);
+  };
+
+  /** El header persiste entre páginas: sus links de idioma apuntan a la página actual (hreflang del head). */
+  const alDia = () => {
+    document.querySelectorAll<HTMLAnchorElement>('[data-header] [data-toggle-idioma] a[hreflang]').forEach((a) => {
+      const alterna = document.querySelector<HTMLLinkElement>(`link[rel="alternate"][hreflang="${a.hreflang}"]`);
+      a.href = alterna ? new URL(alterna.href).pathname : `/${a.hreflang}/`;
     });
   };
 
@@ -69,11 +113,19 @@ const { lang, tipo } = Astro.props;
       sessionStorage.removeItem(CLAVE);
       const { path, ratio } = JSON.parse(guardado) as { path: string; ratio: number };
       if (path === location.pathname && !location.hash) {
-        scrollTo({ top: ratio * (document.documentElement.scrollHeight - innerHeight), behavior: 'instant' });
+        const ir = () => {
+          const y = ratio * (document.documentElement.scrollHeight - innerHeight);
+          const smoother = ScrollSmoother.get();
+          if (smoother) smoother.scrollTo(y, false);
+          else scrollTo({ top: y, behavior: 'instant' });
+        };
+        ir();
+        // Con ScrollSmoother el alto real llega cuando arranca el motion (page-load): se vuelve a ubicar ahí.
+        document.addEventListener('astro:page-load', () => requestAnimationFrame(() => requestAnimationFrame(ir)), { once: true });
       }
       // El foco queda en el toggle (el del footer: el menú de la página nueva está cerrado), no al
       // principio de la página: quien usa teclado sigue donde estaba.
-      document.querySelector<HTMLElement>('footer [data-toggle-idioma] [aria-current]')?.focus({ preventScroll: true });
+      document.querySelector<HTMLElement>('[data-header] [data-toggle-idioma] [aria-current]')?.focus({ preventScroll: true });
     } catch {
       /* nada que restaurar */
     }
@@ -85,24 +137,17 @@ const { lang, tipo } = Astro.props;
     document.querySelectorAll<HTMLButtonElement>('[data-toggle-modo] [data-tema]').forEach((b) => {
       b.addEventListener('click', () => {
         const tema = b.dataset['tema'];
-        if ((tema !== 'light' && tema !== 'dark') || tema === temaActual()) return;
-        const cambiar = () => {
-          document.documentElement.dataset['theme'] = tema;
-          try {
-            localStorage.setItem('tema', tema);
-          } catch {
-            /* sin storage: el modo vale solo para esta página */
-          }
-          pintar();
-        };
-        // M23 · fundido cruzado de toda la página (300 · in-out); sin View Transitions, cambio directo.
-        if (!document.startViewTransition) return cambiar();
-        const html = document.documentElement;
-        html.dataset['vt'] = 'tema';
-        document.startViewTransition(cambiar).finished.finally(() => delete html.dataset['vt']);
+        if (tema === 'light' || tema === 'dark') cambiarTema(tema);
       });
     });
+    document.querySelectorAll<HTMLButtonElement>('[data-switch-tema]').forEach((b) => {
+      // El header persiste: el listener se pone una sola vez.
+      if (b.dataset['listo'] !== undefined) return;
+      b.dataset['listo'] = '';
+      b.addEventListener('click', () => cambiarTema(temaActual() === 'dark' ? 'light' : 'dark'));
+    });
     pintar();
+    alDia();
 
     document.querySelectorAll<HTMLAnchorElement>('[data-toggle-idioma] a:not([aria-current])').forEach((a) => {
       a.addEventListener('click', () => {
@@ -165,6 +210,43 @@ const { lang, tipo } = Astro.props;
   }
 
   .segmentado__opcion:focus-visible {
+    outline-offset: var(--focus-offset);
+  }
+
+  .segmentado--compacto .segmentado__opcion {
+    padding-inline: 0;
+  }
+
+  /* Switch de modo (header): un botón de 44 px; muestra la luna en claro y el sol en oscuro. */
+  .tema-switch {
+    display: inline-grid;
+    place-items: center;
+    inline-size: var(--control-height);
+    block-size: var(--control-height);
+    padding: 0;
+    border: var(--border-control);
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--color-text-primary);
+    cursor: pointer;
+  }
+
+  .tema-switch :global(.icono) {
+    grid-area: 1 / 1;
+  }
+
+  .tema-switch[aria-checked="true"] :global(.tema-switch__luna),
+  .tema-switch[aria-checked="false"] :global(.tema-switch__sol) {
+    visibility: hidden;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tema-switch:hover {
+      background: var(--color-surface);
+    }
+  }
+
+  .tema-switch:focus-visible {
     outline-offset: var(--focus-offset);
   }
 

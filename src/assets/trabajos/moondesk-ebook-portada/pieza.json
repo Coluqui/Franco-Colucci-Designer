@@ -2,14 +2,11 @@
   "slug": "moondesk-ebook-portada",
   "caso": "moondesk",
   "formato": "ebook",
+  "tipo": "documentos",
   "ratio": "597:842",
   "titulo": {
     "es": "Ebook: Los 5 errores del packaging",
     "en": "Ebook: The 5 packaging mistakes"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

@@ -1,25 +1,19 @@
 ---
 /**
- * Caso · PRD §5: título + frase + datos (cliente, rol, año, servicios, herramientas) · hero 16:8
- * · métricas grandes · El problema · Lo que hice · Piezas filtrables por formato + visor · Resultado
- * · Testimonio · Siguiente caso (invertido).
- * Bloques sin datos reales: métricas y testimonio no se muestran; piezas muestran un estado vacío.
- * Fase 6: transition:name en la media y el título (M06–M07).
+ * Proyecto · PRD v4.0 §5: empresa (H1) + rol · qué es la empresa y cómo fue el proyecto · hero
+ * · piezas agrupadas por tipo (Redes, Ads, Documentos…) + visor · Siguiente proyecto (invertido).
+ * Sin hero propio, el hero es la portada de la primera pieza (se recorta, nunca se deforma).
+ * transition:name en la media y el título: la card de la home se convierte en este hero.
  */
 import type { GetStaticPaths } from 'astro';
 import { Image } from 'astro:assets';
 import Base from '../../../layouts/Base.astro';
-import MetricasGrandes from '../../../components/MetricasGrandes.astro';
-import Pasos from '../../../components/Pasos.astro';
-import Filtros from '../../../components/Filtros.astro';
 import TilePieza from '../../../components/TilePieza.astro';
 import Visor from '../../../components/Visor.astro';
 import SiguienteCaso from '../../../components/SiguienteCaso.astro';
 import Link from '../../../components/Link.astro';
-import type { PiezaVista } from '../../../components/tipos';
 import { locales, t, localizePath, type Lang } from '../../../i18n';
-import { getCasos, getPiezasDeCaso, siguienteCaso, nombreServicio, hrefCaso, type Caso } from '../../../lib/casos';
-import { formatos } from '../../../content.config';
+import { getCasos, getPiezasDeCaso, siguienteCaso, nombreTipo, hrefCaso, piezaVista, type Caso } from '../../../lib/casos';
 
 export const getStaticPaths = (async () => {
   const casos = await getCasos();
@@ -32,62 +26,50 @@ interface Props {
 
 const lang = Astro.params.lang as Lang;
 const { caso } = Astro.props;
-const casos = await getCasos();
-const siguiente = siguienteCaso(casos, caso.slug);
+const siguiente = siguienteCaso(await getCasos(), caso.slug);
 const piezasData = await getPiezasDeCaso(caso.slug);
 
-const piezas: Array<PiezaVista & { filtro: string }> = piezasData.map((p) => ({
-  slug: p.slug,
-  titulo: p.titulo[lang],
-  cliente: caso.cliente,
-  formato: t(lang, `formats.${p.formato}`),
-  ratio: p.ratio,
-  slides: p.slides.map((s) => ({ src: s.src, alt: s.alt[lang] })),
-  filtro: p.formato,
+const vista = (p: (typeof piezasData)[number]) => piezaVista(lang, caso.cliente, p);
+
+/** Grupos en el orden de `tiposPieza`; el visor recorre las piezas en ese mismo orden. */
+const grupos = caso.tipos.map(({ tipo, cantidad }) => ({
+  tipo,
+  nombre: nombreTipo(lang, tipo),
+  cantidad,
+  piezas: piezasData.filter((p) => p.tipo === tipo).map(vista),
 }));
-
-const opcionesFormato = formatos
-  .map((f) => ({ valor: f, nombre: t(lang, `formats.${f}`), cantidad: piezasData.filter((p) => p.formato === f).length }))
-  .filter((o) => o.cantidad > 0);
-
-const datos = [
-  { etiqueta: t(lang, 'caseDetail.client'), valor: caso.cliente },
-  { etiqueta: t(lang, 'caseDetail.role'), valor: caso.rol[lang] },
-  ...(caso.anio ? [{ etiqueta: t(lang, 'caseDetail.year'), valor: String(caso.anio) }] : []),
-  { etiqueta: t(lang, 'caseDetail.services'), valor: caso.servicios.map((s) => nombreServicio(lang, s)).join(' · ') },
-  ...(caso.herramientas.length ? [{ etiqueta: t(lang, 'caseDetail.tools'), valor: caso.herramientas.join(' · ') }] : []),
-];
+const piezas = grupos.flatMap((g) => g.piezas);
 ---
 
-<Base lang={lang} title={`${caso.titulo[lang]} · Franco Colucci`} description={caso.frase[lang]} chrome>
+<Base lang={lang} title={`${caso.cliente} · Franco Colucci`} description={caso.descripcion[lang]} chrome>
   <article class="caso">
     <header class="container caso__cabecera">
       <p class="t-ui caso__volver" data-entra>
         <Link href={localizePath(lang, 'trabajos/')} lang={lang} class="link--suelto">{t(lang, 'caseDetail.back')}</Link>
       </p>
       <div class="caso__intro">
-        <h1><span class="caso__nombre" transition:name={`caso-${caso.slug}-titulo`} transition:animate="initial">{caso.titulo[lang]}</span></h1>
-        <p class="t-lead caso__frase" data-entra>{caso.frase[lang]}</p>
+        <h1><span class="caso__nombre" transition:name={`caso-${caso.slug}-titulo`} transition:animate="initial">{caso.cliente}</span></h1>
+        <p class="t-lead caso__frase" data-entra>{caso.descripcion[lang]}</p>
       </div>
       <dl class="caso__datos" data-entra>
-        {
-          datos.map((d) => (
-            <div>
-              <dt class="t-dato">{d.etiqueta}</dt>
-              <dd class="t-body">{d.valor}</dd>
-            </div>
-          ))
-        }
+        <div>
+          <dt class="t-dato">{t(lang, 'caseDetail.role')}</dt>
+          <dd class="t-body">{caso.rol[lang]}</dd>
+        </div>
+        <div>
+          <dt class="t-dato">{t(lang, 'caseDetail.pieces')}</dt>
+          <dd class="t-body">{grupos.map((g) => `${g.nombre} ${g.cantidad}`).join(' · ')}</dd>
+        </div>
       </dl>
     </header>
 
     <div class="container">
-      <div class="caso__hero" transition:name={`caso-${caso.slug}-media`} transition:animate="initial">
+      <div class="caso__hero" data-reveal="clip" transition:name={`caso-${caso.slug}-media`} transition:animate="initial">
         {
-          caso.hero ? (
+          caso.portada ? (
             <Image
-              src={caso.hero}
-              alt={caso.heroAlt?.[lang] ?? ''}
+              src={caso.portada.src}
+              alt={caso.portada.alt[lang]}
               widths={[640, 1024, 1600]}
               sizes="(min-width: 82rem) 82rem, 100vw"
               loading="eager"
@@ -101,79 +83,33 @@ const datos = [
     </div>
 
     {
-      caso.metricas.length > 0 && (
-        <div class="container caso__bloque" data-entra>
-          <MetricasGrandes
-            etiqueta={t(lang, 'caseDetail.metrics')}
-            metricas={caso.metricas.map((m) => ({ valor: m.valor, etiqueta: m.etiqueta[lang] }))}
-          />
-        </div>
-      )
-    }
-
-    <section class="container caso__bloque caso__texto" aria-labelledby="problema" data-entra>
-      <h2 id="problema">{t(lang, 'caseDetail.problem')}</h2>
-      <p class="t-body">{caso.problema[lang]}</p>
-    </section>
-
-    <section class="container caso__bloque caso__texto" aria-labelledby="lo-que-hice">
-      <h2 id="lo-que-hice">{t(lang, 'caseDetail.whatIDid')}</h2>
-      <Pasos pasos={caso.pasos.map((p) => p[lang])} />
-    </section>
-
-    <section class="container caso__bloque" aria-labelledby="piezas">
-      <h2 id="piezas">{t(lang, 'caseDetail.pieces')}</h2>
-      {
-        piezas.length > 0 ? (
-          <>
-            {opcionesFormato.length > 1 && (
-              <Filtros
-                lang={lang}
-                etiqueta={t(lang, 'filters.byFormat')}
-                opciones={opcionesFormato}
-                objetivo="piezas-caso"
-                param="formato"
-                total={piezas.length}
-              />
-            )}
-            <div class="caso__piezas" id="piezas-caso">
-              {piezas.map((p) => (
-                <TilePieza lang={lang} pieza={p} filtro={p.filtro} />
-              ))}
-            </div>
-            <Visor lang={lang} piezas={piezas} />
-          </>
-        ) : (
-          <p class="t-body caso__vacio">{t(lang, 'caseDetail.piecesEmpty')}</p>
-        )
-      }
-    </section>
-
-    <section class="container caso__bloque caso__texto" aria-labelledby="resultado">
-      <h2 id="resultado">{t(lang, 'caseDetail.result')}</h2>
-      <p class="t-body">{caso.resultado[lang]}</p>
-    </section>
-
-    {
-      caso.testimonio && (
-        <section class="container caso__bloque" aria-labelledby="testimonio">
-          <h2 id="testimonio" class="visually-hidden">
-            {t(lang, 'caseDetail.testimonial')}
-          </h2>
-          <figure class="caso__testimonio">
-            <blockquote class="t-h2">{caso.testimonio.cita[lang]}</blockquote>
-            <figcaption>
-              {caso.testimonio.autor} · {caso.testimonio.rol[lang]}
-            </figcaption>
-          </figure>
+      caso.reel && (
+        <section class="container caso__bloque" aria-labelledby="reel">
+          <h2 id="reel" class="caso__grupo" data-reveal>{t(lang, 'caseDetail.reel')}</h2>
+          <video class="caso__reel" data-reveal="clip" src={caso.reel.src} poster={caso.reel.poster} aria-label={caso.reel.titulo[lang]} controls playsinline preload="none" />
         </section>
       )
     }
+    {
+      grupos.map((g) => (
+        <section class="container caso__bloque" aria-labelledby={`tipo-${g.tipo}`}>
+          <h2 id={`tipo-${g.tipo}`} class="caso__grupo" data-reveal>
+            {g.nombre} <span class="t-label caso__cantidad">{g.cantidad}</span>
+          </h2>
+          <div class="caso__piezas">
+            {g.piezas.map((p) => (
+              <TilePieza lang={lang} pieza={p} />
+            ))}
+          </div>
+        </section>
+      ))
+    }
+    {piezas.length > 0 ? <Visor lang={lang} piezas={piezas} /> : <p class="container t-body caso__vacio">{t(lang, 'caseDetail.piecesEmpty')}</p>}
   </article>
 
   {
     siguiente && (
-      <SiguienteCaso lang={lang} slug={siguiente.slug} href={hrefCaso(lang, siguiente.slug)} titulo={siguiente.titulo[lang]} frase={siguiente.frase[lang]} />
+      <SiguienteCaso lang={lang} slug={siguiente.slug} href={hrefCaso(lang, siguiente.slug)} titulo={siguiente.cliente} frase={siguiente.rol[lang]} />
     )
   }
 </Base>
@@ -261,6 +197,14 @@ const datos = [
     gap: var(--space-6);
   }
 
+  /* Reel vertical: entero, sin recortar; los controles nativos permiten pausar. */
+  .caso__reel {
+    inline-size: min(100%, 22rem);
+    aspect-ratio: 9 / 16;
+    border-radius: var(--radius-sm);
+    background: var(--color-stage);
+  }
+
   .caso__bloque h2,
   .caso__bloque p {
     margin: 0;
@@ -294,20 +238,13 @@ const datos = [
     }
   }
 
-  .caso__testimonio {
-    display: grid;
-    gap: var(--space-5);
-    margin: 0;
+  .caso__grupo {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
   }
 
-  .caso__testimonio blockquote {
-    margin: 0;
-    font-stretch: calc(var(--wdth-normal) * 1%);
-    font-weight: var(--weight-ui);
-  }
-
-  .caso__testimonio figcaption {
-    font-size: var(--text-small);
+  .caso__cantidad {
     color: var(--color-text-secondary);
   }
 </style>

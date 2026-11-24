@@ -1,0 +1,141 @@
+---
+/**
+ * Skills · PRD v4.0 §5 · design system §7 ("Skills", reemplaza a la FAQ).
+ * Grupos (Diseño, Video y motion, Web, IA) con el logo del software en un color (currentColor),
+ * el nombre y para qué lo usa. Los logos son decorativos (aria-hidden); el nombre es texto real.
+ * Hover: el logo pasa a opacidad 1 (resto 0,7). Una columna en angosto; 2 desde 40rem; 4 desde 72rem.
+ */
+import { gruposHerramientas } from '../config/herramientas';
+import { t, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<div class="skills-caja">
+  <div class="skills">
+    {
+      gruposHerramientas.map((g) => (
+        <section class="skills__grupo" data-reveal-item aria-labelledby={`skills-${g.grupo}`}>
+          <h3 id={`skills-${g.grupo}`} class="t-dato skills__titulo">
+            {t(lang, `skills.groups.${g.grupo}`)}
+          </h3>
+          <ul class="skills__lista" role="list">
+            {g.items.map((h) => (
+              <li class="skill">
+                {'logo' in h ? (
+                  <span class="skill__logo" set:html={h.logo} />
+                ) : (
+                  <span class="skill__logo skill__logo--siglas" aria-hidden="true">
+                    {h.siglas}
+                  </span>
+                )}
+                <span class="skill__texto">
+                  <span class="t-ui skill__nombre">{h.nombre}</span>
+                  <span class="skill__uso">{t(lang, `skills.items.${h.id}`)}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .skills-caja {
+    container: skills / inline-size;
+  }
+
+  .skills {
+    display: grid;
+    gap: var(--space-8) var(--grid-gutter);
+  }
+
+  @container skills (min-width: 40rem) {
+    .skills {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @container skills (min-width: 72rem) {
+    .skills {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .skills__grupo {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+  }
+
+  .skills__titulo {
+    margin: 0;
+    padding-block-end: var(--space-3);
+    border-block-end: var(--border-hairline);
+  }
+
+  .skills__lista {
+    display: grid;
+    gap: var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .skill {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: start;
+  }
+
+  .skill__logo {
+    display: grid;
+    place-items: center;
+    inline-size: calc(var(--icon-size) * 2);
+    block-size: calc(var(--icon-size) * 2);
+    color: var(--color-text-primary);
+    opacity: 0.7; /* PENDIENTE token --opacity-logo-rest (design system §7: "resto 0,7"), igual que GrillaClientes */
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .skill__logo :global(svg) {
+    inline-size: 100%;
+    block-size: 100%;
+    fill: currentColor;
+  }
+
+  .skill__logo--siglas {
+    border: var(--border-rule);
+    border-radius: var(--radius-xs);
+    font-size: var(--text-small);
+    font-weight: var(--weight-black);
+    line-height: 1;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .skill:hover .skill__logo {
+      opacity: 1;
+    }
+  }
+
+  .skill__texto {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .skill__nombre {
+    font-weight: var(--weight-ui);
+  }
+
+  .skill__uso {
+    font-size: var(--text-small);
+    color: var(--color-text-secondary);
+  }
+</style>

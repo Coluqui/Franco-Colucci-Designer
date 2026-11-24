@@ -11,7 +11,7 @@ Todo lo que está como `PENDIENTE` en el sitio o espera una decisión de Franco.
 | `public/brand/grain.svg` | Grano global | Falta. Hoy: `public/dev/grain-provisorio.svg` (`src/styles/global.css`) |
 | CV en PDF, ES y EN | Menú, barra mobile, panel, Sobre mí | Falta. Hay uno en `C:\Users\FRANCO\Portfolio\public\cv-franco-colucci.pdf` (¿vigente?) |
 | Originales de mayor calidad | Visor y heros de caso | Ver `docs/inventario.md` |
-| Campaña del loop del hero (1:1, 4:5, 9:16, 3:1, 16:10) | Hero (M04) | Falta (PRD §14) |
+| ~~Campaña del loop del hero~~ | Hero | Reemplazado: el hero queda sin piezas (Franco, 24 nov) |
 | Logos de clientes en SVG monocromo | Grilla de clientes | Solo JPG |
 
 ## Tokens que faltan en `design-system/tokens.css`
@@ -60,24 +60,22 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 ## Contenido
 
 - `meta.siteDescription` (ES y EN) en `src/i18n/*.json`.
-- **Casos** (`src/content/casos/*.json`, Fase 4): frase, tipo, descripción corta, rol, año, herramientas, problema, pasos, resultado, 2–4 métricas reales, testimonio y hero 16:8 de MoonDesk, ISCAMEN, Condimento y Carpa. Hoy dicen `PENDIENTE`.
+- ~~**Casos**~~: resuelto en la Fase 9B con rol y descripción reales (de portfolio2026-twhh.vercel.app). Ya no llevan problema, pasos, resultado ni métricas (PRD v4.0). Falta, opcional: un hero propio 16:8 por proyecto (hoy se usa la portada de la primera pieza).
 - **Servicios por caso**: los puse a partir del inventario (MoonDesk, ISCAMEN y Carpa → Redes; Condimento → Ads y Branding). Confirmar o corregir.
 - **Descripciones de los 6 servicios** (`serviceItems.*.description`) y la pieza de vista previa de cada uno.
 - **Textos de páginas en PENDIENTE**: bajada de Trabajos, bio corta y bio de Sobre mí, datos (base, idiomas, modalidad), experiencia con fechas, cómo uso la IA, herramientas e IA de la home.
-- **6 preguntas frecuentes**: las preguntas son un borrador de Claude (`faq.q1`–`q6` en `src/i18n/*.json`), a revisar; las respuestas (`faq.a1`–`a6`) las da Franco.
+- ~~**Preguntas frecuentes**~~: quitadas en PRD v4.0; las reemplaza Skills.
 - **Títulos y descripciones SEO** por página: borradores en `pages.*` de `src/i18n/*.json`; revisarlos.
 - **Fase 5 · piezas**:
   - Originales de mayor resolución de MoonDesk one-pager, pieza QR y portada de ebook (hoy ~596 × 842 px).
   - Banner de Carpa (835 × 451) fuera del visor: cargarlo si llega un original apaisado de más resolución.
-  - "Objetivo" de cada pieza (`objetivo` en cada `pieza.json`, hoy PENDIENTE) y métricas reales si las hay.
   - Vistas previas de **Mail (3:1)** y **Web (16:10)**: no hay piezas en esos formatos.
-  - **Loop del hero**: una misma campaña en 1:1, 4:5, 9:16, 3:1 y 16:10 (ningún trabajo la tiene hoy).
-  - Elegidas por Claude para las vistas previas (confirmar): Ads → Condimento "otra campaña"; Redes → carrusel MoonDesk "Nacimos de un error"; Reels → story testimonio MoonDesk (estática); Branding → Condimento branding.
+  - Elegidas por Claude para las vistas previas (confirmar): Ads → Condimento "otra campaña"; Redes → carrusel MoonDesk "Nacimos de un error"; Reels → reel de Franco del 16 nov (`public/reels/reel.mp4`); Branding → Condimento branding.
 - **Fase 5 · dudas sobre piezas (las decide Franco)**:
   - `moondesk-story-testimonio`: muestra la cita, el nombre y la empresa de un cliente. ¿Hay permiso para publicarlo en el portfolio? (El alt no transcribe nombre ni empresa.)
   - `moondesk-post-retrabajos`: es una pregunta sin respuesta y sin logo; ¿es la portada de un carrusel incompleto o de otra marca?
   - `iscamen-story-mujer-en-la-ciencia`: jornada con UNCuyo y Gobierno de Mendoza; confirmar que fue un trabajo para ISCAMEN.
-  - `moondesk-pieza-qr` (con GS1 Argentina): ¿se imprimió o fue digital? Hoy está como "impreso".
+  - ~~`moondesk-pieza-qr`: ¿impreso o digital?~~ Resuelto (24 nov): todos los documentos de MoonDesk son digitales (formato "Documento digital").
   - `carpa-metodo` pasó de carrusel a **ebook** (son 9 portadas de módulos y bonos, no un carrusel de redes). `carpa-mockup-producto` repite esas portadas en dispositivos: ¿pieza aparte o hero del caso Carpa?
   - `iscamen-carrusel-citricos` slide 5: el texto dice "VITAMINAS C  A TU ALCANCE" (doble espacio); revisar si falta una palabra.
 - **Vista previa de Branding**: la pieza de Condimento es ≈1:1 y el marco de Branding es 4:5 (PRD §8), así que el recorte corta el logotipo. Opciones: (a) una pieza de branding pensada para 4:5; (b) un punto de foco por pieza; (c) Branding en 1:1, actualizando antes el PRD §8.
@@ -86,7 +84,7 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 ## Fase 6 · motion (paso 2: M04 y M05)
 
 - **Decisión de Franco · M05 con movimiento reducido.** `docs/motion.md` pide "fundido de 120 ms, el marco salta". Hoy el marco encastra en 120 ms con `--ease-out` y la pieza cambia sin fundido (`--duration-fast` vale 0 en reducido). Para cumplirlo al pie de la letra hace falta (a) un token de duración del encastre que valga 0 en reducido, o (b) permitir una rama `reducido()` en M05 (hoy `.claude/rules/motion.md` solo la permite en M04 y FLIP). La otra salida es actualizar la columna "Reducido" de M05 en `docs/motion.md`.
-- **Campaña del loop (M04).** Cuando llegue: cada `.hero__pieza` lleva su imagen (la regla `object-fit: cover` ya está) y el texto oculto de cada `<li>` de la tira nombra la campaña ("ISCAMEN · 4:5" + una descripción breve), para que el lector no diga menos que la pantalla. `hero.campaignPending` se reemplaza por el nombre real.
+- ~~**Campaña del loop (M04).**~~ Obsoleto: el hero ya no lleva piezas.
 - **Paso 3 (M15).** "Un protagonista por pantalla": a 360 px la frase-problema entra en el primer viewport con el loop andando. Cuando M15 esté activa, el loop se pausa mientras la frase se enciende.
 - **Paso 4 (`<ClientRouter />`).** Los scripts de M04 y M05 tienen que correr en `astro:page-load` y liberar en `astro:before-swap`; si no, al volver a la home no hay loop ni hover en servicios.
 - **QA de cierre.** El CLS de carga se mide con el build de producción (`astro preview`): en dev, Vite inyecta estilos tarde y con el server cargado el wordmark baja unos px (en producción, 0 en 8 cargas en paralelo).
@@ -188,3 +186,20 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 - **CLS de carga con red lenta:** 0,0068 en `/es/` a 1440 (el glifo del hero sigue al ancho del wordmark al llegar Archivo) y 0,00008 en Trabajos. Entra en la decisión abierta de `font-display` (Fase 6).
 - **Lighthouse marca contraste** en las palabras apagadas de M15 antes del scroll (estado previsto) y en el "CV" pendiente de la barra mobile (no es un control). Se resuelve con el CV real; M15 queda como está salvo decisión.
 - **Imágenes de las piezas en el caso:** PageSpeed estima 114 KiB de ahorro a 360 px. Revisar el `sizes` de `TilePieza` con las piezas reales.
+
+## Fase 9 · contenido (PRD v4.0)
+
+- ~~**Franco · confirmar las piezas del hero**~~ Descartado (24 nov): el hero queda solo con wordmark y bajada.
+- **Franco · reel liviano.** `public/reels/reel.mp4` es el video de WhatsApp tal cual (58 s, 1080 × 1920, 9 MB). Se carga recién al abrir Reels (`preload="none"`), pero conviene exportarlo en H.264 a 720 × 1280 y ~2 MB. El póster sale del segundo 1,5.
+- **Franco · CV en inglés.** El CV en español es el de la web anterior (`public/cv/franco-colucci-cv.pdf`); `site.cv.en` sigue en null.
+- **Franco · fechas de experiencia.** Sobre mí usa la bio de la web anterior; solo ISCAMEN tiene fecha (desde 2021).
+- **Pieza "¿Tu marca está preparada?" (MoonDesk)** quedó como Documentos. Confirmar el tipo.
+- **Carpa tiene 2 piezas acá y 4 en la web anterior** (bonos, módulos, banner y mockup): la agrupación de la Fase 5 juntó las portadas en una. Si Franco prefiere las 4, se separan.
+- **Logos de Skills:** Simple Icons (CC0) para Figma, Canva, WordPress, ChatGPT, Gemini, Claude y ElevenLabs; Adobe y CapCut con siglas (no están en Simple Icons).
+
+## Fase 9 · ajustes del 24 nov
+
+- **Franco · foto nueva.** Se quitó el retrato de la home y de Sobre mí; `Retrato.astro` queda listo para cuando elija una mejor.
+- **Franco · confirmar que el reel (IA en el cultivo de vid) es de ISCAMEN.** Hoy está dentro del proyecto ISCAMEN y también en Qué hago.
+- **Franco · favicon.** El sitio todavía no tiene favicon (no existe `public/brand/`). Con la marca FC se puede hacer uno "FC" cuando lo apruebes.
+- **Docs · glifo.** `CLAUDE.md` y el design system §2 todavía describen el glifo de marcos; quedó una nota del cambio a FC. Si el glifo no vuelve, se reescribe §2.

@@ -10,6 +10,10 @@ export type NombreIcono =
   | 'flecha-izq'
   | 'flecha-diag'
   | 'flecha-abajo'
+  | 'flecha-arriba'
+  | 'sol'
+  | 'luna'
+  | 'menu'
   | 'carrusel'
   | 'check'
   | 'mas'
@@ -31,6 +35,10 @@ const trazos: Record<NombreIcono, string> = {
   'flecha-izq': 'M13.5 8h-11M7 3.5 2.5 8 7 12.5',
   'flecha-diag': 'M4 12 12 4M5.5 4H12v6.5',
   'flecha-abajo': 'M8 2.5v11M3.5 9 8 13.5 12.5 9',
+  'flecha-arriba': 'M8 13.5v-11M3.5 7 8 2.5 12.5 7',
+  sol: 'M8 5.25a2.75 2.75 0 1 1 0 5.5 2.75 2.75 0 0 1 0-5.5zM8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.05 3.05l1.06 1.06M11.89 11.89l1.06 1.06M3.05 12.95l1.06-1.06M11.89 4.11l1.06-1.06',
+  menu: 'M2 4.5h12M2 8h12M2 11.5h12',
+  luna: 'M13.5 9.75A5.75 5.75 0 1 1 6.25 2.5a4.5 4.5 0 0 0 7.25 7.25z',
   carrusel: 'M5.5 2.5h8v8M2.5 5.5h8v8h-8z',
   check: 'M2.5 8.5 6 12l7.5-8',
   mas: 'M2.5 8h11M8 2.5v11',

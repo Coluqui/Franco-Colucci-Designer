@@ -46,27 +46,13 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       await expect.poll(flecha).toBe(reducido ? 0 : 4);
     });
 
-    test('M29 · la FAQ se abre con grid-template-rows y el + pasa a −', async ({ page }) => {
-      await page.goto('/es/');
-      const boton = page.locator('[data-faq-boton]').first();
-      await boton.scrollIntoViewIfNeeded();
-      const respuesta = page.locator('.faq__respuesta').first();
-      // Al cargar, el cierre inicial no se anima (solo el clic).
-      expect(await page.locator('.faq__respuesta').evaluateAll((els) => els.flatMap((e) => e.getAnimations()).length)).toBe(0);
-      expect(await respuesta.evaluate((e) => getComputedStyle(e).transitionProperty)).toContain('grid-template-rows');
-      await boton.click();
-      await expect(boton).toHaveAttribute('aria-expanded', 'true');
-      await expect.poll(() => boton.locator('.icono__vertical').evaluate((e) => getComputedStyle(e).transform)).toBe('matrix(1, 0, 0, 0, 0, 0)');
-      await expect(respuesta).toBeVisible();
-      await boton.click();
-      await expect(boton).toHaveAttribute('aria-expanded', 'false');
-      await expect(respuesta).toBeHidden();
-    });
 
     test('M28 · el contador rueda y el arrastre con mouse lleva al más cercano', async ({ page }) => {
       await page.goto('/es/dev/componentes/');
       const raiz = page.locator('[data-testimonios]');
       await raiz.scrollIntoViewIfNeeded();
+      // Con ScrollSmoother (motion 4.1) el contenido llega con retraso: se espera a que quede quieto.
+      await page.waitForTimeout(1500);
       const contador = raiz.locator('[data-contador]');
       await raiz.locator('[data-siguiente]').click();
       if (!reducido) expect(await contador.evaluate((e) => e.getAnimations().length)).toBeGreaterThan(0);

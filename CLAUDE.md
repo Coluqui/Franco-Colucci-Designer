@@ -8,14 +8,13 @@ Mandan sobre todo lo demás. Si chocan entre sí, gana la de arriba.
 
 | # | Documento | Versión | Qué define |
 | --- | --- | --- | --- |
-| 1 | `docs/PRD-Portfolio-Franco-Colucci.md` | v3.2 | Alcance, páginas, flujos, contenido, requisitos, stack |
+| 1 | `docs/PRD-Portfolio-Franco-Colucci.md` | v4.0 | Alcance, páginas, flujos, contenido, requisitos, stack |
 | 2 | `docs/design-system.md` | v2.1 "Formato" | Cómo y dónde se usa cada token, componentes y estados, responsive, prohibidos |
 | 3 | `design-system/tokens.css` | v2.1 | **Única fuente de valores** (`tokens.json` es una copia derivada) |
-| 4 | `docs/motion.md` | v2.0 "Formato vivo" | M01–M32, resortes, versión reducida, criterios de aceptación |
+| 4 | `docs/motion.md` | v3.0 "Desglose" | Efectos 4.1–4.13 con GSAP, versión reducida, criterios de aceptación |
 | 5 | `.claude/rules/*.md` | — | Reglas por ruta (se cargan solas al tocar `src/`) |
-| 6 | `prompts/07-motion.md` | — | Guía de implementación del motion (Fase 6) |
 
-- **"Ficha de producción" es obsoleta**: marcas de corte, naranja señal, Instrument Sans, radios de 0 px, navegación numerada, mosaico del hero, `motion.md` v1.1 e IDs M33–M39. Si aparece, se lista y se propone borrarlo.
+- **"Ficha de producción" es obsoleta**: marcas de corte, naranja señal, Instrument Sans, radios de 0 px, navegación numerada, mosaico del hero, `motion.md` v1.1 e IDs M33–M39. También **"Formato vivo"** (`motion.md` v2.0, M01–M32, `prompts/07-motion.md`), reemplazado por v3.0 el 24 nov. Si aparece, se lista y se propone borrarlo.
 - Si un pedido contradice estas fuentes, **avisar antes** y decir qué documento habría que actualizar.
 - **Nunca inventar contenido real** (testimonios, métricas, clientes, textos de caso): placeholder `PENDIENTE` + entrada en `docs/pendientes.md`.
 
@@ -29,7 +28,7 @@ Mandan sobre todo lo demás. Si chocan entre sí, gana la de arriba.
 - **CSS nativo con tokens** (`design-system/tokens.css`). Sin Tailwind ni librerías de UI.
 - **i18n nativo**: `/es/` y `/en/` con prefijo; `/` elige según el navegador (español por defecto).
 - **Colecciones de contenido** con Zod (`src/content.config.ts`).
-- **Motion**: CSS + Web Animations API + View Transitions (`<ClientRouter />`). **Sin librerías de animación.**
+- **Motion**: **GSAP** (ScrollTrigger, ScrollSmoother, SplitText, CustomEase) registrado una sola vez en `src/motion/gsap.ts` + View Transitions (`<ClientRouter />`). Sin otras librerías de animación.
 - **Fuentes**: Archivo variable (`wdth` 62–125, `wght` 100–900) + Geist Mono 500, autoalojadas en `public/fonts/`.
 - **Formulario**: Resend desde una ruta on-demand (Fase 7). **Hosting**: Vercel.
 
@@ -46,7 +45,7 @@ src/i18n/             es.json, en.json, index.ts (t(), switchLangPath(), localiz
 src/content.config.ts colección `piezas`
 src/assets/trabajos/<slug>/   una carpeta por pieza: pieza.json + slides
 src/pages/[lang]/     páginas por idioma
-src/scripts/motion/   encastre.ts, respiracion.ts, lectura.ts, flip.ts, observer.ts
+src/motion/           gsap.ts, tokens.ts, smooth.ts, reveals.ts, textNoise.ts, hoverPreview.ts, index.ts
 src/config/site.ts    mail, WhatsApp, LinkedIn (PENDIENTE hasta que Franco los complete)
 ```
 
@@ -57,6 +56,7 @@ src/config/site.ts    mail, WhatsApp, LinkedIn (PENDIENTE hasta que Franco los c
 - Hover solo en `@media (hover: hover) and (pointer: fine)`; focus-visible con `--focus-ring`; objetivos de 44 × 44 px.
 - Mobile-first, container queries, `100dvh`, safe areas.
 - **Un carrusel es UNA pieza** con varios slides (PRD §6). Una pieza simple tiene un solo slide.
+- **Un proyecto es una empresa**: rol, descripción y sus piezas agrupadas por tipo. Sin objetivo, métricas ni FAQ (PRD v4.0).
 - Las piezas nunca se tiñen, deforman ni llevan grano encima.
 
 ## Forma de trabajo
@@ -68,7 +68,7 @@ src/config/site.ts    mail, WhatsApp, LinkedIn (PENDIENTE hasta que Franco los c
   - lo pendiente;
   - las decisiones que hacen falta.
   **No pasar a la fase siguiente sin aprobación.**
-- **Commits chicos**, uno por paso, en español, con qué y por qué. Motion: `motion(M05): …`.
+- **Commits chicos**, uno por paso, en español, con qué y por qué. Motion: `motion(4.8): …`.
 - **Antes de cerrar una fase**:
   - `npm run build` sin errores;
   - revisión a 360, 768, 1280 y 1440 px, en claro y oscuro, en ES y EN;
@@ -85,7 +85,7 @@ src/config/site.ts    mail, WhatsApp, LinkedIn (PENDIENTE hasta que Franco los c
 | `arquitecto` | Repo, Astro, i18n, colecciones, CLAUDE.md |
 | `frontend` | Layouts, componentes y páginas con tokens |
 | `ux-ui` | Revisa jerarquía, estados, responsive y fidelidad (solo lectura) |
-| `motion` | M01–M32 según `docs/motion.md` |
+| `motion` | Efectos 4.1–4.13 según `docs/motion.md` v3.0 (GSAP) |
 | `accesibilidad` | WCAG 2.2 AA (solo lectura) |
 | `contenido` | Piezas, textos ES/EN, alt text |
 | `backend` | Formulario, anti-spam, env, CV, deploy |
@@ -101,6 +101,6 @@ Las fuentes de verdad mandan sobre cualquier skill.
 | --- | --- | --- |
 | **frontend-design** | Calidad de implementación: HTML semántico, CSS, layout, detalle tipográfico, estados, terminación | Su estética propia: colores, fuentes, radios, sombras y concepto salen del design system |
 | **ui-ux-pro-max** | Revisión de UX y accesibilidad, WCAG 2.2 AA, checklists de entrega | Sus paletas, estilos y pares tipográficos |
-| **motion-foundations** | Técnicas: rendimiento, `prefers-reduced-motion`, cuándo animar | Su API `motion/react` y sus presets; no se suman librerías (GSAP, Framer Motion, Lenis) sin OK |
+| **motion-foundations** | Técnicas: rendimiento, `prefers-reduced-motion`, cuándo animar | Su API `motion/react` y sus presets; el motion se hace con GSAP; no se suman otras librerías (Framer Motion, Lenis) sin OK |
 
 Si falta una skill, avisar y seguir con las que haya, sin instalar nada. Hoy, como reemplazo de ui-ux-pro-max: `design:accessibility-review` (WCAG 2.1, más los criterios 2.2 a mano) y `design:design-critique`.

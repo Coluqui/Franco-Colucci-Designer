@@ -1,0 +1,109 @@
+---
+/**
+ * Botón flotante "Volver arriba" (Franco, 24 nov). Abajo a la derecha, encima de la barra mobile.
+ * Aparece pasada una pantalla de scroll. Es un link a #contenido: sin JS también funciona.
+ * Con JS sube suave (con el smoother si está activo; directo con movimiento reducido) y el foco
+ * va al principio del contenido.
+ */
+import Icono from './Icono.astro';
+import { t, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+---
+
+<a class="arriba" href="#contenido" aria-label={t(lang, 'a11y.backToTop')} data-arriba>
+  <Icono nombre="flecha-arriba" />
+</a>
+
+<script>
+  import { enCadaPagina } from '../scripts/pagina';
+  import { ScrollSmoother } from '../motion/gsap';
+
+  enCadaPagina(() => {
+    const boton = document.querySelector<HTMLAnchorElement>('[data-arriba]');
+    if (!boton) return;
+    const alScroll = () => boton.toggleAttribute('data-visible', scrollY > innerHeight);
+    const alClic = (e: MouseEvent) => {
+      e.preventDefault();
+      // Si no, el manejo de links internos de smooth.ts lo lleva al principio de <main> (debajo del header), no a 0.
+      e.stopPropagation();
+      // Foco primero: con el smoother, el foco mueve el scroll (smooth.ts) y lo de abajo lo pisa.
+      document.getElementById('contenido')?.focus({ preventScroll: true });
+      const smoother = ScrollSmoother.get();
+      if (smoother) smoother.scrollTo(0, true);
+      else scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    };
+    addEventListener('scroll', alScroll, { passive: true });
+    boton.addEventListener('click', alClic);
+    alScroll();
+    return () => {
+      removeEventListener('scroll', alScroll);
+      boton.removeEventListener('click', alClic);
+    };
+  });
+</script>
+
+<style>
+  .arriba {
+    position: fixed;
+    inset-inline-end: var(--grid-margin);
+    inset-block-end: calc(var(--bottom-bar-height) + var(--safe-bottom) + var(--space-4));
+    z-index: var(--z-bottom-bar);
+    display: grid;
+    place-items: center;
+    inline-size: var(--control-height);
+    block-size: var(--control-height);
+    border: var(--border-control);
+    border-radius: var(--radius-xs);
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(var(--shift-xs));
+    transition:
+      opacity var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out),
+      visibility 0s linear var(--duration-fast);
+  }
+
+  .arriba[data-visible],
+  .arriba:focus-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+
+  .arriba:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .arriba:hover {
+      background: var(--color-surface);
+    }
+  }
+
+  /* Sin barra mobile: más cerca del borde. */
+  @media (min-width: 48rem) {
+    .arriba {
+      inset-block-end: calc(var(--safe-bottom) + var(--space-6));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .arriba {
+      transform: none;
+    }
+  }
+
+  /* Con menú, panel o visor abiertos, no se ve. */
+  :global(html:has(dialog[open])) .arriba {
+    display: none;
+  }
+</style>

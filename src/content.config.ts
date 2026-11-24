@@ -16,7 +16,10 @@ const localized = z.object({
 
 /** Formatos de pieza (filtro "por formato" del caso y etiqueta del tile). */
 /** El orden también es el de la grilla del caso y el de los chips: lo digital primero, impresos al final. */
-export const formatos = ['carrusel', 'post', 'story', 'reel', 'ad', 'branding', 'mail', 'web', 'ebook', 'impreso'] as const;
+export const formatos = ['carrusel', 'post', 'story', 'reel', 'ad', 'branding', 'mail', 'web', 'ebook', 'documento', 'impreso'] as const;
+
+/** Tipos de pieza (PRD v4.0 §8). El orden es el de los grupos en la página del proyecto. */
+export const tiposPieza = ['redes', 'ads', 'documentos', 'lanzamientos', 'identidad'] as const;
 
 const piezas = defineCollection({
   loader: glob({
@@ -42,15 +45,9 @@ const piezas = defineCollection({
         orden: z.number().int().min(1).optional(),
         /** Proporción de la pieza, p. ej. "4:5", "9:16", "16:10". */
         ratio: z.string().regex(/^\d+(?:\.\d+)?:\d+(?:\.\d+)?$/, 'ratio como "4:5"'),
+        /** Tipo de pieza (PRD v4.0): agrupa las piezas en la página del proyecto y filtra Trabajos. */
+        tipo: z.enum(tiposPieza),
         titulo: localized,
-        objetivo: localized,
-        /** Métrica del chip (número + etiqueta). Opcional: nunca se inventa. */
-        metrica: z
-          .object({
-            valor: z.string().min(1),
-            etiqueta: localized,
-          })
-          .optional(),
         slides: z
           .array(
             z.object({
@@ -68,16 +65,15 @@ const piezas = defineCollection({
       }),
 });
 
-/** Servicios (PRD §8): filtran Trabajos y arman la lista de servicios. */
+/** Servicios (PRD §8): arman la lista de "Qué hago". */
 export const servicios = ['ads', 'redes', 'reels', 'mail', 'web', 'branding'] as const;
 
 const kebab = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'slug en kebab-case');
 
 /**
- * Casos · PRD §5 (página de caso) y §8 (plantilla de caso obligatoria).
- * Un JSON por caso en src/content/casos/<slug>.json. Las piezas se vinculan con su campo `caso`.
- * Nada se inventa: textos "PENDIENTE: …" hasta que Franco aporte los datos; métricas y testimonio
- * pueden faltar (la página no muestra esos bloques).
+ * Proyectos · PRD v4.0 §5 y §8: un proyecto es una empresa con el rol de Franco, qué es la empresa y
+ * cómo fue el trabajo, y sus piezas agrupadas por tipo. Un JSON por proyecto en src/content/casos/<slug>.json;
+ * las piezas se vinculan con su campo `caso`. Sin objetivo, métricas ni pasos.
  */
 const casos = defineCollection({
   loader: glob({
@@ -94,36 +90,18 @@ const casos = defineCollection({
   schema: ({ image }) =>
     z.object({
       slug: kebab,
-      /** Orden en la home y en Trabajos; también define el "Siguiente caso". */
+      /** Orden en la home y en Trabajos; también define el "Siguiente proyecto". */
       orden: z.number().int().min(1),
+      /** Empresa: H1 del proyecto y nombre en la card. */
       cliente: z.string().min(1),
-      /** Título del caso (H1 de su página, nombre en la fila). */
-      titulo: localized,
-      /** Frase del caso: qué se resolvió, en una línea. */
-      frase: localized,
-      /** Tipo de trabajo, en la fila ("Campaña · Redes y ads"). */
-      tipo: localized,
-      /** Descripción corta de la fila (1–2 líneas). */
-      descripcion: localized,
       rol: localized,
-      anio: z.number().int().min(2000).max(2100).optional(),
-      servicios: z.array(z.enum(servicios)).min(1),
-      herramientas: z.array(z.string().min(1)).default([]),
-      problema: localized,
-      /** "Lo que hice": pasos en orden. */
-      pasos: z.array(localized).min(1),
-      resultado: localized,
-      /** 2–4 métricas reales; vacío hasta tenerlas (nunca se inventan). */
-      metricas: z
-        .array(z.object({ valor: z.string().min(1), etiqueta: localized }))
-        .max(4)
-        .default([]),
-      testimonio: z
-        .object({ cita: localized, autor: z.string().min(1), rol: localized })
-        .optional(),
-      /** Hero del caso (mockup o pieza a ancho completo); la fila lo recorta a 16:10, el caso a 16:8. */
+      /** Qué es la empresa y cómo fue el proyecto (un párrafo). */
+      descripcion: localized,
+      /** Hero opcional (mockup a ancho completo). Sin hero, se usa la portada de la primera pieza. */
       hero: image().optional(),
       heroAlt: localized.optional(),
+      /** Reel del proyecto (video vertical 9:16 en public/), con su título para el lector de pantalla. */
+      reel: z.object({ src: z.string().startsWith('/'), poster: z.string().startsWith('/'), titulo: localized }).optional(),
     }),
 });
 

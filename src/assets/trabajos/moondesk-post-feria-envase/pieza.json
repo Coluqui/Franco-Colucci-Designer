@@ -2,14 +2,11 @@
   "slug": "moondesk-post-feria-envase",
   "caso": "moondesk",
   "formato": "post",
+  "tipo": "redes",
   "ratio": "4:5",
   "titulo": {
     "es": "Post: Feria Envase 2025",
     "en": "Post: Envase 2025 trade fair"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

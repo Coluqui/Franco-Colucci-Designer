@@ -2,14 +2,11 @@
   "slug": "moondesk-post-retrabajos",
   "caso": "moondesk",
   "formato": "post",
+  "tipo": "redes",
   "ratio": "4:5",
   "titulo": {
     "es": "Post: ¿Qué generó más retrabajos?",
     "en": "Post: What caused the most rework?"
-  },
-  "objetivo": {
-    "es": "PENDIENTE: objetivo de la pieza.",
-    "en": "PENDING: piece goal."
   },
   "slides": [
     {

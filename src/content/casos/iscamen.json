@@ -1,52 +1,21 @@
 {
   "slug": "iscamen",
-  "orden": 2,
+  "orden": 1,
   "cliente": "ISCAMEN",
-  "titulo": {
-    "es": "ISCAMEN",
-    "en": "ISCAMEN"
-  },
-  "frase": {
-    "es": "PENDIENTE: frase del caso (qué se resolvió, en una línea).",
-    "en": "PENDING: case sentence (what was solved, in one line)."
-  },
-  "tipo": {
-    "es": "PENDIENTE: tipo de trabajo",
-    "en": "PENDING: type of work"
+  "rol": {
+    "es": "Lead Digital Designer",
+    "en": "Lead Digital Designer"
   },
   "descripcion": {
-    "es": "PENDIENTE: descripción corta del caso para la fila.",
-    "en": "PENDING: short case description for the row."
+    "es": "ISCAMEN es el organismo de sanidad y calidad agropecuaria de Mendoza. Lidero su diseño digital desde 2021: campañas para redes, ciclos de capacitación y comunicación institucional que traduce información técnica en piezas claras para productores y vecinos.",
+    "en": "ISCAMEN is the agricultural health and quality agency of Mendoza, Argentina. I have led its digital design since 2021: social campaigns, training series and institutional communication that turn technical information into clear pieces for growers and the public."
   },
-  "rol": {
-    "es": "PENDIENTE: rol",
-    "en": "PENDING: role"
-  },
-  "servicios": [
-    "redes"
-  ],
-  "herramientas": [],
-  "problema": {
-    "es": "PENDIENTE: el problema del caso.",
-    "en": "PENDING: the case problem."
-  },
-  "pasos": [
-    {
-      "es": "PENDIENTE: paso 1 de lo que hice.",
-      "en": "PENDING: step 1 of what I did."
-    },
-    {
-      "es": "PENDIENTE: paso 2.",
-      "en": "PENDING: step 2."
-    },
-    {
-      "es": "PENDIENTE: paso 3.",
-      "en": "PENDING: step 3."
+  "reel": {
+    "src": "/reels/reel.mp4",
+    "poster": "/reels/reel-poster.jpg",
+    "titulo": {
+      "es": "Inteligencia artificial en el cultivo de vid",
+      "en": "Artificial intelligence in vineyard farming"
     }
-  ],
-  "resultado": {
-    "es": "PENDIENTE: resultado del caso.",
-    "en": "PENDING: case result."
-  },
-  "metricas": []
+  }
 }

@@ -1,20 +1,17 @@
 ---
 /**
- * Fila de caso (home y Trabajos) · design system §7 y §8 · PRD §3.
+ * Card de proyecto (home y Trabajos) · design system §7 y §8 · PRD v4.0 §5 (sin métricas).
  * Panel --color-surface, --radius-sm. Todo el panel es clicable (link estirado desde el título),
  * así el lector de pantalla oye un solo link con el nombre del caso.
  * - Ancho (contenedor ≥ 60rem): media 16:10 en 7 columnas + texto en 5.
- * - Angosto: una columna, las métricas arriba de la imagen.
+ * - Angosto: una columna.
  * Hover: la media escala --scale-media-hover con --spring-soft y aparece "Ver caso →" (M27).
  * Foco: anillo en todo el panel y "Ver caso →" visible. En táctil, "Ver caso →" siempre visible.
- * M17: cada fila entra una vez al 15 %: el panel entero sube --shift-md y aparece; la media aparece
- * --stagger después (solo opacidad: ya sube con el panel). La fila que ya se ve al cargar no se anima.
- * Se anima el <article> y no .fila__texto, que en angosto es display: contents (no tiene caja).
+ * Motion v3.0 (4.8): la card entra subiendo (data-reveal-item) y su media se destapa (data-reveal="clip").
  * Fase 6, paso 4: la media se convierte en el hero del caso con View Transitions (M06, M07).
  */
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import ChipMetrica from './ChipMetrica.astro';
 import Icono from './Icono.astro';
 import { t, type Lang } from '../i18n';
 
@@ -24,13 +21,12 @@ interface Props {
   slug: string;
   href: string;
   titulo: string;
-  /** Tipo de trabajo, en label (p. ej. "Campaña · Redes y ads"). */
+  /** Rol de Franco en el proyecto. */
   tipo: string;
-  /** Hasta 2 chips (design system §7). */
-  metricas?: Array<{ valor: string; etiqueta: string }>;
   descripcion: string;
+  /** Piezas por tipo ("Redes 7"). */
   servicios: string[];
-  /** Media 16:10 (hero del caso). Sin imagen: marco PENDIENTE sobre --color-stage. */
+  /** Media 16:10 (portada del proyecto). Sin imagen: marco PENDIENTE sobre --color-stage. */
   imagen?: ImageMetadata | undefined;
   alt?: string;
   /** Nivel del título según la página: h3 en la home (bajo "Trabajos"), h2 en Trabajos. */
@@ -39,13 +35,13 @@ interface Props {
   prioridad?: boolean;
 }
 
-const { lang, slug, href, titulo, tipo, metricas = [], descripcion, servicios, imagen, alt, nivel = 'h3', prioridad = false } = Astro.props;
+const { lang, slug, href, titulo, tipo, descripcion, servicios, imagen, alt, nivel = 'h3', prioridad = false } = Astro.props;
 const Titulo = nivel;
 ---
 
-<div class="fila-caja" data-fila>
+<div class="fila-caja" data-fila data-reveal-item>
   <article class="fila">
-    <div class="fila__media" transition:name={`caso-${slug}-media`} transition:animate="initial">
+    <div class="fila__media" data-reveal="clip" transition:name={`caso-${slug}-media`} transition:animate="initial">
       {
         imagen ? (
           <Image
@@ -65,20 +61,9 @@ const Titulo = nivel;
     <div class="fila__texto">
       <Titulo class="t-h3 fila__titulo"><a class="fila__link" href={href}><span class="fila__nombre" transition:name={`caso-${slug}-titulo`} transition:animate="initial">{titulo}</span></a></Titulo>
       <p class="fila__tipo">{tipo}</p>
-      {
-        metricas.length > 0 && (
-          <ul class="fila__metricas" role="list" aria-label={t(lang, 'case.metrics')}>
-            {metricas.slice(0, 2).map((m) => (
-              <li>
-                <ChipMetrica valor={m.valor} etiqueta={m.etiqueta} />
-              </li>
-            ))}
-          </ul>
-        )
-      }
       <p class="t-body fila__descripcion">{descripcion}</p>
       <p class="t-ui fila__servicios">
-        <span class="visually-hidden">{t(lang, 'case.servicesLabel')}</span>
+        <span class="visually-hidden">{t(lang, 'case.piecesLabel')}</span>
         {servicios.join(' · ')}
       </p>
       <span class="t-ui fila__ver" aria-hidden="true">
@@ -89,19 +74,6 @@ const Titulo = nivel;
   </article>
 </div>
 
-<script>
-  import { ms } from '../scripts/motion/base';
-  import { entrar } from '../scripts/motion/observer';
-  import { enCadaPagina } from '../scripts/pagina';
-
-  enCadaPagina(() => {
-    document.querySelectorAll<HTMLElement>('[data-fila]').forEach((fila) => {
-      const panel = fila.querySelector<HTMLElement>('.fila');
-      const media = fila.querySelector<HTMLElement>('.fila__media');
-      if (panel && media) entrar(fila, [{ el: panel }, { el: media, retraso: ms('--stagger'), soloOpacidad: true }]);
-    });
-  });
-</script>
 
 <style>
   .fila-caja {
@@ -118,23 +90,9 @@ const Titulo = nivel;
     color: var(--color-text-primary);
   }
 
-  /* Angosto: el texto se aplana en la grilla para poder subir las métricas arriba de la imagen. */
+  /* Angosto: el texto se aplana en la grilla y la media sube arriba. */
   .fila__texto {
     display: contents;
-  }
-
-  /* Angosto: solo la métrica principal sube arriba de la imagen (design system §8). */
-  .fila__metricas {
-    display: contents;
-  }
-
-  .fila__metricas li:first-child {
-    order: -2;
-    justify-self: start;
-  }
-
-  .fila__metricas li {
-    justify-self: start;
   }
 
   .fila__media {
@@ -172,11 +130,6 @@ const Titulo = nivel;
       padding-block: var(--space-2);
     }
 
-    .fila__metricas {
-      display: flex;
-    }
-
-    .fila__metricas li:first-child,
     .fila__media {
       order: 0;
     }
@@ -222,14 +175,6 @@ const Titulo = nivel;
     font-size: var(--text-small);
     font-weight: var(--weight-ui);
     line-height: var(--leading-ui);
-  }
-
-  .fila__metricas {
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    margin: 0;
-    padding: 0;
-    list-style: none;
   }
 
   .fila__descripcion {

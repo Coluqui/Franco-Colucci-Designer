@@ -1,7 +1,7 @@
 ---
 /**
- * Home · PRD §5: Hero · Frase-problema · Clientes + Testimonios (invertida) · Trabajos destacados (4 filas)
- * · Qué hago (servicios + herramientas e IA) · Sobre mí (resumen) · Preguntas frecuentes · Cierre · Footer.
+ * Home · PRD v4.0 §5: Hero · Frase-problema · Clientes + Testimonios (invertida) · Trabajos (por proyecto, una fila de piezas del mismo alto)
+ * · Qué hago (servicios + vista previa) · Skills · Sobre mí (resumen) · Cierre · Footer.
  * Contenido real que falta: PENDIENTE (docs/pendientes.md). Motion (M04, M15, M16, M17): Fase 6.
  */
 import type { GetStaticPaths } from 'astro';
@@ -10,14 +10,15 @@ import Hero from '../../components/Hero.astro';
 import Seccion from '../../components/Seccion.astro';
 import FraseProblema from '../../components/FraseProblema.astro';
 import GrillaClientes from '../../components/GrillaClientes.astro';
-import FilaCaso from '../../components/FilaCaso.astro';
+import ProyectoFila from '../../components/ProyectoFila.astro';
+import Visor from '../../components/Visor.astro';
 import ListaServicios from '../../components/ListaServicios.astro';
 import ResumenSobreMi from '../../components/ResumenSobreMi.astro';
-import Faq from '../../components/Faq.astro';
+import Skills from '../../components/Skills.astro';
 import Cierre from '../../components/Cierre.astro';
 import Link from '../../components/Link.astro';
 import { locales, t, localizePath, type Lang } from '../../i18n';
-import { getCasos, filaDeCaso } from '../../lib/casos';
+import { getCasos, getPiezasDeCaso, piezasDeFila, piezaVista, hrefCaso } from '../../lib/casos';
 import { ordenServicios, ratioServicio, piezaServicio } from '../../config/servicios';
 import { getCollection } from 'astro:content';
 
@@ -25,6 +26,17 @@ export const getStaticPaths = (() => locales.map((lang) => ({ params: { lang } }
 
 const lang = Astro.params.lang as Lang;
 const casos = await getCasos();
+/** Trabajos: por proyecto, una fila de piezas enteras de la misma proporción; un solo visor para todas. */
+const proyectos = await Promise.all(
+  casos.map(async (c) => ({
+    slug: c.slug,
+    href: hrefCaso(lang, c.slug),
+    titulo: c.cliente,
+    rol: c.rol[lang],
+    total: c.tipos.reduce((n, x) => n + x.cantidad, 0),
+    piezas: piezasDeFila(await getPiezasDeCaso(c.slug)).map((p) => piezaVista(lang, c.cliente, p)),
+  })),
+);
 
 /** Clientes del PRD §3; los logos SVG monocromos están PENDIENTE (se muestra el nombre). */
 const clientes = ['ISCAMEN', 'MoonDesk', 'Condimento', 'Carpa', 'RLB', 'Interlink'].map((nombre) => ({ nombre }));
@@ -40,14 +52,10 @@ const servicios = ordenServicios.map((slug) => {
     ratio: ratioServicio[slug],
     imagen: portada?.src,
     alt: portada?.alt[lang],
+    // Reel de Franco (16 nov): reemplaza a la pieza de vista previa de Reels.
+    ...(slug === 'reels' ? { video: { src: '/reels/reel.mp4', poster: '/reels/reel-poster.jpg', etiqueta: t(lang, 'services.reelLabel') } } : {}),
   };
 });
-
-/** 6 preguntas para recruiters (borrador de Claude, PRD §8); las respuestas las da Franco. */
-const preguntas = ([1, 2, 3, 4, 5, 6] as const).map((n) => ({
-  pregunta: t(lang, `faq.q${n}`),
-  respuesta: t(lang, `faq.a${n}`),
-}));
 ---
 
 <Base lang={lang} title={`Franco Colucci · ${t(lang, 'pages.home.title')}`} description={t(lang, 'pages.home.description')} chrome>
@@ -71,29 +79,26 @@ const preguntas = ([1, 2, 3, 4, 5, 6] as const).map((n) => ({
     <Link slot="accion" class="t-ui link--suelto" href={localizePath(lang, 'trabajos/')} lang={lang}>{t(lang, 'home.allWork')}</Link>
     <ul class="filas" role="list">
       {
-        casos.map((c, i) => (
+        proyectos.map((p) => (
           <li>
-            <FilaCaso lang={lang} {...filaDeCaso(lang, c)} prioridad={i === 0} />
+            <ProyectoFila lang={lang} {...p} />
           </li>
         ))
       }
     </ul>
+    <Visor lang={lang} piezas={proyectos.flatMap((p) => p.piezas)} />
   </Seccion>
 
-  <Seccion id="que-hago" titulo={t(lang, 'home.whatIDo')}>
+  <Seccion id="que-hago" titulo={t(lang, 'home.whatIDo')} invertida>
     <ListaServicios lang={lang} servicios={servicios} />
-    <div class="herramientas">
-      <h3 class="t-h3">{t(lang, 'home.tools')}</h3>
-      <p class="t-body">{t(lang, 'home.toolsText')}</p>
-    </div>
   </Seccion>
 
-  <Seccion id="sobre-mi" titulo={t(lang, 'home.aboutTitle')}>
+  <Seccion id="skills" titulo={t(lang, 'skills.title')}>
+    <Skills lang={lang} />
+  </Seccion>
+
+  <Seccion id="sobre-mi" titulo={t(lang, 'home.aboutTitle')} superficie>
     <ResumenSobreMi lang={lang} />
-  </Seccion>
-
-  <Seccion id="preguntas" titulo={t(lang, 'faq.title')}>
-    <Faq preguntas={preguntas} />
   </Seccion>
 
   <Cierre lang={lang} />
@@ -134,20 +139,10 @@ const preguntas = ([1, 2, 3, 4, 5, 6] as const).map((n) => ({
 
   .filas {
     display: grid;
-    gap: var(--space-6);
+    gap: var(--space-8);
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .herramientas {
-    display: grid;
-    gap: var(--space-4);
-    max-inline-size: var(--measure);
-  }
-
-  .herramientas h3,
-  .herramientas p {
-    margin: 0;
-  }
 </style>

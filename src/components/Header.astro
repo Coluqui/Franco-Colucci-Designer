@@ -1,7 +1,9 @@
 ---
 /**
  * Header · design system §7 y §8.
- * Glifo (inicio) a la izquierda; "▣ Hablemos" (primario) + "Menú" (secundario) a la derecha.
+ * Monograma "FC" (inicio) a la izquierda: al scrollear se despliega en "Franco Colucci" + puesto
+ * (Franco, 24 nov; motion en src/motion/logo.ts; desde 48rem). A la derecha: idioma ES / EN, switch de
+ * modo, "Hablemos" (primario) y el menú como ícono (burger). Todos los controles a la misma altura.
  * - Transparente arriba; con scroll > 8 px, --color-bg + filete (data-scrolled). M19: el fondo es una
  *   capa (::before) que aparece con opacidad (300 · in-out), así no se anima ningún color.
  * - Sobre una sección invertida, reasigna los tokens (data-invertido).
@@ -9,7 +11,8 @@
  * - "Hablemos" es un link a /[lang]/hablemos/ (funciona sin JS); con JS abre el panel.
  */
 import Boton from './Boton.astro';
-import Glifo from './Glifo.astro';
+import Toggle from './Toggle.astro';
+import Icono from './Icono.astro';
 import { t, localizePath, type Lang } from '../i18n';
 
 interface Props {
@@ -21,31 +24,35 @@ const { lang } = Astro.props;
 
 <header class="header" data-header transition:persist={`header-${lang}`}>
   <div class="header__interior container">
-    <a class="header__logo" href={localizePath(lang)} aria-label={t(lang, 'nav.homeLink')}>
-      <Glifo size="1.625rem" />
+    <a class="header__logo logo" href={localizePath(lang)} aria-label={t(lang, 'nav.homeLink')} data-logo>
+      <span class="logo__nombre" aria-hidden="true" data-logo-nombre>
+        <span>F</span><span class="logo__resto" data-logo-resto>ranco&nbsp;</span><span>C</span><span class="logo__resto" data-logo-resto>olucci</span>
+        <span class="logo__puesto" data-logo-puesto>{t(lang, 'nav.role')}</span>
+      </span>
     </a>
 
     <div class="header__acciones">
+      <Toggle lang={lang} tipo="idioma" compacto />
+      <Toggle lang={lang} tipo="modo" compacto />
       <Boton
         class="header__hablemos"
         size="sm"
-        glifo
         href={localizePath(lang, 'hablemos/')}
         data-abre-panel
       >
         {t(lang, 'nav.talk')}
       </Boton>
-      <Boton
-        class="header__menu"
-        variante="secundario"
-        size="sm"
+      <button
+        class="header__icono header__menu"
+        type="button"
         data-abre-menu
         aria-haspopup="dialog"
         aria-expanded="false"
         aria-controls="menu"
+        aria-label={t(lang, 'nav.menu')}
       >
-        {t(lang, 'nav.menu')}
-      </Boton>
+        <Icono nombre="menu" />
+      </button>
     </div>
   </div>
 </header>
@@ -122,20 +129,98 @@ const { lang } = Astro.props;
     min-block-size: var(--header-height);
   }
 
-  .header__logo {
-    display: inline-grid;
-    place-items: center;
-    min-inline-size: var(--control-height);
+  /* Logo: "FC" plegado; las letras que faltan (data-logo-resto) tienen ancho 0 hasta que el motion las abre.
+     El puesto cuelga debajo del nombre (absoluto): no mueve el header. */
+  .logo {
+    display: inline-flex;
+    align-items: center;
     min-block-size: var(--control-height);
-    margin-inline-start: calc((var(--control-height) - 1.625rem) / -2);
     color: var(--color-text-primary);
+    text-decoration: none;
     border-radius: var(--radius-xs);
   }
 
+  .logo__nombre {
+    position: relative;
+    font-size: var(--text-h3);
+    font-weight: var(--weight-black);
+    font-stretch: calc(var(--wdth-wide) * 1%);
+    line-height: 1;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+
+  .logo__resto {
+    display: inline-block;
+    inline-size: 0;
+    overflow: clip;
+    vertical-align: bottom;
+  }
+
+  .logo__puesto {
+    position: absolute;
+    inset-block-start: calc(100% + var(--space-1));
+    inset-inline-start: 0;
+    font-size: var(--text-small);
+    font-stretch: calc(var(--wdth-normal) * 1%);
+    letter-spacing: 0;
+    font-weight: var(--weight-ui);
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--color-text-secondary);
+    opacity: 0;
+  }
+
   .header__acciones {
+    --alto-control: var(--control-height);
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  /* Misma altura para todo: 44 en táctil/angosto; 36 desde 48rem, como el botón "Hablemos" (sm). */
+  @media (min-width: 48rem) {
+    .header__acciones {
+      --alto-control: var(--control-height-sm);
+      gap: var(--space-3);
+    }
+  }
+
+  .header__acciones :global(.segmentado) {
+    padding: 0;
+  }
+
+  .header__acciones :global(.segmentado__opcion) {
+    min-block-size: calc(var(--alto-control) - 2px);
+    min-inline-size: calc(var(--alto-control) - 2px);
+  }
+
+  .header__acciones :global(.tema-switch),
+  .header__icono {
+    inline-size: var(--alto-control);
+    block-size: var(--alto-control);
+  }
+
+  .header__icono {
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    border: var(--border-control);
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--color-text-primary);
+    cursor: pointer;
+  }
+
+  .header__icono:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .header__icono:hover {
+      background: var(--color-surface);
+    }
   }
 
   /* 360 px: "Hablemos" vive en la barra inferior (design system §8). */

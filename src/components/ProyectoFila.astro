@@ -1,0 +1,125 @@
+---
+/**
+ * Proyecto en la home (Franco, 24 nov): nombre + rol + "Ver caso completo · N piezas en el caso →"
+ * y debajo una fila de piezas enteras, todas de la misma proporción (mismo alto, simétricas).
+ * La descripción de la empresa vive en la página del proyecto. Los tiles abren el visor de la home.
+ */
+import TilePieza from './TilePieza.astro';
+import Icono from './Icono.astro';
+import type { PiezaVista } from './tipos';
+import { t, tf, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  slug: string;
+  href: string;
+  titulo: string;
+  rol: string;
+  /** Total de piezas del proyecto (un carrusel cuenta 1). */
+  total: number;
+  piezas: PiezaVista[];
+}
+
+const { lang, slug, href, titulo, rol, total, piezas } = Astro.props;
+---
+
+<article class="proyecto" aria-labelledby={`proyecto-${slug}`}>
+  <header class="proyecto__cabecera" data-reveal>
+    <div class="proyecto__nombre">
+      <h3 id={`proyecto-${slug}`} class="t-h3 proyecto__titulo">
+        <span transition:name={`caso-${slug}-titulo`} transition:animate="initial">{titulo}</span>
+      </h3>
+      <p class="proyecto__rol">{rol}</p>
+    </div>
+    <a class="t-ui proyecto__ver" href={href}>
+      <span>{t(lang, 'case.viewFull')}<span class="visually-hidden">: {titulo}</span></span>
+      <span class="t-label proyecto__cantidad">{tf(lang, 'case.piecesInCase', { n: total })}</span>
+      <Icono nombre="flecha-der" />
+    </a>
+  </header>
+  <div class="proyecto__piezas">
+    {piezas.map((p) => <TilePieza lang={lang} pieza={p} sizes="(min-width: 80rem) 18rem, (min-width: 48rem) 22vw, 45vw" />)}
+  </div>
+</article>
+
+<style>
+  .proyecto {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .proyecto__cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-6);
+    padding-block-end: var(--space-4);
+    border-block-end: var(--border-hairline);
+  }
+
+  .proyecto__nombre {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .proyecto__titulo,
+  .proyecto__rol {
+    margin: 0;
+  }
+
+  .proyecto__rol {
+    font-size: var(--text-small);
+    font-weight: var(--weight-ui);
+    color: var(--color-text-secondary);
+  }
+
+  .proyecto__ver {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    min-block-size: var(--control-height-sm);
+    color: var(--color-text-primary);
+    font-weight: var(--weight-ui);
+    text-decoration: none;
+  }
+
+  .proyecto__cantidad {
+    color: var(--color-text-secondary);
+  }
+
+  .proyecto__ver :global(.icono) {
+    color: var(--color-accent);
+    transition: transform var(--spring-soft-duration) var(--spring-soft);
+  }
+
+  .proyecto__ver:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+    border-radius: var(--radius-xs);
+  }
+
+  .proyecto__ver:focus-visible :global(.icono) {
+    transform: translateX(var(--shift-xs));
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .proyecto__ver:hover :global(.icono) {
+      transform: translateX(var(--shift-xs));
+    }
+  }
+
+  /* Misma proporción en toda la fila: mismo alto. 2 columnas en angosto, 4 desde 48rem. */
+  .proyecto__piezas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--grid-gutter);
+  }
+
+  @media (min-width: 48rem) {
+    .proyecto__piezas {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

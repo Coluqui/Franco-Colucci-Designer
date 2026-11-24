@@ -1,7 +1,7 @@
 {
   "meta": {
     "siteName": "Franco Colucci",
-    "siteTitle": "Franco Colucci · Graphic & Digital Designer",
+    "siteTitle": "Franco Colucci · Digital & UX/UI Designer",
     "siteDescription": "PENDING: site description in English."
   },
   "lang": {
@@ -13,7 +13,8 @@
   "theme": {
     "label": "Mode",
     "light": "Light",
-    "dark": "Dark"
+    "dark": "Dark",
+    "darkMode": "Dark mode"
   },
   "redirect": {
     "title": "Franco Colucci",
@@ -22,7 +23,8 @@
   "a11y": {
     "skipToContent": "Skip to content",
     "newTab": "(opens in a new tab)",
-    "pending": "(pending)"
+    "pending": "(pending)",
+    "backToTop": "Back to top"
   },
   "nav": {
     "label": "Main navigation",
@@ -35,7 +37,8 @@
     "closeMenu": "Close menu",
     "talk": "Let's talk",
     "contact": "Contact",
-    "quickActions": "Quick actions"
+    "quickActions": "Quick actions",
+    "role": "Digital & UX/UI Designer"
   },
   "contact": {
     "email": "Email",
@@ -70,16 +73,17 @@
     "honeypot": "If you are a person, leave this field empty."
   },
   "case": {
-    "view": "View case",
-    "services": "Services",
-    "metrics": "Metrics",
-    "servicesLabel": "Services:"
+    "view": "View project",
+    "piecesLabel": "Pieces:",
+    "viewFull": "See full case",
+    "piecesInCase": "{n} pieces in the case"
   },
   "services": {
     "title": "What I do",
     "preview": "Preview",
     "seeWork": "See {servicio} work",
-    "pendingPreview": "Preview PENDING"
+    "pendingPreview": "Preview PENDING",
+    "reelLabel": "Reel: Artificial intelligence in vineyard farming"
   },
   "clients": {
     "title": "Clients"
@@ -94,29 +98,13 @@
     "slide": "testimonial",
     "hint": "Use the ← → arrow keys to move between testimonials."
   },
-  "faq": {
-    "title": "Frequently asked questions",
-    "q1": "What kind of pieces do you design?",
-    "a1": "PENDING: Franco’s answer.",
-    "q2": "Are you looking for a full-time role, freelance work or both?",
-    "a2": "PENDING: Franco’s answer.",
-    "q3": "Do you work remotely?",
-    "a3": "PENDING: Franco’s answer.",
-    "q4": "How do you use AI in your process?",
-    "a4": "PENDING: Franco’s answer.",
-    "q5": "Which tools do you work with?",
-    "a5": "PENDING: Franco’s answer.",
-    "q6": "How long does a piece or a campaign take?",
-    "a6": "PENDING: Franco’s answer."
-  },
   "filters": {
-    "byService": "Filter by service",
-    "byFormat": "Filter by format",
     "all": "All",
     "results": "{n} pieces",
     "resultsOne": "1 piece",
-    "resultsCases": "{n} case studies",
-    "resultsCasesOne": "1 case study"
+    "resultsCases": "{n} projects",
+    "resultsCasesOne": "1 project",
+    "byType": "Filter by piece type"
   },
   "tile": {
     "view": "View piece",
@@ -148,16 +136,16 @@
   },
   "pages": {
     "home": {
-      "title": "Graphic & Digital Designer",
+      "title": "Digital & UX/UI Designer",
       "description": "Franco Colucci’s portfolio: social, performance ads, emails, ebooks and websites that read in a second and can be measured."
     },
     "work": {
       "title": "Work",
-      "description": "Franco Colucci’s case studies, filterable by service: ads, social, reels, email, web and branding."
+      "description": "Franco Colucci’s projects by company (MoonDesk, ISCAMEN, Condimento and Carpa), with their social, ad, document and launch pieces."
     },
     "about": {
       "title": "About",
-      "description": "Who Franco Colucci is, graphic and digital designer: experience, way of working and use of AI."
+      "description": "Who Franco Colucci is, digital & UX/UI designer: experience, way of working and use of AI."
     },
     "talk": {
       "title": "Let’s talk",
@@ -169,11 +157,7 @@
     }
   },
   "hero": {
-    "tagline": "I design pieces your team can publish today and measure tomorrow.",
-    "formatsLabel": "One campaign in five formats",
-    "formatPending": "Piece PENDING",
-    "pause": "Pause the format loop",
-    "campaignPending": "PENDING"
+    "tagline": "I design pieces your team can publish today and measure tomorrow."
   },
   "problem": {
     "text": "A campaign can have the best offer and still lose clicks because the piece doesn’t read in a second."
@@ -182,13 +166,11 @@
     "text": "If your team needs pieces that read in a second, let’s talk."
   },
   "home": {
-    "featured": "Featured work",
+    "featured": "Work",
     "allWork": "See all work",
     "whatIDo": "What I do",
-    "tools": "Tools and AI",
-    "toolsText": "PENDING: tools and how I use AI in the process.",
     "aboutTitle": "About",
-    "aboutText": "PENDING: short bio.",
+    "aboutText": "I studied Graphic Design at Universidad Nacional de Cuyo and trained in UX/UI. For 5+ years I have designed for public institutions, companies and agencies, from brief to final delivery. I'm looking for remote work only.",
     "aboutLink": "More about me",
     "clientsEmpty": "PENDING: client logos as monochrome SVG.",
     "testimonialsEmpty": "PENDING: client testimonials."
@@ -227,39 +209,34 @@
   },
   "work": {
     "title": "Work",
-    "intro": "PENDING: work page intro.",
-    "empty": "No case studies with this service."
+    "intro": "A selection by company. Each carousel counts as one piece.",
+    "empty": "No projects with this piece type."
   },
   "caseDetail": {
-    "client": "Client",
     "role": "Role",
-    "year": "Year",
-    "services": "Services",
-    "tools": "Tools",
-    "heroPending": "Case hero PENDING (16:8)",
-    "metrics": "Results",
-    "problem": "The problem",
-    "whatIDid": "What I did",
+    "heroPending": "Project hero PENDING (16:8)",
     "pieces": "Pieces",
-    "piecesEmpty": "Pieces PENDING: loaded in Phase 5.",
-    "result": "Result",
-    "testimonial": "Testimonial",
-    "next": "Next case",
-    "back": "All work"
+    "piecesEmpty": "This project has no pieces loaded yet.",
+    "next": "Next project",
+    "back": "All work",
+    "reel": "Reel"
   },
   "about": {
     "title": "About",
     "portraitAlt": "Portrait of Franco Colucci",
-    "bio": "PENDING: About bio.",
+    "bio": "I studied Graphic Design at Universidad Nacional de Cuyo and trained in UX/UI (Coderhouse and Codo a Codo). For 5+ years I have designed for public institutions, companies and agencies. I'm looking for remote work only.",
     "data": "Details",
     "base": "Based in",
     "languages": "Languages",
     "workMode": "Work mode",
     "experience": "Experience",
-    "experiencePending": "PENDING: experience with dates.",
     "ai": "How I use AI",
-    "aiPending": "PENDING: how I use AI in the process.",
-    "cv": "CV"
+    "cv": "CV",
+    "baseValue": "Mendoza, Argentina",
+    "languagesValue": "Spanish (native) · English B2 · Italian A2",
+    "workModeValue": "Remote only · GMT-3",
+    "experienceText": "I have designed for ISCAMEN (Lead Digital Designer since 2021), Grupo Nexia and Sette Agency, and for brands such as MoonDesk, Condimento, Carpa, RLB and Interlink: social media, performance ads, email marketing, ebooks, WordPress websites and Figma systems.",
+    "aiText": "I work closely with teams, from brief to final delivery, and use AI to produce faster without giving up design judgement: ChatGPT for ideas and draft copy, Nano Banana to generate and edit images, Claude Code for websites and design systems, and ElevenLabs for voices."
   },
   "talk": {
     "title": "Let’s talk"
@@ -280,6 +257,38 @@
     "web": "Web",
     "ebook": "Ebook",
     "branding": "Branding",
+    "documento": "Digital document",
     "impreso": "Print"
+  },
+  "pieceTypes": {
+    "redes": "Social",
+    "ads": "Ads",
+    "documentos": "Documents",
+    "lanzamientos": "Launches",
+    "identidad": "Branding"
+  },
+  "skills": {
+    "title": "Skills",
+    "groups": {
+      "design": "Design",
+      "video": "Video and motion",
+      "web": "Web",
+      "ai": "AI and vibe coding"
+    },
+    "items": {
+      "illustrator": "Branding, illustration and vector pieces.",
+      "photoshop": "Retouching, compositing and social and ad assets.",
+      "indesign": "Ebooks, one-pagers and editorial documents.",
+      "figma": "Interfaces, design systems and templates.",
+      "canva": "Editable templates for marketing teams.",
+      "aftereffects": "Motion graphics and animated pieces.",
+      "premiere": "Video editing and reels.",
+      "capcut": "Reels and quick edits for social.",
+      "wordpress": "Sites built with Elementor, responsive and easy to maintain.",
+      "chatgpt": "Ideas, draft copy and production support.",
+      "nanobanana": "Image generation and editing.",
+      "claudecode": "Vibe coding: websites, design systems and video.",
+      "elevenlabs": "Voices, voice-overs and audio."
+    }
   }
 }

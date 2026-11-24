@@ -1,3 +1,5 @@
+> **OBSOLETO (24 nov 2026).** Corresponde a motion v2.0 "Formato vivo", reemplazado por `docs/motion.md` v3.0 "Desglose". Se conserva como historial; propuesto para borrar.
+
 # Cumplimiento de motion · cierre de la Fase 6
 
 Contra `docs/motion.md` v2.0 §9. Medido el 24 nov 2026 sobre el build de producción (`astro preview`), salvo M28, que solo existe en `/es/dev/componentes/` mientras los testimonios sean PENDIENTE.

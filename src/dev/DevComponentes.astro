@@ -8,7 +8,6 @@ import Boton from '../components/Boton.astro';
 import Link from '../components/Link.astro';
 import Toggle from '../components/Toggle.astro';
 import Campo from '../components/Campo.astro';
-import ChipMetrica from '../components/ChipMetrica.astro';
 import FilaCaso from '../components/FilaCaso.astro';
 import ListaServicios from '../components/ListaServicios.astro';
 import DevComponentesB from './DevComponentesB.astro';
@@ -50,8 +49,8 @@ const base = `/${lang}/dev/componentes`;
   <section aria-labelledby="c-botones">
     <h2 id="c-botones">2 · Botones y links</h2>
     <div class="fila-demo">
-      <Boton glifo>Hablemos</Boton>
-      <Boton size="sm" glifo>Hablemos (sm)</Boton>
+      <Boton>Hablemos</Boton>
+      <Boton size="sm">Hablemos (sm)</Boton>
       <Boton variante="secundario">Menú</Boton>
       <Boton variante="secundario" size="sm">Menú (sm)</Boton>
       <Boton variante="secundario" icono="flecha-abajo">CV</Boton>
@@ -69,7 +68,7 @@ const base = `/${lang}/dev/componentes`;
     </p>
     <div class="seccion-invertida caja-invertida fila-demo">
       <p class="t-body">Sobre sección invertida: <Link href="#c-botones" lang={lang}>link</Link></p>
-      <Boton glifo>Hablemos</Boton>
+      <Boton>Hablemos</Boton>
       <Boton variante="secundario">Secundario</Boton>
     </div>
   </section>
@@ -93,33 +92,18 @@ const base = `/${lang}/dev/componentes`;
       la página Hablemos.
     </p>
     <div class="fila-demo">
-      <Boton href={`/${lang}/hablemos/`} glifo data-abre-panel aria-haspopup="dialog">Abrir panel Hablemos</Boton>
-    </div>
-  </section>
-
-  <section aria-labelledby="c-chip">
-    <h2 id="c-chip">5 · Chip de métrica</h2>
-    <div class="fila-demo">
-      <ChipMetrica valor="00 %" etiqueta="PENDIENTE" />
-      <ChipMetrica valor="0,0×" etiqueta="PENDIENTE: etiqueta larga de métrica" />
-    </div>
-    <div class="seccion-invertida caja-invertida fila-demo">
-      <ChipMetrica valor="00 %" etiqueta="PENDIENTE" />
+      <Boton href={`/${lang}/hablemos/`} data-abre-panel aria-haspopup="dialog">Abrir panel Hablemos</Boton>
     </div>
   </section>
 
   <section aria-labelledby="c-fila">
     <h2 id="c-fila">6 · Fila de caso</h2>
-    <p class="t-body">Hover: la media escala y aparece "Ver caso →". Tab: anillo en todo el panel. Angosta: métricas arriba.</p>
+    <p class="t-body">Hover: la media escala y aparece "Ver caso →". Tab: anillo en todo el panel. Angosta: media arriba.</p>
     <FilaCaso
       lang={lang}
       href="#c-fila"
       titulo="PENDIENTE: caso uno"
       tipo="PENDIENTE · tipo de trabajo"
-      metricas={[
-        { valor: '00 %', etiqueta: 'PENDIENTE' },
-        { valor: '0,0×', etiqueta: 'PENDIENTE' },
-      ]}
       descripcion="PENDIENTE: descripción corta del caso, una o dos líneas con el problema y lo que se hizo."
       servicios={['Redes', 'Ads', 'Branding']}
       imagen={moondesk02}
@@ -130,7 +114,6 @@ const base = `/${lang}/dev/componentes`;
       href="#c-fila"
       titulo="PENDIENTE: caso dos, título más largo"
       tipo="PENDIENTE"
-      metricas={[{ valor: '00', etiqueta: 'PENDIENTE' }]}
       descripcion="PENDIENTE: descripción corta del caso."
       servicios={['Redes']}
       imagen={iscamen13}

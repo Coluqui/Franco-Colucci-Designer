@@ -1,12 +1,12 @@
 ---
 /**
  * Footer · design system §7 · PRD §3.
- * Glifo grande, mail, LinkedIn, WhatsApp, CV, toggles ES/EN y modo, y la firma "Franco Colucci, 2026".
+ * Monograma "FC" grande, mail, LinkedIn, WhatsApp, CV y la firma "Franco Colucci, 2026".
+ * Idioma y modo viven en el header (24 nov).
  * Los datos de contacto salen de src/config/site.ts (PENDIENTE hasta que Franco los complete).
  */
 import Glifo from './Glifo.astro';
 import Link from './Link.astro';
-import Toggle from './Toggle.astro';
 import { t, tf, localizePath, type Lang } from '../i18n';
 import { site, mailHref, linkedinHref, whatsappHref, cvHref } from '../config/site';
 
@@ -53,11 +53,6 @@ const paginas = [
         <li><Link href={cvHref(lang)} lang={lang} download>{t(lang, 'contact.downloadCv')}</Link></li>
       </ul>
 
-      <div class="footer__toggles">
-        <Toggle lang={lang} tipo="idioma" />
-        <Toggle lang={lang} tipo="modo" />
-      </div>
-
       <p class="t-label footer__firma">{tf(lang, 'footer.signature', { nombre: site.nombre, anio: site.anio })}</p>
     </div>
   </div>
@@ -74,11 +69,10 @@ const paginas = [
     gap: var(--space-8);
   }
 
-  /* El glifo mide el ancho de esta caja (100cqi): una longitud real, también para su borde. */
+  /* El monograma mide el ancho de esta caja (100cqi). */
   .footer__glifo {
     container-type: inline-size;
     inline-size: min(100%, 12rem);
-    aspect-ratio: var(--ratio-square);
   }
 
   .footer__datos {
@@ -106,12 +100,6 @@ const paginas = [
     display: inline-flex;
     align-items: center;
     min-block-size: var(--control-height);
-  }
-
-  .footer__toggles {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
   }
 
   .footer__firma {
