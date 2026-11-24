@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-/** Fase 6, paso 3: M13, M14 (respiración), M15 (lectura) y M16, M17 (entradas). docs/motion.md §5. */
+/** Fase 6, paso 3: M13, M14 (respiración), M15 (lectura). M16 y M17 pasaron a motion v3.0: tests/motion-desglose.spec.ts. */
 
 const stretch = (page: Page, sel: string) =>
   page.locator(sel).first().evaluate((el) => parseFloat(getComputedStyle(el).fontStretch));
@@ -101,51 +101,6 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       await expect(page.locator('html')).toHaveAttribute('data-leyendo', '');
       await expect.poll(async () => Math.min(...(await opacidades(page))), { timeout: 5000 }).toBe(1);
       await expect(page.locator('html')).not.toHaveAttribute('data-leyendo', '');
-    });
-
-    test('M16 y M17 · lo de abajo entra una vez; lo que ya se ve no se anima', async ({ page }) => {
-      await page.goto('/es/');
-      const titulo = page.locator('#preguntas .seccion__cabecera');
-      // Fuera de pantalla: espera escondido (solo cuando nadie lo ve).
-      expect(await titulo.evaluate((el) => getComputedStyle(el).opacity)).toBe('0');
-      await titulo.scrollIntoViewIfNeeded();
-      await expect.poll(() => titulo.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
-      await expect.poll(() => titulo.evaluate((el) => (el as HTMLElement).style.cssText)).toBe('');
-      // Las filas: cada una entra; al terminar no quedan estilos en línea.
-      const filas = page.locator('[data-fila]');
-      for (const f of await filas.all()) await f.scrollIntoViewIfNeeded();
-      await expect
-        .poll(() => filas.evaluateAll((els) => els.every((f) => [...f.querySelectorAll<HTMLElement>('.fila, .fila__media')].every((e) => getComputedStyle(e).opacity === '1'))))
-        .toBe(true);
-    });
-
-    test('M16 y M17 · nunca hay foco en algo invisible: lo que espera entra al recibir el foco', async ({ page }) => {
-      await page.goto('/es/');
-      const fila = page.locator('[data-fila]').last();
-      const panel = fila.locator('.fila');
-      if ((await panel.evaluate((e) => e.style.opacity)) !== '0') test.skip(true, 'la fila ya se ve al cargar');
-      await fila.locator('a').first().focus();
-      await expect.poll(() => panel.evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
-    });
-
-    test('M16 · la vista previa de servicios (trabajo) no hace entrada', async ({ page }) => {
-      await page.goto('/es/');
-      expect(await page.locator('[data-servicios]').evaluate((e) => e.closest<HTMLElement>('.servicios-caja')!.style.opacity)).toBe('');
-    });
-
-    test('M16 · el hero y la primera pantalla se ven en el primer cuadro', async ({ page }) => {
-      await page.goto('/es/');
-      const ocultos = await page.evaluate(() =>
-        [...document.querySelectorAll<HTMLElement>('body *')]
-          // Las piezas del loop que no están en turno esperan ocultas a propósito.
-          .filter((el) => !el.closest('[data-loop-escena]'))
-          .filter((el) => {
-            const r = el.getBoundingClientRect();
-            return r.bottom > 0 && r.top < innerHeight && r.width > 0 && el.style.opacity === '0';
-          })
-          .map((el) => el.className),
-      );
-      expect(ocultos).toEqual([]);
     });
   });
 }

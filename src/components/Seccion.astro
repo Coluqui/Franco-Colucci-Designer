@@ -3,8 +3,8 @@
  * Sección de página · design system §6 y §8.
  * Separación vertical --space-section; título h2 opcional (con slot "accion" a la derecha);
  * `invertida` aplica el remapeo de tokens de .seccion-invertida (clientes, cierre, siguiente caso).
- * M16: cuando el título entra un 15 %, una vez, el H2 y el primer bloque suben y aparecen. Una entrada
- * por sección; nunca piezas, y si el bloque son filas de caso, las filas entran solas (M17).
+ * Motion v3.0: el H2 se revela por palabras (4.4, data-split); la sección invertida se abre con una
+ * máscara ligada al scroll y su contenido entra después (4.6, data-mask).
  */
 interface Props {
   id?: string;
@@ -22,14 +22,15 @@ const idTitulo = id && titulo ? `${id}-titulo` : undefined;
 <section
   id={id}
   data-seccion
+  data-mask={invertida ? '' : undefined}
   class:list={['seccion', { 'seccion-invertida': invertida }, className]}
   aria-labelledby={idTitulo}
 >
-  <div class="container seccion__caja">
+  <div class="container seccion__caja" data-mask-content={invertida ? '' : undefined}>
     {
       titulo && (
         <div class="seccion__cabecera">
-          <h2 id={idTitulo} class:list={{ 'visually-hidden': tituloOculto }}>
+          <h2 id={idTitulo} class:list={{ 'visually-hidden': tituloOculto }} data-split={invertida || tituloOculto ? undefined : ''}>
             {titulo}
           </h2>
           {Astro.slots.has('accion') && <slot name="accion" />}
@@ -40,27 +41,6 @@ const idTitulo = id && titulo ? `${id}-titulo` : undefined;
   </div>
 </section>
 
-<script>
-  import { ms } from '../scripts/motion/base';
-  import { entrar, type Parte } from '../scripts/motion/observer';
-  import { enCadaPagina } from '../scripts/pagina';
-
-  enCadaPagina(() => {
-    document.querySelectorAll<HTMLElement>('[data-seccion]').forEach((seccion) => {
-      const caja = seccion.querySelector<HTMLElement>('.seccion__caja');
-      const cabecera = caja?.querySelector<HTMLElement>(':scope > .seccion__cabecera');
-      const titulo = cabecera?.querySelector('h2:not(.visually-hidden)') ? cabecera : null;
-      const bloque = (cabecera ? cabecera.nextElementSibling : caja?.firstElementChild) as HTMLElement | null;
-      // Ni piezas (tiles, vista previa de servicios) ni filas (las filas tienen su propia entrada, M17).
-      const bloqueSirve = bloque && !bloque.querySelector('[data-fila], .tile, [data-servicios]');
-      const partes: Parte[] = [];
-      if (titulo) partes.push({ el: titulo });
-      if (bloqueSirve) partes.push({ el: bloque, retraso: titulo ? ms('--stagger') : 0 });
-      const disparador = titulo ?? (bloqueSirve ? bloque : null);
-      if (disparador) entrar(disparador, partes);
-    });
-  });
-</script>
 
 <style>
   .seccion {

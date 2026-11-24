@@ -19,7 +19,7 @@ const { lang } = Astro.props;
   <div class="skills">
     {
       gruposHerramientas.map((g) => (
-        <section class="skills__grupo" aria-labelledby={`skills-${g.grupo}`}>
+        <section class="skills__grupo" data-reveal-item aria-labelledby={`skills-${g.grupo}`}>
           <h3 id={`skills-${g.grupo}`} class="t-dato skills__titulo">
             {t(lang, `skills.groups.${g.grupo}`)}
           </h3>

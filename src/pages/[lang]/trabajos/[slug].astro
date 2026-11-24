@@ -72,7 +72,7 @@ const piezas = grupos.flatMap((g) => g.piezas);
     </header>
 
     <div class="container">
-      <div class="caso__hero" transition:name={`caso-${caso.slug}-media`} transition:animate="initial">
+      <div class="caso__hero" data-reveal="clip" transition:name={`caso-${caso.slug}-media`} transition:animate="initial">
         {
           caso.portada ? (
             <Image
@@ -93,7 +93,7 @@ const piezas = grupos.flatMap((g) => g.piezas);
     {
       grupos.map((g) => (
         <section class="container caso__bloque" aria-labelledby={`tipo-${g.tipo}`}>
-          <h2 id={`tipo-${g.tipo}`} class="caso__grupo">
+          <h2 id={`tipo-${g.tipo}`} class="caso__grupo" data-reveal>
             {g.nombre} <span class="t-label caso__cantidad">{g.cantidad}</span>
           </h2>
           <div class="caso__piezas">

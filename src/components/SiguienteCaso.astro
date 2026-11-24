@@ -18,8 +18,8 @@ interface Props {
 const { lang, slug, href, titulo, frase } = Astro.props;
 ---
 
-<section class="seccion-invertida siguiente" aria-labelledby="siguiente-etiqueta">
-  <div class="container siguiente__caja">
+<section class="seccion-invertida siguiente" aria-labelledby="siguiente-etiqueta" data-mask>
+  <div class="container siguiente__caja" data-mask-content>
     <h2 class="t-dato siguiente__etiqueta" id="siguiente-etiqueta">{t(lang, 'caseDetail.next')}</h2>
     <a class="siguiente__link" href={href} aria-describedby="siguiente-frase">
       <span class="t-h1 siguiente__titulo">

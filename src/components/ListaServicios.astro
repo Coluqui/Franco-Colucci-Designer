@@ -43,7 +43,7 @@ interface Props {
 const { lang, servicios, grupo = 'servicios' } = Astro.props;
 ---
 
-<div class="servicios-caja">
+<div class="servicios-caja" data-reveal>
   <ul class="servicios" role="list" data-servicios>
     {
       servicios.map((s, i) => (

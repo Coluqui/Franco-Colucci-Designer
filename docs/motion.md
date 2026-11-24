@@ -56,7 +56,7 @@ GSAP usa nombres de curva propios (`power3.out`), que CSS no entiende. Por eso *
 | --- | --- | --- |
 | 4.1 | **Smooth scroll** con ScrollSmoother (`smooth: 1`, `effects: true`). Wrapper `#smooth-wrapper > #smooth-content`. Solo con `(pointer: fine)`; en touch, scroll nativo. Header, menú, panel Hablemos, visor y barra mobile van **fuera** de `#smooth-content` | Layout `Base.astro` |
 | 4.2 | **Intro del hero.** Wordmark partido con SplitText (chars), `yPercent: 100 → 0` dentro de una máscara, `ease.expo`. El acento entra con wipe `inset(0 100% 0 0)` → `inset(0 0% 0 0)`. Bajada y CTA: fade + `y: 20` con delay corto. Total ≤ 1,6 s. **No bloquea la interacción** | `Hero.astro` |
-| 4.3 | **Hero ligado al scroll.** En el primer viewport el wordmark escala 1 → 0,85 y la pieza destacada crece hacia su lugar en la grilla (`scrub: true`). **Sin pin largo:** dura como máximo el 60–80 % del alto del viewport | `Hero.astro` |
+| 4.3 | **Hero ligado al scroll.** Entrada: las letras del wordmark suben dentro de su máscara y la bajada aparece. Al scrollear, el wordmark escala 1 → 0,85 y sube; la bajada se desvanece (`scrub: true`). El hero no lleva piezas (Franco, 24 nov). **Sin pin largo:** dura como máximo el 60–80 % del alto del viewport | `Hero.astro` |
 | 4.4 | **Revelado de texto** (`data-split`): SplitText en palabras (títulos) o líneas (párrafos) con máscara, `yPercent: 110 → 0`, `stagger.words`, al entrar (`start: "top 85%"`, `once: true`) | Títulos de sección, bajadas |
 | 4.5 | **Texto que se define** (`data-noise-text`, efecto firma, máximo 2 titulares): pasa de granulado a sólido palabra por palabra con el scroll. Filtro SVG `feTurbulence` + `feDisplacementMap`; `baseFrequency` y `scale` → 0, con `opacity` y `blur()` por palabra, con `scrub`. Capa fantasma del mismo texto debajo (baja opacidad, `aria-hidden`). El texto real sigue siendo seleccionable | Frase-problema y cierre |
 | 4.6 | **Sección que se abre con máscara**: `clip-path: inset(15% 10% round var(--radius-sm))` → `inset(0)`, con `scrub` y pin corto (≤ 50vh). El contenido entra después, escalonado (`opacity`, `y`, `blur(8px) → 0`). Colores del tema (sección invertida), nunca fijos | Clientes + Testimonios, Skills |
@@ -75,7 +75,7 @@ GSAP usa nombres de curva propios (`power3.out`), que CSS no entiende. Por eso *
 - **Sin layout shift ni parpadeo:** los estados iniciales se ponen en CSS bajo `html.motion` (clase que agrega `initMotion()`), o con `gsap.set` antes del primer paint. Si JS falla o no carga, el contenido se ve igual.
 - **Mobile:** pins desactivados o más cortos, sin efectos de cursor, sin ScrollSmoother.
 - **Accesibilidad:** los textos partidos con SplitText mantienen `aria-label` con el texto completo; lo decorativo lleva `aria-hidden`. Foco visible, Esc y foco atrapado en menú, panel y visor.
-- **El trabajo no se tiñe ni se deforma:** las piezas pueden recortarse, escalar dentro de su máscara (4.8) o moverse (4.3), nunca estirarse, inclinarse, teñirse ni llevar grano o blur una vez quietas.
+- **El trabajo no se tiñe ni se deforma:** las piezas pueden recortarse, escalar dentro de su máscara (4.8) o moverse, nunca estirarse, inclinarse, teñirse ni llevar grano o blur una vez quietas.
 - **Moderación:** el foco es ver los proyectos rápido. Ningún efecto esconde contenido más de ~1 viewport de scroll. Ante la duda, menos.
 - **Lighthouse Performance ≥ 90 en desktop** con todo aplicado (y se sigue midiendo en mobile).
 
