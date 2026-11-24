@@ -11,7 +11,7 @@ import { ms, numero, resorte } from './base';
  * respira de --wdth-rest a su ancho final: el de la página actual (125) es el único que respira, así
  * nunca hay más de uno a la vez (límite de §5). Termina en su CSS: el hover sigue funcionando.
  */
-export function respirarEntrada(links: HTMLElement[]) {
+export function respirarEntrada(links: HTMLElement[], retraso = 0) {
   const reposo = `${numero('--wdth-rest')}%`;
   const desplazamiento = `translateY(${numero('--shift-md')}px)`;
   const paso = ms('--stagger-fast');
@@ -25,7 +25,7 @@ export function respirarEntrada(links: HTMLElement[]) {
         { transform: desplazamiento, opacity: 0, fontStretch: reposo },
         { transform: 'none', opacity: 1, fontStretch: final },
       ],
-      { ...soft, delay: k * paso, fill: 'backwards' },
+      { ...soft, delay: retraso + k * paso, fill: 'backwards' },
     );
   });
 }

@@ -67,51 +67,117 @@ const { lang } = Astro.props;
 
 <script>
   import { enCadaPagina } from '../scripts/pagina';
+  import { animar, curva, detener, ms, numero, resorte } from '../scripts/motion/base';
 
+  /** Campos que entran escalonados al abrir (M21: máx. 4). */
+  const MAX_CAMPOS = 4;
+
+  /**
+   * M21 · desktop: el panel entra desde la derecha; mobile: sube desde abajo, a pantalla completa
+   * (--spring-soft). El velo aparece en 300 ms. Los campos entran con --stagger-fast (máx. 4).
+   * Cierre con ESC, × o el velo: sale en 300 · in y el foco vuelve a quien lo abrió (nativo).
+   */
   enCadaPagina(() => {
     const panel = document.querySelector<HTMLDialogElement>('[data-panel]');
-    if (panel) {
-      document.querySelectorAll<HTMLAnchorElement>('[data-abre-panel]').forEach((a) => {
-        // Recién con JS el link abre un diálogo: antes es un link común a /hablemos/.
-        a.setAttribute('aria-haspopup', 'dialog');
-        a.addEventListener('click', (e) => {
-          e.preventDefault();
-          panel.showModal();
-        });
-      });
-      panel.querySelector('[data-cierra-panel]')?.addEventListener('click', () => panel.close());
-      // Clic en el velo: el evento llega al <dialog> mismo (fuera del interior).
-      panel.addEventListener('click', (e) => {
-        if (e.target === panel) panel.close();
-      });
+    if (!panel) return;
+    // El header persiste entre páginas: sus escuchas se sueltan al salir (si no, se acumulan).
+    const ac = new AbortController();
+    const signal = ac.signal;
+    const interior = panel.querySelector<HTMLElement>('.panel__interior')!;
+    const campos = [...panel.querySelectorAll<HTMLElement>('.panel__form > *')].slice(0, MAX_CAMPOS);
+    let velo: Animation | null = null;
+    let cerrando = false;
 
-      // Copiar mail (M30 anima el cambio en la Fase 6; acá, el cambio de texto y el aviso).
-      const copiar = panel.querySelector<HTMLButtonElement>('[data-copiar]');
-      const texto = copiar?.querySelector('[data-copiar-texto]');
-      const aviso = panel.querySelector('[data-copiar-estado]');
-      copiar?.addEventListener('click', async () => {
-        const mail = copiar.dataset['copiar'];
-        if (!mail || !texto) return;
-        try {
-          await navigator.clipboard.writeText(mail);
-        } catch {
-          // Sin permiso de portapapeles: se anuncia y se muestra el mail para copiarlo a mano.
-          const error = (copiar.dataset['textoError'] ?? '').replace('{mail}', mail);
-          texto.textContent = error;
-          if (aviso) aviso.textContent = error;
-          return;
-        }
-        texto.textContent = copiar.dataset['textoOk'] ?? '';
-        if (aviso) aviso.textContent = copiar.dataset['textoOk'] ?? '';
-        copiar.dataset['estado'] = 'ok';
-        const espera = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hold-feedback')) || 0;
-        setTimeout(() => {
-          texto.textContent = copiar.dataset['texto'] ?? '';
-          delete copiar.dataset['estado'];
-          if (aviso) aviso.textContent = '';
-        }, espera);
+    /** Afuera: a la derecha en desktop, abajo en mobile (el panel ocupa la pantalla). */
+    const afuera = () => (matchMedia('(min-width: 48rem)').matches ? 'translateX(100%)' : 'translateY(100%)');
+
+    const fundirVelo = (hasta: number, opciones: { easing: string; duration: number }) => {
+      const desde = velo ? Number(getComputedStyle(panel, '::backdrop').opacity) : 1 - hasta;
+      velo?.cancel();
+      velo = panel.animate({ opacity: [desde, hasta] }, { ...opciones, pseudoElement: '::backdrop', fill: 'forwards' });
+    };
+
+    const abrir = () => {
+      cerrando = false;
+      if (!panel.open) panel.showModal();
+      fundirVelo(1, curva('out', 'base'));
+      animar(interior, { transform: 'none' }, { ...resorte('soft'), desde: { transform: afuera() }, soltar: true });
+      const paso = ms('--stagger-fast');
+      const bajar = `translateY(${numero('--shift-md')}px)`;
+      campos.forEach((c, k) =>
+        animar(c, { opacity: '1', transform: 'none' }, {
+          ...resorte('soft'),
+          delay: (k + 1) * paso,
+          desde: { opacity: '0', transform: bajar },
+          soltar: true,
+        }),
+      );
+    };
+
+    const cerrarPanel = async () => {
+      if (!panel.open || cerrando) return;
+      cerrando = true;
+      fundirVelo(0, curva('in', 'base'));
+      const a = animar(interior, { transform: afuera() }, curva('in', 'base'));
+      await a.finished.catch(() => {});
+      if (cerrando && panel.open) panel.close();
+    };
+
+    document.querySelectorAll<HTMLAnchorElement>('[data-abre-panel]').forEach((a) => {
+      // Recién con JS el link abre un diálogo: antes es un link común a /hablemos/.
+      a.setAttribute('aria-haspopup', 'dialog');
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        abrir();
+      }, { signal });
+    });
+    panel.querySelector('[data-cierra-panel]')?.addEventListener('click', cerrarPanel, { signal });
+    // Clic en el velo: el evento llega al <dialog> mismo (fuera del interior).
+    panel.addEventListener('click', (e) => {
+      if (e.target === panel) cerrarPanel();
+    }, { signal });
+    panel.addEventListener('cancel', (e) => {
+      e.preventDefault();
+      cerrarPanel();
+    }, { signal });
+    panel.addEventListener('close', () => {
+      cerrando = false;
+      velo?.cancel();
+      velo = null;
+      [interior, ...campos].forEach((el) => {
+        detener(el);
+        el.style.opacity = '';
+        el.style.transform = '';
       });
-    }
+    }, { signal });
+
+    // Copiar mail (M30 anima el cambio en la Fase 6; acá, el cambio de texto y el aviso).
+    const copiar = panel.querySelector<HTMLButtonElement>('[data-copiar]');
+    const texto = copiar?.querySelector('[data-copiar-texto]');
+    const aviso = panel.querySelector('[data-copiar-estado]');
+    copiar?.addEventListener('click', async () => {
+      const mail = copiar.dataset['copiar'];
+      if (!mail || !texto) return;
+      try {
+        await navigator.clipboard.writeText(mail);
+      } catch {
+        // Sin permiso de portapapeles: se anuncia y se muestra el mail para copiarlo a mano.
+        const error = (copiar.dataset['textoError'] ?? '').replace('{mail}', mail);
+        texto.textContent = error;
+        if (aviso) aviso.textContent = error;
+        return;
+      }
+      texto.textContent = copiar.dataset['textoOk'] ?? '';
+      if (aviso) aviso.textContent = copiar.dataset['textoOk'] ?? '';
+      copiar.dataset['estado'] = 'ok';
+      const espera = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hold-feedback')) || 0;
+      setTimeout(() => {
+        texto.textContent = copiar.dataset['texto'] ?? '';
+        delete copiar.dataset['estado'];
+        if (aviso) aviso.textContent = '';
+      }, espera);
+    });
+    return () => ac.abort();
   });
 </script>
 

@@ -2,7 +2,8 @@
 /**
  * Header · design system §7 y §8.
  * Glifo (inicio) a la izquierda; "▣ Hablemos" (primario) + "Menú" (secundario) a la derecha.
- * - Transparente arriba; con scroll > 8 px, --color-bg + filete (data-scrolled). M19 anima esto en la Fase 6.
+ * - Transparente arriba; con scroll > 8 px, --color-bg + filete (data-scrolled). M19: el fondo es una
+ *   capa (::before) que aparece con opacidad (300 · in-out), así no se anima ningún color.
  * - Sobre una sección invertida, reasigna los tokens (data-invertido).
  * - 360 px: "Hablemos" pasa a la barra inferior. 1280 px o más: alto 80 px (token).
  * - "Hablemos" es un link a /[lang]/hablemos/ (funciona sin JS); con JS abre el panel.
@@ -95,9 +96,22 @@ const { lang } = Astro.props;
     color: var(--color-text-primary);
   }
 
-  .header[data-scrolled] {
-    background: var(--color-bg);
+  /* M19 · fondo y filete en una capa propia: aparecen con opacidad. Sobre una sección invertida,
+     data-invertido reasigna los tokens (la capa toma el fondo invertido). */
+  .header::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 -1px;
+    z-index: -1;
     border-block-end: var(--border-hairline);
+    background: var(--color-bg);
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-in-out);
+    pointer-events: none;
+  }
+
+  .header[data-scrolled]::before {
+    opacity: 1;
   }
 
   .header__interior {

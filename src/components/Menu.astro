@@ -70,25 +70,96 @@ const links: Array<{ clave: UiKey; href: string }> = [
 </dialog>
 
 <script>
-  import { respirarEntrada } from '../scripts/motion/respiracion';
   import { enCadaPagina } from '../scripts/pagina';
+  import { respirarEntrada } from '../scripts/motion/respiracion';
+  import { animar, curva, detener, numero, resorte, token } from '../scripts/motion/base';
 
+  /**
+   * M20 · el menú crece desde el botón "Menú": el rectángulo del botón cambia de formato hasta cubrir
+   * la pantalla (clip-path: inset(), radio --radius-xs → 0, --spring-snap). Al 60 % entran los links
+   * (M14). "Menú" ↔ "Cerrar" con roll vertical. Cerrar: vuelve a meterse en el botón (300 · in) y el
+   * foco vuelve a "Menú" (nativo del <dialog>).
+   */
   enCadaPagina(() => {
     const menu = document.querySelector<HTMLDialogElement>('[data-menu]');
-    const abridores = document.querySelectorAll<HTMLElement>('[data-abre-menu]');
-    if (menu) {
-      const marcar = (abierto: boolean) => abridores.forEach((b) => b.setAttribute('aria-expanded', String(abierto)));
-      abridores.forEach((b) =>
-        b.addEventListener('click', () => {
-          menu.showModal();
-          marcar(true);
-          respirarEntrada([...menu.querySelectorAll<HTMLElement>('.menu__link')]);
-        }),
-      );
-      menu.querySelector('[data-cierra-menu]')?.addEventListener('click', () => menu.close());
-      // ESC (nativo) y close(): el navegador devuelve el foco al botón que lo abrió.
-      menu.addEventListener('close', () => marcar(false));
-    }
+    const abridores = [...document.querySelectorAll<HTMLElement>('[data-abre-menu]')];
+    if (!menu) return;
+    // El header persiste entre páginas: sus escuchas se sueltan al salir (si no, se acumulan).
+    const ac = new AbortController();
+    const signal = ac.signal;
+    const links = [...menu.querySelectorAll<HTMLElement>('.menu__link')];
+    const cerrar = menu.querySelector<HTMLElement>('[data-cierra-menu]');
+    const etiquetaCerrar = cerrar?.querySelector<HTMLElement>('.boton__texto') ?? null;
+    let origen: HTMLElement | null = null;
+    let cerrando = false;
+
+    const marcar = (abierto: boolean) => abridores.forEach((b) => b.setAttribute('aria-expanded', String(abierto)));
+    marcar(false);
+
+    /** El recorte que deja ver solo la caja de `el` (o null si no se ve). */
+    const recorteDe = (el: HTMLElement | null) => {
+      const r = el?.getBoundingClientRect();
+      if (!r || !r.width) return null;
+      const m = menu.getBoundingClientRect();
+      return `inset(${r.top - m.top}px ${m.right - r.right}px ${m.bottom - r.bottom}px ${r.left - m.left}px round ${token('--radius-xs')})`;
+    };
+    const completo = 'inset(0px 0px 0px 0px round 0px)';
+
+    /** Roll vertical de una etiqueta: entra desde abajo (abrir) o sale hacia abajo (cerrar). */
+    const rollar = (el: HTMLElement | null, entra: boolean) => {
+      if (!el) return;
+      const fuera = { opacity: '0', transform: `translateY(${numero('--shift-sm')}px)` };
+      if (entra) animar(el, { opacity: '1', transform: 'none' }, { ...resorte('snap'), desde: fuera, soltar: true });
+      else animar(el, fuera, curva('in', 'fast'));
+    };
+
+    const abrir = (boton: HTMLElement) => {
+      origen = boton;
+      cerrando = false;
+      if (!menu.open) menu.showModal();
+      marcar(true);
+      const snap = resorte('snap');
+      const desde = recorteDe(boton);
+      if (desde) animar(menu, { clipPath: completo }, { ...snap, desde: { clipPath: desde }, soltar: true });
+      else animar(menu, { opacity: '1' }, { ...curva('out', 'base'), desde: { opacity: '0' }, soltar: true });
+      rollar(etiquetaCerrar, true);
+      // M14 al 60 % del encastre.
+      respirarEntrada(links, snap.duration * 0.6);
+    };
+
+    const cerrarMenu = async () => {
+      if (!menu.open || cerrando) return;
+      cerrando = true;
+      rollar(etiquetaCerrar, false);
+      const hasta = recorteDe(origen);
+      const a = hasta
+        ? animar(menu, { clipPath: hasta }, curva('in', 'base'))
+        : animar(menu, { opacity: '0' }, curva('in', 'base'));
+      await a.finished.catch(() => {});
+      if (cerrando && menu.open) menu.close();
+    };
+
+    abridores.forEach((b) => b.addEventListener('click', () => abrir(b), { signal }));
+    cerrar?.addEventListener('click', cerrarMenu, { signal });
+    // ESC: el menú se cierra con su animación (si el navegador igual lo cierra, close limpia).
+    menu.addEventListener('cancel', (e) => {
+      e.preventDefault();
+      cerrarMenu();
+    }, { signal });
+    menu.addEventListener('close', () => {
+      cerrando = false;
+      [menu, etiquetaCerrar].forEach((el) => {
+        if (!el) return;
+        detener(el);
+        el.style.clipPath = '';
+        el.style.opacity = '';
+        el.style.transform = '';
+      });
+      marcar(false);
+      // "Menú" vuelve con su roll.
+      rollar(origen?.querySelector<HTMLElement>('.boton__texto') ?? null, true);
+    }, { signal });
+    return () => ac.abort();
   });
 </script>
 

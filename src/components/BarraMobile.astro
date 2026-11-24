@@ -52,8 +52,20 @@ const cv = cvHref(lang);
     }
   }
 
+  /* M22 · con el menú, el panel o el visor abiertos, la barra baja fuera de pantalla y vuelve al
+     cerrarlos (--spring-soft). Queda inerte mientras está afuera. */
+  .barra-mobile {
+    transition:
+      transform var(--spring-soft-duration) var(--spring-soft),
+      visibility 0s linear;
+  }
+
   :global(html:has(dialog[open])) .barra-mobile {
-    display: none;
+    transform: translateY(100%);
+    visibility: hidden;
+    transition:
+      transform var(--spring-soft-duration) var(--spring-soft),
+      visibility 0s linear var(--spring-soft-duration);
   }
 
   @media (max-width: 47.999rem) {
