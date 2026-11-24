@@ -74,6 +74,13 @@ const ogLocale = { es: 'es_AR', en: 'en_US' } satisfies Record<Lang, string>;
           } catch (e) {}
         };
         html();
+        // Motion v3.0: lo que se revela al scrollear arranca oculto desde el primer cuadro.
+        // Resguardo: si GSAP no llegó a iniciar en 3 s, se muestra todo.
+        var d = document.documentElement;
+        d.classList.add('motion');
+        setTimeout(function () {
+          if (!('motionListo' in d.dataset)) d.classList.remove('motion');
+        }, 3000);
         // ClientRouter copia los atributos de <html> de la página nueva: se vuelven a poner antes de pintarla.
         if (!window.__temaNav) {
           window.__temaNav = true;
@@ -93,16 +100,22 @@ const ogLocale = { es: 'es_AR', en: 'en_US' } satisfies Record<Lang, string>;
   <body>
     <a class="skip-link" href="#contenido">{t(lang, 'a11y.skipToContent')}</a>
     {chrome && <Header lang={lang} />}
-    <main id="contenido" tabindex="-1">
-      <slot />
-    </main>
-    {chrome && <Footer lang={lang} />}
+    <div id="smooth-wrapper">
+      <div id="smooth-content">
+        <main id="contenido" tabindex="-1">
+          <slot />
+        </main>
+        {chrome && <Footer lang={lang} />}
+      </div>
+    </div>
     {chrome && <BarraMobile lang={lang} />}
     {chrome && <Menu lang={lang} />}
     {chrome && <PanelHablemos lang={lang} />}
     <script>
       // M06: entrada del contenido del caso al llegar con ClientRouter.
       import '../scripts/motion/paginas';
+      // Motion v3.0 (GSAP): revelados por scroll, hero y smooth scroll.
+      import '../motion/index';
     </script>
   </body>
 </html>

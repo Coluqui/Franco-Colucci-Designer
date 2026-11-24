@@ -256,3 +256,20 @@ main:focus {
 .skip-link:focus-visible {
   transform: none;
 }
+
+/* Motion v3.0 · estados iniciales de los revelados por scroll (src/motion/reveals.ts y hero.ts).
+   Solo bajo html.motion (la agrega un script en <head> y src/motion/index.ts): sin JS, todo visible. */
+html.motion :is([data-split], [data-reveal], [data-reveal-item], [data-mask-content] > *, [data-hero-linea], [data-hero-bajada]) {
+  opacity: 0;
+}
+
+/* 4.1 · con ScrollSmoother, el wrapper es fijo y el header queda afuera: el contenido arranca debajo. */
+html[data-smooth] #smooth-content {
+  padding-block-start: var(--header-height);
+}
+
+html[data-smooth] .header {
+  position: fixed;
+  inset-inline: 0;
+}
+
