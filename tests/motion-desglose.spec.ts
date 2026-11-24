@@ -66,9 +66,9 @@ test('smooth scroll solo con puntero fino y sin movimiento reducido', async ({ p
 test('nunca hay foco en algo invisible: lo que espera aparece al recibir el foco', async ({ page }) => {
   await page.goto('/es/');
   await expect(page.locator('html')).toHaveAttribute('data-motion-listo', '');
-  const fila = page.locator('.fila-caja[data-reveal-item]').last();
-  await fila.locator('a').first().focus();
-  await expect.poll(() => fila.evaluate((e) => +getComputedStyle(e).opacity)).toBeGreaterThan(0.99);
+  const tile = page.locator('#trabajos .tile[data-reveal-item]').last();
+  await tile.locator('a').first().focus();
+  await expect.poll(() => tile.evaluate((e) => +getComputedStyle(e).opacity)).toBeGreaterThan(0.99);
 });
 
 test('ir y volver con ClientRouter: un solo smoother y los revelados vuelven a andar', async ({ page }) => {
@@ -92,4 +92,31 @@ test('ir y volver con ClientRouter: un solo smoother y los revelados vuelven a a
   await bajarHastaElFinal(page);
   await expect.poll(() => ocultos(page), { timeout: 5000 }).toBe(0);
   expect(errs).toEqual([]);
+});
+
+test('logo: "FC" arriba; al bajar se despliega el nombre y el puesto (desde 48rem)', async ({ page }) => {
+  await page.goto('/es/trabajos/');
+  await expect(page.locator('html')).toHaveAttribute('data-motion-listo', '');
+  const ancho = () => page.locator('[data-logo-nombre]').evaluate((e) => e.getBoundingClientRect().width);
+  const plegado = await ancho();
+  await page.evaluate(() => scrollTo(0, 600));
+  if ((page.viewportSize()?.width ?? 0) < 768) {
+    await page.waitForTimeout(800);
+    expect(await ancho()).toBe(plegado);
+    return;
+  }
+  await expect.poll(ancho).toBeGreaterThan(plegado * 3);
+  await expect.poll(() => page.locator('[data-logo-puesto]').evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
+  await page.evaluate(() => scrollTo(0, 0));
+  await expect.poll(ancho).toBeLessThan(plegado + 1);
+});
+
+test('volver arriba: aparece al bajar y lleva al principio', async ({ page }) => {
+  await page.goto('/es/');
+  const boton = page.locator('[data-arriba]');
+  await expect(boton).not.toHaveAttribute('data-visible', '');
+  await page.evaluate(() => scrollTo(0, innerHeight * 3));
+  await expect(boton).toHaveAttribute('data-visible', '');
+  await boton.click();
+  await expect.poll(() => page.evaluate(() => scrollY), { timeout: 5000 }).toBeLessThan(5);
 });

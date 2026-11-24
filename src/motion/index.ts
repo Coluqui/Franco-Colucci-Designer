@@ -8,6 +8,7 @@ import { gsap, ScrollTrigger } from './gsap';
 import { iniciarSmooth } from './smooth';
 import { revelar, alFocoRevelar } from './reveals';
 import { animarHero } from './hero';
+import { animarLogo } from './logo';
 
 const html = document.documentElement;
 let mm: gsap.MatchMedia | null = null;
@@ -18,12 +19,13 @@ export function initMotion() {
   html.classList.add('motion');
   mm = gsap.matchMedia();
   // `siempre`: GSAP solo corre el callback si alguna condición coincide; sin ella, touch sin reducido no animaba nada.
-  mm.add({ siempre: 'all', reducido: '(prefers-reduced-motion: reduce)', fino: '(hover: hover) and (pointer: fine)' }, (ctx) => {
-    const { reducido, fino } = ctx.conditions as { reducido: boolean; fino: boolean };
+  mm.add({ siempre: 'all', reducido: '(prefers-reduced-motion: reduce)', fino: '(hover: hover) and (pointer: fine)', ancho: '(min-width: 48rem)' }, (ctx) => {
+    const { reducido, fino, ancho } = ctx.conditions as { reducido: boolean; fino: boolean; ancho: boolean };
     // El smoother va primero: los ScrollTriggers se miden contra él.
     const quitarSmooth = fino && !reducido ? iniciarSmooth() : null;
     html.toggleAttribute('data-smooth', Boolean(quitarSmooth));
     animarHero(reducido);
+    if (ancho) animarLogo(reducido);
     revelar(reducido);
     return () => {
       quitarSmooth?.();

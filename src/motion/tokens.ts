@@ -37,6 +37,12 @@ export const mov = {
   escalaMedia: 1.15,
   /** Esquinas del marco inicial de la sección con máscara (4.6). */
   radioMascara: '12px',
+  /** Logo del header: se despliega pasados estos px de scroll. */
+  umbralLogo: 80,
+  /** Logo: el nombre sube (yPercent) para dejar lugar al puesto. */
+  subidaLogo: -35,
+  /** Logo: "ranco" y "olucci" se abren con este desfase. */
+  escalonLogo: 0.08,
   /** Los revelados disparan cuando el borde superior llega al 85 % del viewport (4.4). */
   inicio: 'top 85%',
 } as const;
