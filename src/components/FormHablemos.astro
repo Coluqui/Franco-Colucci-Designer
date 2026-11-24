@@ -61,9 +61,9 @@ const primerError = (['nombre', 'email', 'mensaje'] as const).find((c) => errore
 
         <p class="form-hablemos__error-envio" role="alert" data-error-envio hidden={estado !== 'error'}>
           <Icono nombre="error" />
-          <span>
+          <span class="form-hablemos__resultado-texto">
             {t(lang, 'form.error')}
-            {' '}<Link href={mailHref()} lang={lang}>{site.mail ?? t(lang, 'contact.email')}</Link>
+            <Link href={mailHref()} lang={lang} class="link--suelto">{site.mail ?? t(lang, 'contact.email')}</Link>
           </span>
         </p>
 
@@ -218,8 +218,10 @@ const primerError = (['nombre', 'email', 'mensaje'] as const).find((c) => errore
     gap: var(--space-4);
   }
 
+  /* Ancho fijo para "Enviar", "Enviando" y "Reintentar": el botón no salta al apretar. */
   form :global(.form-hablemos__enviar) {
     justify-self: start;
+    min-inline-size: var(--space-10);
   }
 
   /* Campo trampa: fuera de la vista y del orden de tabulación; un bot lo completa igual. */
@@ -232,18 +234,26 @@ const primerError = (['nombre', 'email', 'mensaje'] as const).find((c) => errore
     white-space: nowrap;
   }
 
+  /* Los dos resultados del envío son cajas del mismo nivel (no se confunden con el error de un campo). */
   .form-hablemos__error-envio,
   .form-hablemos__exito {
     display: flex;
     gap: var(--space-2);
     align-items: flex-start;
     margin: 0;
-    font-size: var(--text-small);
+    padding: var(--space-4);
+    border-radius: var(--radius-xs);
+    color: var(--color-text-primary);
+    font-size: var(--text-body);
     line-height: var(--leading-ui);
   }
 
   .form-hablemos__error-envio {
-    color: var(--color-danger);
+    background: var(--color-danger-bg);
+  }
+
+  .form-hablemos__exito {
+    background: var(--color-success-bg);
   }
 
   .form-hablemos__error-envio :global(.icono),
@@ -252,16 +262,18 @@ const primerError = (['nombre', 'email', 'mensaje'] as const).find((c) => errore
     margin-block-start: 0.1em;
   }
 
-  .form-hablemos__exito {
-    padding: var(--space-4);
-    border-radius: var(--radius-xs);
-    background: var(--color-success-bg);
-    color: var(--color-text-primary);
-    font-size: var(--text-body);
+  .form-hablemos__error-envio :global(.icono) {
+    color: var(--color-danger);
   }
 
   .form-hablemos__exito :global(.icono) {
     color: var(--color-success);
+  }
+
+  /* El mail va en su propia línea, como link suelto de 44 px. */
+  .form-hablemos__resultado-texto {
+    display: grid;
+    justify-items: start;
   }
 
   .form-hablemos__exito:focus-visible {

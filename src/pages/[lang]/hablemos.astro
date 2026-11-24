@@ -58,7 +58,8 @@ if (resultado?.error) {
     padding-block: var(--space-6) var(--space-section);
   }
 
-  .hablemos > * {
+  /* :global: FormHablemos es otro componente y el estilo con scope no alcanzaría su raíz. */
+  .hablemos > :global(*) {
     margin: 0;
     max-inline-size: var(--measure);
   }
@@ -83,6 +84,13 @@ if (resultado?.error) {
 
   .hablemos__directo li {
     display: flex;
+    align-items: center;
+    min-block-size: var(--control-height);
+  }
+
+  /* Objetivo de 44 px en el link mismo, no solo en el ítem (igual que el panel). */
+  .hablemos__directo li > :global(*:not(.visually-hidden)) {
+    display: inline-flex;
     align-items: center;
     min-block-size: var(--control-height);
   }
