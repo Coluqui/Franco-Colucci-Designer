@@ -149,6 +149,8 @@
   --border-rule: 2px solid var(--color-text-primary);
   --focus-ring: 2px solid var(--color-accent);
   --focus-offset: 3px;
+  --progress-height: 2px;    /* M32 barra de "Enviando" en la base del botón */
+  --progress-opacity: 0.6;
 
   /* ---- Controles ---- */
   --control-height: 2.75rem;     /* 44: mínimo táctil */

@@ -11,7 +11,7 @@ import FormHablemos from './FormHablemos.astro';
 import Link from './Link.astro';
 import Icono from './Icono.astro';
 import { t, type Lang } from '../i18n';
-import { site, linkedinHref, whatsappHref, cvHref } from '../config/site';
+import { site, mailHref, linkedinHref, whatsappHref, cvHref } from '../config/site';
 
 interface Props {
   lang: Lang;
@@ -36,7 +36,9 @@ const { lang } = Astro.props;
     <section class="panel__directo" aria-labelledby="panel-hablemos-directo">
       <h3 id="panel-hablemos-directo" class="panel__subtitulo">{t(lang, 'contact.direct')}</h3>
       <ul role="list">
-        <li>
+        <!-- M30 · el mail se lee y se selecciona fuera del botón; el botón solo copia. -->
+        <li class="panel__mail">
+          <Link href={mailHref()} lang={lang}>{site.mail ?? t(lang, 'contact.email')}</Link>
           <button
             class="panel__copiar link"
             type="button"
@@ -298,6 +300,11 @@ const { lang } = Astro.props;
     display: inline-flex;
     align-items: center;
     min-block-size: var(--control-height);
+  }
+
+  .panel__mail {
+    flex-wrap: wrap;
+    column-gap: var(--space-4);
   }
 
   .panel__copiar {
