@@ -11,7 +11,7 @@ Todo lo que está como `PENDIENTE` en el sitio o espera una decisión de Franco.
 | `public/brand/grain.svg` | Grano global | Falta. Hoy: `public/dev/grain-provisorio.svg` (`src/styles/global.css`) |
 | CV en PDF, ES y EN | Menú, barra mobile, panel, Sobre mí | Falta. Hay uno en `C:\Users\FRANCO\Portfolio\public\cv-franco-colucci.pdf` (¿vigente?) |
 | Originales de mayor calidad | Visor y heros de caso | Ver `docs/inventario.md` |
-| Campaña del loop del hero (1:1, 4:5, 9:16, 3:1, 16:10) | Hero (M04) | Falta (PRD §14) |
+| ~~Campaña del loop del hero~~ | Hero | Reemplazado en PRD v4.0: el hero muestra las mejores piezas (`src/config/hero.ts`) |
 | Logos de clientes en SVG monocromo | Grilla de clientes | Solo JPG |
 
 ## Tokens que faltan en `design-system/tokens.css`
@@ -60,19 +60,17 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 ## Contenido
 
 - `meta.siteDescription` (ES y EN) en `src/i18n/*.json`.
-- **Casos** (`src/content/casos/*.json`, Fase 4): frase, tipo, descripción corta, rol, año, herramientas, problema, pasos, resultado, 2–4 métricas reales, testimonio y hero 16:8 de MoonDesk, ISCAMEN, Condimento y Carpa. Hoy dicen `PENDIENTE`.
+- ~~**Casos**~~: resuelto en la Fase 9B con rol y descripción reales (de portfolio2026-twhh.vercel.app). Ya no llevan problema, pasos, resultado ni métricas (PRD v4.0). Falta, opcional: un hero propio 16:8 por proyecto (hoy se usa la portada de la primera pieza).
 - **Servicios por caso**: los puse a partir del inventario (MoonDesk, ISCAMEN y Carpa → Redes; Condimento → Ads y Branding). Confirmar o corregir.
 - **Descripciones de los 6 servicios** (`serviceItems.*.description`) y la pieza de vista previa de cada uno.
 - **Textos de páginas en PENDIENTE**: bajada de Trabajos, bio corta y bio de Sobre mí, datos (base, idiomas, modalidad), experiencia con fechas, cómo uso la IA, herramientas e IA de la home.
-- **6 preguntas frecuentes**: las preguntas son un borrador de Claude (`faq.q1`–`q6` en `src/i18n/*.json`), a revisar; las respuestas (`faq.a1`–`a6`) las da Franco.
+- ~~**Preguntas frecuentes**~~: quitadas en PRD v4.0; las reemplaza Skills.
 - **Títulos y descripciones SEO** por página: borradores en `pages.*` de `src/i18n/*.json`; revisarlos.
 - **Fase 5 · piezas**:
   - Originales de mayor resolución de MoonDesk one-pager, pieza QR y portada de ebook (hoy ~596 × 842 px).
   - Banner de Carpa (835 × 451) fuera del visor: cargarlo si llega un original apaisado de más resolución.
-  - "Objetivo" de cada pieza (`objetivo` en cada `pieza.json`, hoy PENDIENTE) y métricas reales si las hay.
   - Vistas previas de **Mail (3:1)** y **Web (16:10)**: no hay piezas en esos formatos.
-  - **Loop del hero**: una misma campaña en 1:1, 4:5, 9:16, 3:1 y 16:10 (ningún trabajo la tiene hoy).
-  - Elegidas por Claude para las vistas previas (confirmar): Ads → Condimento "otra campaña"; Redes → carrusel MoonDesk "Nacimos de un error"; Reels → story testimonio MoonDesk (estática); Branding → Condimento branding.
+  - Elegidas por Claude para las vistas previas (confirmar): Ads → Condimento "otra campaña"; Redes → carrusel MoonDesk "Nacimos de un error"; Reels → reel de Franco del 16 nov (`public/reels/reel.mp4`); Branding → Condimento branding.
 - **Fase 5 · dudas sobre piezas (las decide Franco)**:
   - `moondesk-story-testimonio`: muestra la cita, el nombre y la empresa de un cliente. ¿Hay permiso para publicarlo en el portfolio? (El alt no transcribe nombre ni empresa.)
   - `moondesk-post-retrabajos`: es una pregunta sin respuesta y sin logo; ¿es la portada de un carrusel incompleto o de otra marca?
@@ -188,3 +186,14 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 - **CLS de carga con red lenta:** 0,0068 en `/es/` a 1440 (el glifo del hero sigue al ancho del wordmark al llegar Archivo) y 0,00008 en Trabajos. Entra en la decisión abierta de `font-display` (Fase 6).
 - **Lighthouse marca contraste** en las palabras apagadas de M15 antes del scroll (estado previsto) y en el "CV" pendiente de la barra mobile (no es un control). Se resuelve con el CV real; M15 queda como está salvo decisión.
 - **Imágenes de las piezas en el caso:** PageSpeed estima 114 KiB de ahorro a 360 px. Revisar el `sizes` de `TilePieza` con las piezas reales.
+
+## Fase 9 · contenido (PRD v4.0)
+
+- **Franco · confirmar las piezas del hero** (`src/config/hero.ts`): Condimento "No necesitás otra campaña", MoonDesk "Nacimos de un error", ISCAMEN "La mujer en la ciencia", mockup de Carpa y ebook de MoonDesk. Propuesta de Claude: una por proyecto, en formatos distintos.
+- **Franco · reel liviano.** `public/reels/reel.mp4` es el video de WhatsApp tal cual (58 s, 1080 × 1920, 9 MB). Se carga recién al abrir Reels (`preload="none"`), pero conviene exportarlo en H.264 a 720 × 1280 y ~2 MB. El póster sale del segundo 1,5.
+- **Franco · CV en inglés.** El CV en español es el de la web anterior (`public/cv/franco-colucci-cv.pdf`); `site.cv.en` sigue en null.
+- **Franco · fechas de experiencia.** Sobre mí usa la bio de la web anterior; solo ISCAMEN tiene fecha (desde 2021).
+- **Pieza "¿Tu marca está preparada?" (MoonDesk)** quedó como Documentos. Confirmar el tipo.
+- **Carpa tiene 2 piezas acá y 4 en la web anterior** (bonos, módulos, banner y mockup): la agrupación de la Fase 5 juntó las portadas en una. Si Franco prefiere las 4, se separan.
+- **Logos de Skills:** Simple Icons (CC0) para Figma, Canva, WordPress, ChatGPT, Gemini, Claude y ElevenLabs; Adobe y CapCut con siglas (no están en Simple Icons).
+
