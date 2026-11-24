@@ -1,0 +1,276 @@
+---
+/**
+ * Formulario Hablemos · design system §7 (panel y campos) · PRD §11 · motion M32.
+ * Lo usan el panel (con JS) y /[lang]/hablemos/ (sin JS: postea a la acción y la página se
+ * vuelve a dibujar con `valores`, `errores` y `estado`).
+ * Estados: error por campo; enviando (barra en el botón); éxito (el formulario se cierra como M29 y
+ * aparece la confirmación en --color-success-bg; M03 espera marca-formato.svg); error de envío
+ * ("Reintentar" + el mail, sin perder lo escrito).
+ * Anti-spam: campo trampa `web` (invisible) y `t`, el momento en que se mostró el formulario.
+ */
+import { actions } from 'astro:actions';
+import Campo from './Campo.astro';
+import Boton from './Boton.astro';
+import Link from './Link.astro';
+import Icono from './Icono.astro';
+import { t, localizePath, type Lang, type UiKey } from '../i18n';
+import { site, mailHref } from '../config/site';
+
+type NombreCampo = 'nombre' | 'email' | 'mensaje';
+
+interface Props {
+  lang: Lang;
+  /** Prefijo de los id (el panel y la página pueden estar en el mismo documento). */
+  id: string;
+  valores?: Partial<Record<NombreCampo, string>>;
+  /** Claves de error que devuelve la acción: 'required' | 'invalidEmail'. */
+  errores?: Partial<Record<NombreCampo, string>>;
+  estado?: 'exito' | 'error';
+  /** Momento en que se mostró (lo pone el servidor; en páginas estáticas, el script). */
+  momento?: number;
+}
+
+const { lang, id, valores = {}, errores = {}, estado, momento } = Astro.props;
+const error = (campo: NombreCampo) => (errores[campo] ? t(lang, `form.${errores[campo]}` as UiKey) : undefined);
+// Sin JS no se puede mover el foco: el primer campo con error lo recibe al cargar.
+const primerError = (['nombre', 'email', 'mensaje'] as const).find((c) => errores[c]);
+---
+
+<div
+  class="form-hablemos"
+  data-form-hablemos
+  data-estado={estado}
+  data-msg-required={t(lang, 'form.required')}
+  data-msg-invalid-email={t(lang, 'form.invalidEmail')}
+  data-texto-enviar={t(lang, 'form.send')}
+  data-texto-reintentar={t(lang, 'form.retry')}
+  data-texto-enviando={t(lang, 'form.sending')}
+>
+  <div class="form-hablemos__cuerpo">
+    <div class="form-hablemos__interior">
+      <form method="post" action={`${localizePath(lang, 'hablemos/')}${actions.contacto}`} novalidate>
+        <Campo id={`${id}-nombre`} name="nombre" label={t(lang, 'form.name')} autocomplete="name" required textoObligatorio={t(lang, 'form.requiredMark')} value={valores.nombre} error={error('nombre')} autofocus={primerError === 'nombre'} />
+        <Campo id={`${id}-email`} name="email" tipo="email" label={t(lang, 'form.email')} autocomplete="email" required textoObligatorio={t(lang, 'form.requiredMark')} value={valores.email} error={error('email')} autofocus={primerError === 'email'} />
+        <Campo id={`${id}-mensaje`} name="mensaje" tipo="textarea" label={t(lang, 'form.message')} required textoObligatorio={t(lang, 'form.requiredMark')} value={valores.mensaje} error={error('mensaje')} autofocus={primerError === 'mensaje'} />
+
+        <div class="form-hablemos__trampa" aria-hidden="true">
+          <label for={`${id}-web`}>{t(lang, 'form.honeypot')}</label>
+          <input id={`${id}-web`} name="web" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+        <input type="hidden" name="t" value={momento ?? ''} />
+
+        <p class="form-hablemos__error-envio" role="alert" data-error-envio hidden={estado !== 'error'}>
+          <Icono nombre="error" />
+          <span>
+            {t(lang, 'form.error')}
+            {' '}<Link href={mailHref()} lang={lang}>{site.mail ?? t(lang, 'contact.email')}</Link>
+          </span>
+        </p>
+
+        <Boton type="submit" textoCarga={t(lang, 'form.sending')} class="form-hablemos__enviar">
+          {estado === 'error' ? t(lang, 'form.retry') : t(lang, 'form.send')}
+        </Boton>
+      </form>
+    </div>
+  </div>
+
+  <p class="form-hablemos__exito" data-exito tabindex="-1" hidden={estado !== 'exito'}>
+    <Icono nombre="check" />
+    <span>{t(lang, 'form.success')}</span>
+  </p>
+</div>
+
+<script>
+  import { actions, isInputError } from 'astro:actions';
+  import { enCadaPagina } from '../scripts/pagina';
+  import { animar, curva } from '../scripts/motion/base';
+
+  type Control = HTMLInputElement | HTMLTextAreaElement;
+  type Clave = 'required' | 'invalidEmail';
+
+  /** M32 · el formulario de verdad: valida, envía con la acción y muestra cada estado sin perder lo escrito. */
+  enCadaPagina(() => {
+    const ac = new AbortController();
+    document.querySelectorAll<HTMLElement>('[data-form-hablemos]').forEach((raiz) => {
+      const form = raiz.querySelector('form')!;
+      const boton = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+      const textoBoton = boton.querySelector<HTMLElement>('.boton__texto')!;
+      const errorEnvio = raiz.querySelector<HTMLElement>('[data-error-envio]')!;
+      const exito = raiz.querySelector<HTMLElement>('[data-exito]')!;
+      const campos = [...form.querySelectorAll<Control>('.campo__input')];
+      const momento = form.querySelector<HTMLInputElement>('input[name="t"]')!;
+      // Página estática (el panel): el momento es el de la carga, no el del build.
+      if (!momento.value) momento.value = String(Date.now());
+
+      const mensajes: Record<Clave, string> = {
+        required: raiz.dataset['msgRequired'] ?? '',
+        invalidEmail: raiz.dataset['msgInvalidEmail'] ?? '',
+      };
+
+      const validar = (c: Control): Clave | null =>
+        !c.value.trim() ? 'required' : c.type === 'email' && c.validity.typeMismatch ? 'invalidEmail' : null;
+
+      const marcar = (c: Control, clave: Clave | null) => {
+        const caja = c.closest<HTMLElement>('.campo')!;
+        const p = caja.querySelector<HTMLElement>('.campo__error')!;
+        if (clave) {
+          caja.dataset['estado'] = 'error';
+          p.querySelector('[data-campo-mensaje]')!.textContent = mensajes[clave];
+          p.hidden = false;
+          c.setAttribute('aria-invalid', 'true');
+          c.setAttribute('aria-describedby', p.id);
+        } else {
+          delete caja.dataset['estado'];
+          p.hidden = true;
+          c.removeAttribute('aria-invalid');
+          c.removeAttribute('aria-describedby');
+        }
+      };
+
+      /** Marca todos los campos y lleva el foco al primero con error. Devuelve si hubo errores. */
+      const mostrarErrores = (claves: (Clave | null)[]) => {
+        campos.forEach((c, k) => marcar(c, claves[k] ?? null));
+        const k = claves.findIndex(Boolean);
+        if (k >= 0) campos[k]!.focus();
+        return k >= 0;
+      };
+
+      const cargando = (si: boolean) => {
+        if (si) {
+          boton.setAttribute('aria-busy', 'true');
+          boton.setAttribute('aria-disabled', 'true');
+        } else {
+          boton.removeAttribute('aria-busy');
+          boton.removeAttribute('aria-disabled');
+        }
+      };
+
+      // Al corregir un campo con error, el error se va (no aparece mientras se escribe por primera vez).
+      form.addEventListener('input', (e) => {
+        const c = e.target as Control;
+        if (c.getAttribute('aria-invalid') && !validar(c)) marcar(c, null);
+      }, { signal: ac.signal });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (boton.getAttribute('aria-busy')) return;
+        if (mostrarErrores(campos.map(validar))) return;
+
+        errorEnvio.hidden = true;
+        cargando(true);
+        textoBoton.textContent = raiz.dataset['textoEnviando'] ?? '';
+        const { data, error } = await actions.contacto(new FormData(form)).catch(() => ({ data: undefined, error: true as const }));
+        cargando(false);
+
+        if (isInputError(error)) {
+          textoBoton.textContent = raiz.dataset['textoEnviar'] ?? '';
+          mostrarErrores(campos.map((c) => (error.fields as Record<string, Clave[] | undefined>)[c.name]?.[0] ?? null));
+          return;
+        }
+        if (error || !data) {
+          textoBoton.textContent = raiz.dataset['textoReintentar'] ?? '';
+          errorEnvio.hidden = false;
+          return;
+        }
+
+        // Éxito: el formulario se cierra (CSS, como M29) y entra la confirmación, que recibe el foco.
+        // M03 (el glifo re-encastra) llega con marca-formato.svg.
+        raiz.dataset['estado'] = 'exito';
+        exito.hidden = false;
+        exito.focus();
+        animar(exito, { opacity: '1' }, { ...curva('out', 'fast'), desde: { opacity: '0' }, soltar: true });
+      }, { signal: ac.signal });
+    });
+    return () => ac.abort();
+  });
+</script>
+
+<style>
+  /* M32 · éxito: el cuerpo se cierra con grid-template-rows 1fr → 0fr (la excepción de M29),
+     700 · soft; visibility espera al final para que no desaparezca de golpe. */
+  .form-hablemos__cuerpo {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition:
+      grid-template-rows var(--spring-soft-duration) var(--spring-soft),
+      visibility 0s linear;
+  }
+
+  .form-hablemos[data-estado="exito"] .form-hablemos__cuerpo {
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition:
+      grid-template-rows var(--spring-soft-duration) var(--spring-soft),
+      visibility 0s linear var(--spring-soft-duration);
+  }
+
+  .form-hablemos__interior {
+    min-block-size: 0;
+  }
+
+  /* Solo al cerrarse: abierto, el recorte se comería el anillo de foco de los campos. */
+  .form-hablemos[data-estado="exito"] .form-hablemos__interior {
+    overflow: hidden;
+  }
+
+  form {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  form :global(.form-hablemos__enviar) {
+    justify-self: start;
+  }
+
+  /* Campo trampa: fuera de la vista y del orden de tabulación; un bot lo completa igual. */
+  .form-hablemos__trampa {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .form-hablemos__error-envio,
+  .form-hablemos__exito {
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
+    margin: 0;
+    font-size: var(--text-small);
+    line-height: var(--leading-ui);
+  }
+
+  .form-hablemos__error-envio {
+    color: var(--color-danger);
+  }
+
+  .form-hablemos__error-envio :global(.icono),
+  .form-hablemos__exito :global(.icono) {
+    flex: none;
+    margin-block-start: 0.1em;
+  }
+
+  .form-hablemos__exito {
+    padding: var(--space-4);
+    border-radius: var(--radius-xs);
+    background: var(--color-success-bg);
+    color: var(--color-text-primary);
+    font-size: var(--text-body);
+  }
+
+  .form-hablemos__exito :global(.icono) {
+    color: var(--color-success);
+  }
+
+  .form-hablemos__exito:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+
+  .form-hablemos__error-envio[hidden],
+  .form-hablemos__exito[hidden] {
+    display: none;
+  }
+</style>

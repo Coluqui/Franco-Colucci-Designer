@@ -21,9 +21,11 @@ interface Props {
   /** Mensaje de error visible (estado error). */
   error?: string;
   exito?: boolean;
+  /** Sin JS, el primer campo con error recibe el foco al cargar. */
+  autofocus?: boolean;
 }
 
-const { id, name, label, tipo = 'text', autocomplete, required = false, textoObligatorio, disabled = false, value, error, exito = false } = Astro.props;
+const { id, name, label, tipo = 'text', autocomplete, required = false, textoObligatorio, disabled = false, value, error, exito = false, autofocus = false } = Astro.props;
 const idError = `${id}-error`;
 const estado = error ? 'error' : exito ? 'exito' : undefined;
 ---
@@ -43,6 +45,7 @@ const estado = error ? 'error' : exito ? 'exito' : undefined;
           rows="5"
           required={required}
           disabled={disabled}
+          autofocus={autofocus}
           aria-invalid={error ? 'true' : undefined}
           aria-describedby={error ? idError : undefined}
           set:text={value ?? ''}
@@ -57,6 +60,7 @@ const estado = error ? 'error' : exito ? 'exito' : undefined;
           autocomplete={autocomplete}
           required={required}
           disabled={disabled}
+          autofocus={autofocus}
           aria-invalid={error ? 'true' : undefined}
           aria-describedby={error ? idError : undefined}
         />

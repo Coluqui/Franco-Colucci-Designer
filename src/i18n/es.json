@@ -63,7 +63,8 @@
     "required": "Completá este campo.",
     "invalidEmail": "Revisá el email: parece que falta algo.",
     "closePanel": "Cerrar panel",
-    "requiredMark": "(obligatorio)"
+    "requiredMark": "(obligatorio)",
+    "honeypot": "Si sos una persona, dejá este campo vacío."
   },
   "case": {
     "view": "Ver caso",
@@ -258,8 +259,7 @@
     "cv": "CV"
   },
   "talk": {
-    "title": "Hablemos",
-    "formPending": "El formulario se conecta en la Fase 7. Mientras tanto, escribime por cualquiera de estos medios."
+    "title": "Hablemos"
   },
   "notFound": {
     "title": "Esta página no existe",

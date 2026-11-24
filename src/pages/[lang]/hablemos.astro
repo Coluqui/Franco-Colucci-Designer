@@ -1,26 +1,44 @@
 ---
 /**
  * /[lang]/hablemos/ · PRD §5: la versión sin JS del panel Hablemos (los [data-abre-panel] apuntan acá).
- * Fase 4: intro + medios directos. El formulario con envío real (Resend, ruta on-demand) llega en
- * la Fase 7; hasta entonces no se muestra un formulario que no puede enviarse.
+ * On-demand: el formulario postea a la acción `contacto` y esta página se vuelve a dibujar con el
+ * resultado (error por campo, error de envío o éxito), sin perder lo escrito. Con JS, el mismo
+ * formulario envía sin recargar (FormHablemos).
  */
-import type { GetStaticPaths } from 'astro';
+import { actions, isInputError } from 'astro:actions';
 import Base from '../../layouts/Base.astro';
 import Link from '../../components/Link.astro';
-import { locales, t, type Lang } from '../../i18n';
+import FormHablemos from '../../components/FormHablemos.astro';
+import { isLang, t } from '../../i18n';
 import { mailHref, linkedinHref, whatsappHref, cvHref } from '../../config/site';
 
-export const getStaticPaths = (() => locales.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
+export const prerender = false;
 
-const lang = Astro.params.lang as Lang;
+const lang = Astro.params.lang;
+// Idioma inválido: un 404 vacío (Astro sirve la página 404, que es estática).
+if (!isLang(lang)) return new Response(null, { status: 404 });
 const cv = cvHref(lang);
+
+const resultado = Astro.getActionResult(actions.contacto);
+let estado: 'exito' | 'error' | undefined;
+let errores: Record<string, string> = {};
+let valores: Record<string, string> = {};
+if (resultado?.error) {
+  // Lo escrito vuelve a los campos (PRD §11: error sin perder lo escrito).
+  const datos = await Astro.request.formData().catch(() => null);
+  valores = Object.fromEntries(['nombre', 'email', 'mensaje'].map((c) => [c, String(datos?.get(c) ?? '')]));
+  if (isInputError(resultado.error)) errores = Object.fromEntries(Object.entries(resultado.error.fields).map(([c, m]) => [c, String(m?.[0] ?? '')]));
+  else estado = 'error';
+} else if (resultado) {
+  estado = 'exito';
+}
 ---
 
 <Base lang={lang} title={`${t(lang, 'pages.talk.title')} · Franco Colucci`} description={t(lang, 'pages.talk.description')} chrome>
   <div class="container hablemos">
     <h1>{t(lang, 'talk.title')}</h1>
     <p class="t-lead">{t(lang, 'form.intro')}</p>
-    <p class="t-body hablemos__nota">{t(lang, 'talk.formPending')}</p>
+    <FormHablemos lang={lang} id="pagina" {valores} {errores} {estado} momento={Date.now()} />
     <section class="hablemos__directo" aria-labelledby="hablemos-directo">
       <h2 id="hablemos-directo" class="t-h3">{t(lang, 'contact.direct')}</h2>
       <ul role="list">
@@ -43,10 +61,6 @@ const cv = cvHref(lang);
   .hablemos > * {
     margin: 0;
     max-inline-size: var(--measure);
-  }
-
-  .hablemos__nota {
-    color: var(--color-text-secondary);
   }
 
   .hablemos__directo {

@@ -5,13 +5,12 @@
  * Velo --color-scrim; cierra con ESC, × o clic en el velo; el foco vuelve a quien lo abrió.
  * Se abre desde cualquier [data-abre-panel] (header, barra mobile, cierre). Esos son links a
  * /[lang]/hablemos/: sin JS llevan a la página, con JS abren el panel.
- * El envío (Resend, anti-spam, estados) es de la Fase 7; M21 y M32 de la Fase 6.
+ * El formulario (envío, anti-spam y estados M32) es FormHablemos, compartido con /[lang]/hablemos/.
  */
-import Campo from './Campo.astro';
-import Boton from './Boton.astro';
+import FormHablemos from './FormHablemos.astro';
 import Link from './Link.astro';
 import Icono from './Icono.astro';
-import { t, localizePath, type Lang } from '../i18n';
+import { t, type Lang } from '../i18n';
 import { site, linkedinHref, whatsappHref, cvHref } from '../config/site';
 
 interface Props {
@@ -32,12 +31,7 @@ const { lang } = Astro.props;
 
     <p class="t-body panel__intro">{t(lang, 'form.intro')}</p>
 
-    <form class="panel__form" method="post" action={localizePath(lang, 'hablemos/')} novalidate data-form-hablemos>
-      <Campo id="hablemos-nombre" name="nombre" label={t(lang, 'form.name')} autocomplete="name" required textoObligatorio={t(lang, 'form.requiredMark')} />
-      <Campo id="hablemos-email" name="email" tipo="email" label={t(lang, 'form.email')} autocomplete="email" required textoObligatorio={t(lang, 'form.requiredMark')} />
-      <Campo id="hablemos-mensaje" name="mensaje" tipo="textarea" label={t(lang, 'form.message')} required textoObligatorio={t(lang, 'form.requiredMark')} />
-      <Boton type="submit" textoCarga={t(lang, 'form.sending')} class="panel__enviar">{t(lang, 'form.send')}</Boton>
-    </form>
+    <FormHablemos lang={lang} id="panel" />
 
     <section class="panel__directo" aria-labelledby="panel-hablemos-directo">
       <h3 id="panel-hablemos-directo" class="panel__subtitulo">{t(lang, 'contact.direct')}</h3>
@@ -84,7 +78,7 @@ const { lang } = Astro.props;
     const ac = new AbortController();
     const signal = ac.signal;
     const interior = panel.querySelector<HTMLElement>('.panel__interior')!;
-    const campos = [...panel.querySelectorAll<HTMLElement>('.panel__form > *')].slice(0, MAX_CAMPOS);
+    const campos = [...panel.querySelectorAll<HTMLElement>('[data-form-hablemos] form > :is(.campo, .boton)')].slice(0, MAX_CAMPOS);
     let velo: Animation | null = null;
     let cerrando = false;
 
@@ -269,15 +263,6 @@ const { lang } = Astro.props;
 
   .panel__intro {
     color: var(--color-text-secondary);
-  }
-
-  .panel__form {
-    display: grid;
-    gap: var(--space-4);
-  }
-
-  .panel__form :global(.panel__enviar) {
-    justify-self: start;
   }
 
   .panel__directo {

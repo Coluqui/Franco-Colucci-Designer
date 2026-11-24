@@ -63,7 +63,8 @@
     "required": "Please fill in this field.",
     "invalidEmail": "Check the email: something seems to be missing.",
     "closePanel": "Close panel",
-    "requiredMark": "(required)"
+    "requiredMark": "(required)",
+    "honeypot": "If you are a person, leave this field empty."
   },
   "case": {
     "view": "View case",
@@ -258,8 +259,7 @@
     "cv": "CV"
   },
   "talk": {
-    "title": "Let’s talk",
-    "formPending": "The form is connected in Phase 7. Meanwhile, reach me through any of these."
+    "title": "Let’s talk"
   },
   "notFound": {
     "title": "This page doesn’t exist",

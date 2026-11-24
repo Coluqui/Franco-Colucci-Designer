@@ -64,7 +64,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       expect(desde).toBe(ancho ? 'translateX(100%)' : 'translateY(100%)');
       const velo = await panel.evaluate((p) => p.getAnimations({ subtree: true }).find((a) => (a.effect as KeyframeEffect).pseudoElement === '::backdrop')?.effect?.getComputedTiming().duration);
       expect(velo).toBe(reducido ? 120 : 300);
-      const campos = await page.locator('.panel__form > *').evaluateAll((els) => els.filter((e) => e.getAnimations().length > 0).length);
+      const campos = await page.locator('[data-panel] [data-form-hablemos] form > :is(.campo, .boton)').evaluateAll((els) => els.filter((e) => e.getAnimations().length > 0).length);
       expect(campos).toBeLessThanOrEqual(4);
       await quieto(page, '[data-panel]');
       await page.locator('[data-cierra-panel]').click();
