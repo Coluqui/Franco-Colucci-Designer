@@ -46,22 +46,6 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       await expect.poll(flecha).toBe(reducido ? 0 : 4);
     });
 
-    test('M29 · la FAQ se abre con grid-template-rows y el + pasa a −', async ({ page }) => {
-      await page.goto('/es/');
-      const boton = page.locator('[data-faq-boton]').first();
-      await boton.scrollIntoViewIfNeeded();
-      const respuesta = page.locator('.faq__respuesta').first();
-      // Al cargar, el cierre inicial no se anima (solo el clic).
-      expect(await page.locator('.faq__respuesta').evaluateAll((els) => els.flatMap((e) => e.getAnimations()).length)).toBe(0);
-      expect(await respuesta.evaluate((e) => getComputedStyle(e).transitionProperty)).toContain('grid-template-rows');
-      await boton.click();
-      await expect(boton).toHaveAttribute('aria-expanded', 'true');
-      await expect.poll(() => boton.locator('.icono__vertical').evaluate((e) => getComputedStyle(e).transform)).toBe('matrix(1, 0, 0, 0, 0, 0)');
-      await expect(respuesta).toBeVisible();
-      await boton.click();
-      await expect(boton).toHaveAttribute('aria-expanded', 'false');
-      await expect(respuesta).toBeHidden();
-    });
 
     test('M28 · el contador rueda y el arrastre con mouse lleva al más cercano', async ({ page }) => {
       await page.goto('/es/dev/componentes/');

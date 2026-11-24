@@ -1,7 +1,7 @@
 ---
 /**
- * Home · PRD §5: Hero · Frase-problema · Clientes + Testimonios (invertida) · Trabajos destacados (4 filas)
- * · Qué hago (servicios + herramientas e IA) · Sobre mí (resumen) · Preguntas frecuentes · Cierre · Footer.
+ * Home · PRD v4.0 §5: Hero · Frase-problema · Clientes + Testimonios (invertida) · Trabajos (una card por proyecto)
+ * · Qué hago (servicios + vista previa) · Skills · Sobre mí (resumen) · Cierre · Footer.
  * Contenido real que falta: PENDIENTE (docs/pendientes.md). Motion (M04, M15, M16, M17): Fase 6.
  */
 import type { GetStaticPaths } from 'astro';
@@ -13,7 +13,7 @@ import GrillaClientes from '../../components/GrillaClientes.astro';
 import FilaCaso from '../../components/FilaCaso.astro';
 import ListaServicios from '../../components/ListaServicios.astro';
 import ResumenSobreMi from '../../components/ResumenSobreMi.astro';
-import Faq from '../../components/Faq.astro';
+import Skills from '../../components/Skills.astro';
 import Cierre from '../../components/Cierre.astro';
 import Link from '../../components/Link.astro';
 import { locales, t, localizePath, type Lang } from '../../i18n';
@@ -40,14 +40,10 @@ const servicios = ordenServicios.map((slug) => {
     ratio: ratioServicio[slug],
     imagen: portada?.src,
     alt: portada?.alt[lang],
+    // Reel de Franco (16 nov): reemplaza a la pieza de vista previa de Reels.
+    ...(slug === 'reels' ? { video: { src: '/reels/reel.mp4', poster: '/reels/reel-poster.jpg', etiqueta: t(lang, 'services.reelLabel') } } : {}),
   };
 });
-
-/** 6 preguntas para recruiters (borrador de Claude, PRD §8); las respuestas las da Franco. */
-const preguntas = ([1, 2, 3, 4, 5, 6] as const).map((n) => ({
-  pregunta: t(lang, `faq.q${n}`),
-  respuesta: t(lang, `faq.a${n}`),
-}));
 ---
 
 <Base lang={lang} title={`Franco Colucci · ${t(lang, 'pages.home.title')}`} description={t(lang, 'pages.home.description')} chrome>
@@ -82,18 +78,14 @@ const preguntas = ([1, 2, 3, 4, 5, 6] as const).map((n) => ({
 
   <Seccion id="que-hago" titulo={t(lang, 'home.whatIDo')}>
     <ListaServicios lang={lang} servicios={servicios} />
-    <div class="herramientas">
-      <h3 class="t-h3">{t(lang, 'home.tools')}</h3>
-      <p class="t-body">{t(lang, 'home.toolsText')}</p>
-    </div>
+  </Seccion>
+
+  <Seccion id="skills" titulo={t(lang, 'skills.title')}>
+    <Skills lang={lang} />
   </Seccion>
 
   <Seccion id="sobre-mi" titulo={t(lang, 'home.aboutTitle')}>
     <ResumenSobreMi lang={lang} />
-  </Seccion>
-
-  <Seccion id="preguntas" titulo={t(lang, 'faq.title')}>
-    <Faq preguntas={preguntas} />
   </Seccion>
 
   <Cierre lang={lang} />
@@ -140,14 +132,4 @@ const preguntas = ([1, 2, 3, 4, 5, 6] as const).map((n) => ({
     list-style: none;
   }
 
-  .herramientas {
-    display: grid;
-    gap: var(--space-4);
-    max-inline-size: var(--measure);
-  }
-
-  .herramientas h3,
-  .herramientas p {
-    margin: 0;
-  }
 </style>

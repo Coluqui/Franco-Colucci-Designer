@@ -6,7 +6,6 @@
  */
 import GrillaClientes from '../components/GrillaClientes.astro';
 import Testimonios from '../components/Testimonios.astro';
-import Faq from '../components/Faq.astro';
 import Filtros from '../components/Filtros.astro';
 import TilePieza from '../components/TilePieza.astro';
 import Visor from '../components/Visor.astro';
@@ -62,16 +61,6 @@ const contar = (f: string) => piezas.filter((p) => p.filtro.split(' ').includes(
   </div>
 </section>
 
-<section aria-labelledby="c-faq">
-  <h2 id="c-faq">10 · FAQ</h2>
-  <Faq
-    preguntas={[1, 2, 3].map((n) => ({
-      pregunta: `PENDIENTE: pregunta frecuente ${n}`,
-      respuesta: 'PENDIENTE: respuesta de Franco.',
-    }))}
-  />
-</section>
-
 <section aria-labelledby="c-piezas">
   <h2 id="c-piezas">11 · Filtros, 12 · Tile de pieza y 13 · Visor</h2>
   <p class="t-body">
@@ -79,7 +68,7 @@ const contar = (f: string) => piezas.filter((p) => p.filtro.split(' ').includes(
   </p>
   <Filtros
     lang={lang}
-    etiqueta={t(lang, 'filters.byService')}
+    etiqueta={t(lang, 'filters.byType')}
     objetivo="demo-piezas"
     param="servicio"
     total={piezas.length}
