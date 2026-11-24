@@ -132,3 +132,13 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
   - **M19 · fundido del header.** Durante los 300 ms del fundido, los textos del header quedan sobre el contenido. Es transitorio.
   - **M12 · posición de la grilla.** `position: relative` se pone en línea sobre la grilla filtrada (`Filtros.astro`). Podría pasar al CSS de cada página.
 
+## Fase 6 · motion (paso 5: microinteracciones M25–M32)
+
+- **M02 dentro de M25.** El primario ya pasa a cobalto y se hunde (0,98). Falta el desencastre del glifo: espera `marca-formato.svg`.
+- **M26 · links de varias líneas.** El subrayado es un pseudo-elemento bajo la caja del link: en un link en línea que se parte en dos renglones, la línea queda solo bajo el último. Hoy no hay links así; si aparecen, ese link usa `text-decoration` sin animación.
+- **M28 · flechas.** Las flechas usan el scroll suave nativo, no `--spring-soft` (§8 permite scroll-snap nativo). El arrastre con mouse sí sigue 1:1 y elige el testimonio más cercano según la velocidad.
+- **M28 · dónde se ve.** Los testimonios reales son PENDIENTE: hoy solo se prueban en `/es/dev/componentes/`.
+- **M29 · reducido.** `docs/motion.md` pide instantáneo; con los tokens queda en 120 ms. Es la misma decisión abierta que M05, M16, M17 y M19–M22.
+- **M31 · tiempo de "Descargando".** El navegador no avisa cuando termina una descarga: "Descargando" dura `--duration-slow` y después pasa a "CV ✓". El CV es PENDIENTE, así que hoy no se ve.
+- **M32 · lo que falta.** Están el error del campo (baja `--shift-xs`) y la barra de "Enviando" (quieta en reducido). El éxito, el error de envío y M03 se conectan con el formulario real en la Fase 7.
+- **Token nuevo.** `--shift-xs: 4px` (0 en reducido), para la flecha de M27 y el error de M32. Agregado a `tokens.css` y `tokens.json`.
