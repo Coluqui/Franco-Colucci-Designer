@@ -1,0 +1,99 @@
+/*
+ * View Transitions entre páginas (<ClientRouter />) · docs/motion.md §3 (M06, M07) y §8.
+ * Curvas y tiempos solo desde tokens: los pseudo-elementos ::view-transition-* cuelgan de <html> y
+ * heredan sus custom properties.
+ *
+ * - Página: la anterior sale con fundido (200 · in). La nueva aparece debajo; en un caso, sus bloques
+ *   entran subiendo (src/scripts/motion/paginas.ts).
+ * - Media de la fila (16:10) → hero del caso (16:8): el marco cambia de formato mientras viaja
+ *   (700 · snap) y la pieza se recorta adentro, nunca se estira (object-fit: cover). Un encastre.
+ * - Nombre de la fila → H1 del caso (y "Siguiente caso" → H1 del siguiente): viaja con la media.
+ * Los nombres los pone transition:name (caso-<slug>-media / -titulo); la clase agrupa a todos.
+ */
+
+.fila__media,
+.caso__hero {
+  view-transition-class: caso-media;
+}
+
+.fila__nombre,
+.caso__nombre,
+.siguiente__nombre {
+  view-transition-class: caso-titulo;
+}
+
+/* Sin cortarse en líneas (una transición no puede capturar un elemento partido en varias). */
+.fila__nombre,
+.caso__nombre,
+.siguiente__nombre {
+  display: inline-block;
+}
+
+::view-transition-old(root) {
+  animation: vt-sale var(--duration-fast) var(--ease-in) both;
+}
+
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-group(*.caso-media),
+::view-transition-group(*.caso-titulo) {
+  animation-duration: var(--duration-page);
+  animation-timing-function: var(--spring-snap);
+}
+
+/* El marco recorta: la pieza no se deforma al cambiar de proporción. */
+::view-transition-group(*.caso-media) {
+  overflow: clip;
+  border-radius: var(--radius-sm);
+}
+
+::view-transition-old(*.caso-media),
+::view-transition-new(*.caso-media) {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+::view-transition-old(*.caso-media),
+::view-transition-new(*.caso-media),
+::view-transition-old(*.caso-titulo),
+::view-transition-new(*.caso-titulo) {
+  animation-duration: var(--duration-page);
+  animation-timing-function: var(--ease-out);
+}
+
+@keyframes vt-sale {
+  to {
+    opacity: 0;
+  }
+}
+
+/*
+ * Movimiento reducido: fundido cruzado de 120 ms y nada viaja. Astro apaga todas las animaciones de
+ * la transición con !important bajo (prefers-reduced-motion); acá se recupera solo el fundido.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .fila__media,
+  .caso__hero,
+  .fila__nombre,
+  .caso__nombre,
+  .siguiente__nombre {
+    view-transition-name: none !important;
+  }
+
+  :root::view-transition-old(root) {
+    animation: vt-sale var(--duration-base) var(--ease-out) both !important;
+  }
+
+  :root::view-transition-new(root) {
+    animation: vt-entra var(--duration-base) var(--ease-out) both !important;
+  }
+
+  @keyframes vt-entra {
+    from {
+      opacity: 0;
+    }
+  }
+}

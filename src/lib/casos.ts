@@ -39,6 +39,7 @@ export const hrefCaso = (lang: Lang, slug: string) => localizePath(lang, `trabaj
 /** Props de FilaCaso para un caso. */
 export function filaDeCaso(lang: Lang, c: Caso) {
   return {
+    slug: c.slug,
     href: hrefCaso(lang, c.slug),
     titulo: c.titulo[lang],
     tipo: c.tipo[lang],

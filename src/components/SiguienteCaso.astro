@@ -8,12 +8,14 @@ import { t, type Lang } from '../i18n';
 
 interface Props {
   lang: Lang;
+  /** El título se convierte en el H1 del caso siguiente (M07): caso-<slug>-titulo. */
+  slug: string;
   href: string;
   titulo: string;
   frase: string;
 }
 
-const { lang, href, titulo, frase } = Astro.props;
+const { lang, slug, href, titulo, frase } = Astro.props;
 ---
 
 <section class="seccion-invertida siguiente" aria-labelledby="siguiente-etiqueta">
@@ -21,7 +23,7 @@ const { lang, href, titulo, frase } = Astro.props;
     <h2 class="t-dato siguiente__etiqueta" id="siguiente-etiqueta">{t(lang, 'caseDetail.next')}</h2>
     <a class="siguiente__link" href={href} aria-describedby="siguiente-frase">
       <span class="t-h1 siguiente__titulo">
-        {titulo}
+        <span class="siguiente__nombre" transition:name={`caso-${slug}-titulo`} transition:animate="initial">{titulo}</span>
         <Icono nombre="flecha-der" size="0.6em" />
       </span>
     </a>

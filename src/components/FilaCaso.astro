@@ -20,6 +20,8 @@ import { t, type Lang } from '../i18n';
 
 interface Props {
   lang: Lang;
+  /** Nombre de la View Transition (M06, M07): caso-<slug>-media y caso-<slug>-titulo. */
+  slug: string;
   href: string;
   titulo: string;
   /** Tipo de trabajo, en label (p. ej. "Campaña · Redes y ads"). */
@@ -37,13 +39,13 @@ interface Props {
   prioridad?: boolean;
 }
 
-const { lang, href, titulo, tipo, metricas = [], descripcion, servicios, imagen, alt, nivel = 'h3', prioridad = false } = Astro.props;
+const { lang, slug, href, titulo, tipo, metricas = [], descripcion, servicios, imagen, alt, nivel = 'h3', prioridad = false } = Astro.props;
 const Titulo = nivel;
 ---
 
 <div class="fila-caja" data-fila>
   <article class="fila">
-    <div class="fila__media">
+    <div class="fila__media" transition:name={`caso-${slug}-media`} transition:animate="initial">
       {
         imagen ? (
           <Image
@@ -61,7 +63,7 @@ const Titulo = nivel;
     </div>
 
     <div class="fila__texto">
-      <Titulo class="t-h3 fila__titulo"><a class="fila__link" href={href}>{titulo}</a></Titulo>
+      <Titulo class="t-h3 fila__titulo"><a class="fila__link" href={href}><span class="fila__nombre" transition:name={`caso-${slug}-titulo`} transition:animate="initial">{titulo}</span></a></Titulo>
       <p class="fila__tipo">{tipo}</p>
       {
         metricas.length > 0 && (

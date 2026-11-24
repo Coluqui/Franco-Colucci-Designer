@@ -4,6 +4,7 @@
  * Con `chrome`: header, footer, barra mobile, menú y panel Hablemos.
  */
 import '../styles/global.css';
+import '../styles/transiciones.css';
 import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Menu from '../components/Menu.astro';
@@ -83,5 +84,9 @@ const { lang, title, description, noindex = false, alternates = true, chrome = f
     {chrome && <BarraMobile lang={lang} />}
     {chrome && <Menu lang={lang} />}
     {chrome && <PanelHablemos lang={lang} />}
+    <script>
+      // M06: entrada del contenido del caso al llegar con ClientRouter.
+      import '../scripts/motion/paginas';
+    </script>
   </body>
 </html>

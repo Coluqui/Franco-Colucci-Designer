@@ -62,14 +62,14 @@ const datos = [
 <Base lang={lang} title={`${caso.titulo[lang]} · Franco Colucci`} description={caso.frase[lang]} chrome>
   <article class="caso">
     <header class="container caso__cabecera">
-      <p class="t-ui caso__volver">
+      <p class="t-ui caso__volver" data-entra>
         <Link href={localizePath(lang, 'trabajos/')} lang={lang} class="link--suelto">{t(lang, 'caseDetail.back')}</Link>
       </p>
       <div class="caso__intro">
-        <h1>{caso.titulo[lang]}</h1>
-        <p class="t-lead caso__frase">{caso.frase[lang]}</p>
+        <h1><span class="caso__nombre" transition:name={`caso-${caso.slug}-titulo`} transition:animate="initial">{caso.titulo[lang]}</span></h1>
+        <p class="t-lead caso__frase" data-entra>{caso.frase[lang]}</p>
       </div>
-      <dl class="caso__datos">
+      <dl class="caso__datos" data-entra>
         {
           datos.map((d) => (
             <div>
@@ -82,7 +82,7 @@ const datos = [
     </header>
 
     <div class="container">
-      <div class="caso__hero">
+      <div class="caso__hero" transition:name={`caso-${caso.slug}-media`} transition:animate="initial">
         {
           caso.hero ? (
             <Image
@@ -102,7 +102,7 @@ const datos = [
 
     {
       caso.metricas.length > 0 && (
-        <div class="container caso__bloque">
+        <div class="container caso__bloque" data-entra>
           <MetricasGrandes
             etiqueta={t(lang, 'caseDetail.metrics')}
             metricas={caso.metricas.map((m) => ({ valor: m.valor, etiqueta: m.etiqueta[lang] }))}
@@ -111,7 +111,7 @@ const datos = [
       )
     }
 
-    <section class="container caso__bloque caso__texto" aria-labelledby="problema">
+    <section class="container caso__bloque caso__texto" aria-labelledby="problema" data-entra>
       <h2 id="problema">{t(lang, 'caseDetail.problem')}</h2>
       <p class="t-body">{caso.problema[lang]}</p>
     </section>
@@ -173,7 +173,7 @@ const datos = [
 
   {
     siguiente && (
-      <SiguienteCaso lang={lang} href={hrefCaso(lang, siguiente.slug)} titulo={siguiente.titulo[lang]} frase={siguiente.frase[lang]} />
+      <SiguienteCaso lang={lang} slug={siguiente.slug} href={hrefCaso(lang, siguiente.slug)} titulo={siguiente.titulo[lang]} frase={siguiente.frase[lang]} />
     )
   }
 </Base>
