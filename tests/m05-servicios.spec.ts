@@ -15,6 +15,8 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       await page.emulateMedia({ reducedMotion });
       await page.goto('/es/');
       await page.locator('[data-servicios]').scrollIntoViewIfNeeded();
+      // Con ScrollSmoother (motion 4.1) el contenido llega con retraso: se espera a que quede quieto.
+      await page.waitForTimeout(1500);
     });
 
     test('el marco toma la forma del servicio activo y no queda tapado', async ({ page }) => {

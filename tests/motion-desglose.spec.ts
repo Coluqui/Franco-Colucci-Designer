@@ -54,10 +54,10 @@ test('4.2 · el hero se ve sin scrollear', async ({ page }) => {
   await expect.poll(() => page.locator('[data-hero-bajada]').evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
 });
 
-test('smooth scroll solo con puntero fino y sin movimiento reducido', async ({ page }) => {
+test('smooth scroll solo con puntero fino, desde 48rem y sin movimiento reducido', async ({ page }) => {
   await page.goto('/es/');
   await expect(page.locator('html')).toHaveAttribute('data-motion-listo', '');
-  const fino = await page.evaluate(() => matchMedia('(hover: hover) and (pointer: fine)').matches);
+  const fino = await page.evaluate(() => matchMedia('(hover: hover) and (pointer: fine) and (min-width: 48rem)').matches);
   expect(await page.evaluate(() => document.documentElement.hasAttribute('data-smooth'))).toBe(fino);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('html')).not.toHaveAttribute('data-smooth', '');

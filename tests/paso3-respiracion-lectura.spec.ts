@@ -20,6 +20,8 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       await page.goto('/es/');
       const summaries = page.locator('[data-servicios] summary');
       await summaries.nth(1).scrollIntoViewIfNeeded();
+      // Con ScrollSmoother el contenido llega con retraso: se espera a que quede quieto.
+      await page.waitForTimeout(1500);
       await summaries.nth(1).click();
       await expect.poll(() => stretch(page, '[data-servicios] details[open] summary')).toBe(125);
       // Los inactivos: 112 con movimiento; 125 en reducido (solo cambia el color).

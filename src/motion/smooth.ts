@@ -1,6 +1,6 @@
 /**
  * 4.1 · Smooth scroll con ScrollSmoother · docs/motion.md v3.0.
- * Solo con puntero fino y sin movimiento reducido (lo decide la condición de matchMedia en index.ts).
+ * Solo con puntero fino, desde 48rem y sin movimiento reducido (lo decide la condición de matchMedia en index.ts).
  * Wrapper `#smooth-wrapper > #smooth-content` en Base.astro; header, menú, panel, visor y barra
  * mobile quedan afuera. Suaviza, no secuestra: la distancia de scroll es la misma.
  */

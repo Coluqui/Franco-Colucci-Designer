@@ -22,7 +22,8 @@ export function initMotion() {
   mm.add({ siempre: 'all', reducido: '(prefers-reduced-motion: reduce)', fino: '(hover: hover) and (pointer: fine)', ancho: '(min-width: 48rem)' }, (ctx) => {
     const { reducido, fino, ancho } = ctx.conditions as { reducido: boolean; fino: boolean; ancho: boolean };
     // El smoother va primero: los ScrollTriggers se miden contra él.
-    const quitarSmooth = fino && !reducido ? iniciarSmooth() : null;
+    // Mobile (táctil o angosto): sin smoother (regla de motion v3.0).
+    const quitarSmooth = fino && ancho && !reducido ? iniciarSmooth() : null;
     html.toggleAttribute('data-smooth', Boolean(quitarSmooth));
     animarHero(reducido);
     if (ancho) animarLogo(reducido);
