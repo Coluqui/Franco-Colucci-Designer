@@ -167,6 +167,12 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 - **Franco · cuenta de Resend.** Crear la cuenta y una API key, y cargar `RESEND_API_KEY` y `CONTACTO_DESTINO` en `.env` (local) y en Vercel (ver `.env.example`). Sin dominio propio verificado, Resend solo manda desde `onboarding@resend.dev` y solo al mail de la cuenta: `CONTACTO_DESTINO` tiene que ser ese mail. Sin clave, el formulario muestra "error de envío".
 - **Probar un envío real** cuando esté la clave (las pruebas automáticas nunca mandan mails).
 - **M03 · glifo como confirmación.** El éxito ya existe; el re-encastre del glifo espera `marca-formato.svg`.
-- **Sin límite de envíos por IP.** En Vercel cada función arranca de cero; un límite real necesita un almacén compartido (Vercel KV o similar). Hoy el anti-spam es el campo trampa y los 3 s mínimos. Revisar si llega spam.
+- **Sin límite de envíos por IP.** En Vercel cada función arranca de cero; un límite real necesita un almacén compartido (Vercel KV o similar). Hoy el anti-spam es el campo trampa y los 3 s mínimos, y un bot que mande `t=1` a mano se saltea el tiempo (QA). Si llega spam o se agota la cuota de Resend: límite en Vercel o `t` firmado en el servidor.
 - **`astro preview` ya no sirve el build** (el adaptador de Vercel genera `.vercel/output`). Las pruebas corren sobre `npm run dev`; el build real se prueba en el deploy de la Fase 8.
 - **`form.intro`** sigue PENDIENTE (bajada del panel Hablemos).
+- **Decisión de Franco · CLS al enviar con éxito.** El formulario se cierra (M32 → M29) y "O escribime directo" sube: QA midió 0,20–0,25 a 360 si la respuesta tarda más de 500 ms (0,03 a 1440). Opciones: dejarlo (es el gesto que pide motion.md, dentro de un modal), o que la confirmación ocupe el lugar del formulario sin cerrarlo.
+- **Decisión de Franco · éxito en el panel.** Hoy, después de enviar, el panel muestra la confirmación hasta que se recarga la página. ¿Se reinicia al cerrarlo?
+- **La página `/hablemos/` no tiene "Copiar mail"** (el panel sí). Con el mail real, conviene un componente compartido para los links directos.
+- **Barra de "Enviando".** No se pudo capturar en pantalla (el envío dura poco). Revisar su visibilidad con el envío real; si se pierde, se ajusta en `--progress-height` / `--progress-opacity`.
+- **Cobalto en el panel (ux-ui).** Con los datos reales puede haber más de 5 links cobalto por pantalla; revisar entonces si "Copiar mail" va en texto primario.
+- **404 en `/es/`** muestra una línea en inglés (fuera de esta fase; para `contenido`).
