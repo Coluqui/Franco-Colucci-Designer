@@ -75,7 +75,7 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
   - `moondesk-story-testimonio`: muestra la cita, el nombre y la empresa de un cliente. ¿Hay permiso para publicarlo en el portfolio? (El alt no transcribe nombre ni empresa.)
   - `moondesk-post-retrabajos`: es una pregunta sin respuesta y sin logo; ¿es la portada de un carrusel incompleto o de otra marca?
   - `iscamen-story-mujer-en-la-ciencia`: jornada con UNCuyo y Gobierno de Mendoza; confirmar que fue un trabajo para ISCAMEN.
-  - `moondesk-pieza-qr` (con GS1 Argentina): ¿se imprimió o fue digital? Hoy está como "impreso".
+  - ~~`moondesk-pieza-qr`: ¿impreso o digital?~~ Resuelto (24 nov): todos los documentos de MoonDesk son digitales (formato "Documento digital").
   - `carpa-metodo` pasó de carrusel a **ebook** (son 9 portadas de módulos y bonos, no un carrusel de redes). `carpa-mockup-producto` repite esas portadas en dispositivos: ¿pieza aparte o hero del caso Carpa?
   - `iscamen-carrusel-citricos` slide 5: el texto dice "VITAMINAS C  A TU ALCANCE" (doble espacio); revisar si falta una palabra.
 - **Vista previa de Branding**: la pieza de Condimento es ≈1:1 y el marco de Branding es 4:5 (PRD §8), así que el recorte corta el logotipo. Opciones: (a) una pieza de branding pensada para 4:5; (b) un punto de foco por pieza; (c) Branding en 1:1, actualizando antes el PRD §8.
@@ -197,3 +197,7 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 - **Carpa tiene 2 piezas acá y 4 en la web anterior** (bonos, módulos, banner y mockup): la agrupación de la Fase 5 juntó las portadas en una. Si Franco prefiere las 4, se separan.
 - **Logos de Skills:** Simple Icons (CC0) para Figma, Canva, WordPress, ChatGPT, Gemini, Claude y ElevenLabs; Adobe y CapCut con siglas (no están en Simple Icons).
 
+## Fase 9 · ajustes del 24 nov
+
+- **Franco · foto nueva.** Se quitó el retrato de la home y de Sobre mí; `Retrato.astro` queda listo para cuando elija una mejor.
+- **Franco · confirmar que el reel (IA en el cultivo de vid) es de ISCAMEN.** Hoy está dentro del proyecto ISCAMEN y también en Qué hago.

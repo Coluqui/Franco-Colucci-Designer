@@ -5,7 +5,6 @@
  */
 import type { GetStaticPaths } from 'astro';
 import Base from '../../layouts/Base.astro';
-import Retrato from '../../components/Retrato.astro';
 import Boton from '../../components/Boton.astro';
 import { locales, t, type Lang } from '../../i18n';
 import { cvHref } from '../../config/site';
@@ -42,7 +41,6 @@ const datos = [
           {t(lang, 'contact.downloadCv')}
         </Boton>
       </div>
-      <Retrato alt={t(lang, 'about.portraitAlt')} loading="eager" class="sobre__retrato" />
     </header>
 
     <section class="sobre__bloque" aria-labelledby="experiencia">
@@ -70,10 +68,6 @@ const datos = [
   }
 
   /* Angosto: el h1 y la bio primero (también en el DOM); el retrato debajo y más chico. */
-  .sobre :global(.sobre__retrato) {
-    inline-size: min(100%, 16rem);
-  }
-
   .sobre__intro {
     display: grid;
     align-content: start;
@@ -107,19 +101,6 @@ const datos = [
 
   .sobre__datos dd {
     margin: 0;
-  }
-
-  @media (min-width: 48rem) {
-    .sobre__cabecera {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      column-gap: calc(var(--grid-gutter) * 2 + (100% - 11 * var(--grid-gutter)) / 12);
-    }
-
-    /* Ancho: el retrato pasa a la izquierda. */
-    .sobre :global(.sobre__retrato) {
-      order: -1;
-      inline-size: 100%;
-    }
   }
 
   .sobre__bloque {
