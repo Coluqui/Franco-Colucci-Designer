@@ -18,6 +18,8 @@ Reglas que nunca se rompen:
 
 ## 2. Glifo y marca
 
+> **24 nov 2026 · Franco cambia la marca:** el glifo de marcos encastrados queda en pausa. La firma es el **monograma "FC"** (letras reales, Archivo 800 a `wdth` 125, `Glifo.astro`): logo del header, menú y footer. En el header, "FC" se despliega en "Franco Colucci" + puesto al scrollear (desde 48rem; `src/motion/logo.ts`). El wordmark del hero vuelve a tener la O. El botón "Hablemos" va sin glifo. Idioma (ES / EN) y modo (switch sol / luna) viven en el header; el footer ya no los lleva. Botón flotante "Volver arriba". Lo que sigue en esta sección queda como referencia hasta que se defina si vuelve el glifo.
+
 | Uso | Cómo |
 | --- | --- |
 | Logo en el header | `public/brand/marca-formato.svg` inline, 24–28 px, `color: var(--color-text-primary)`; el marco 4:5 en `var(--color-accent)` |

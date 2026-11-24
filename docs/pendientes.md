@@ -201,3 +201,5 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 
 - **Franco · foto nueva.** Se quitó el retrato de la home y de Sobre mí; `Retrato.astro` queda listo para cuando elija una mejor.
 - **Franco · confirmar que el reel (IA en el cultivo de vid) es de ISCAMEN.** Hoy está dentro del proyecto ISCAMEN y también en Qué hago.
+- **Franco · favicon.** El sitio todavía no tiene favicon (no existe `public/brand/`). Con la marca FC se puede hacer uno "FC" cuando lo apruebes.
+- **Docs · glifo.** `CLAUDE.md` y el design system §2 todavía describen el glifo de marcos; quedó una nota del cambio a FC. Si el glifo no vuelve, se reescribe §2.

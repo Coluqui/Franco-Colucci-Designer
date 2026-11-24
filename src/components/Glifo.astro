@@ -1,51 +1,31 @@
 ---
 /**
- * Glifo "Formato" (marcos 1:1, 4:5 y 9:16 encastrados; el 4:5 en cobalto). Design system §2.
- * El glifo NO se dibuja: se lee de public/brand/marca-formato.svg.
- * Mientras ese archivo no exista, se muestra un marcador neutro (cuadrado vacío) marcado PENDIENTE.
+ * Monograma "FC" (Franco, 24 nov: reemplaza al cuadrado provisorio del glifo "Formato").
+ * Letras reales en Archivo black ancha, no un dibujo. `size` es el ancho del monograma.
  * Siempre es decorativo (aria-hidden): el texto accesible lo pone quien lo usa.
  */
 interface Props {
-  /** Tamaño en cualquier unidad CSS; por defecto, la altura de las mayúsculas del texto que acompaña. */
+  /** Ancho en cualquier unidad CSS. */
   size?: string;
   class?: string;
 }
 
-const { size = '0.72em', class: className } = Astro.props;
-
-const archivos = import.meta.glob<string>('/public/brand/marca-formato.svg', {
-  query: '?raw',
-  import: 'default',
-  eager: true,
-});
-const svg = Object.values(archivos)[0];
+const { size = '1.625rem', class: className } = Astro.props;
 ---
 
-{
-  svg ? (
-    <span class:list={['glifo', className]} style={`--glifo-size: ${size}`} aria-hidden="true" set:html={svg} />
-  ) : (
-    <span class:list={['glifo', 'glifo--pendiente', className]} style={`--glifo-size: ${size}`} aria-hidden="true" data-pendiente="marca-formato.svg" />
-  )
-}
+<span class:list={['glifo', className]} style={`--glifo-size: ${size}`} aria-hidden="true">FC</span>
 
 <style>
+  /* "FC" en Archivo 800 a wdth 125 mide ~1,45 em de ancho: el cuerpo sale del ancho pedido. */
   .glifo {
     display: inline-block;
     flex: none;
-    inline-size: var(--glifo-size);
-    block-size: var(--glifo-size);
+    font-size: calc(var(--glifo-size) / 1.45);
+    font-weight: var(--weight-black);
+    font-stretch: calc(var(--wdth-wide) * 1%);
+    line-height: 0.8;
+    letter-spacing: -0.02em;
     color: inherit;
-  }
-
-  .glifo :global(svg) {
-    inline-size: 100%;
-    block-size: 100%;
-  }
-
-  /* PENDIENTE: marcador neutro hasta tener el SVG de Franco. Ocupa el mismo lugar. */
-  .glifo--pendiente {
-    border: max(1px, calc(var(--glifo-size) * 0.12)) solid currentColor;
-    border-radius: var(--radius-xs);
+    white-space: nowrap;
   }
 </style>

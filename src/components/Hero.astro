@@ -1,13 +1,12 @@
 ---
 /**
  * Hero de la home · PRD v4.0 §5 · design system §2, §4 y §8.
- * Wordmark "FRANC▣ / COLUCCI" a todo el ancho (H1 real: "Franco Colucci") + bajada. Sin piezas:
+ * Wordmark "FRANCO / COLUCCI" a todo el ancho (H1 real: "Franco Colucci") + bajada. Sin piezas:
  * Franco prefiere que el trabajo aparezca al scrollear (24 nov).
  * Ocupa la primera pantalla; el resto de la home se descubre al bajar (motion v3.0).
  * Motion: 4.2 (el wordmark se arma por letras en su máscara) y 4.3 (al scrollear se achica y se va).
  * Hooks: data-hero, data-hero-linea, data-hero-bajada (src/motion/hero.ts).
  */
-import Glifo from './Glifo.astro';
 import { t, type Lang } from '../i18n';
 
 interface Props {
@@ -22,7 +21,7 @@ const { lang } = Astro.props;
     <h1 class="hero__titulo">
       <span class="visually-hidden">Franco Colucci</span>
       <span class="t-wordmark hero__wordmark" aria-hidden="true" data-hero-wordmark>
-        <span class="hero__mascara"><span class="hero__linea" data-hero-linea>Franc<Glifo class="hero__glifo" /></span></span>
+        <span class="hero__mascara"><span class="hero__linea" data-hero-linea>Franco</span></span>
         <span class="hero__mascara"><span class="hero__linea" data-hero-linea>Colucci</span></span>
       </span>
     </h1>
@@ -69,12 +68,6 @@ const { lang } = Astro.props;
   .hero__linea {
     display: block;
     white-space: nowrap;
-  }
-
-  /* El glifo ocupa el lugar de la O: alto de mayúscula (0,72 em), apoyado en la línea de base. */
-  .hero__wordmark :global(.hero__glifo) {
-    margin-inline-start: 0.04em;
-    vertical-align: baseline;
   }
 
   .hero__bajada {
