@@ -20,8 +20,11 @@ const { texto, as: Tag = 'p', id } = Astro.props;
 
 <script>
   import { lectura } from '../scripts/motion/lectura';
+  import { enCadaPagina } from '../scripts/pagina';
 
-  document.querySelectorAll<HTMLElement>('[data-frase]').forEach(lectura);
+  enCadaPagina(() => {
+    document.querySelectorAll<HTMLElement>('[data-frase]').forEach(lectura);
+  });
 </script>
 
 <style>

@@ -51,11 +51,15 @@ const { preguntas, id = 'faq' } = Astro.props;
 </div>
 
 <script>
-  document.querySelectorAll<HTMLElement>('[data-faq]').forEach((faq) => {
-    faq.querySelectorAll<HTMLButtonElement>('[data-faq-boton]').forEach((boton) => {
-      boton.setAttribute('aria-expanded', 'false');
-      boton.addEventListener('click', () => {
-        boton.setAttribute('aria-expanded', String(boton.getAttribute('aria-expanded') !== 'true'));
+  import { enCadaPagina } from '../scripts/pagina';
+
+  enCadaPagina(() => {
+    document.querySelectorAll<HTMLElement>('[data-faq]').forEach((faq) => {
+      faq.querySelectorAll<HTMLButtonElement>('[data-faq-boton]').forEach((boton) => {
+        boton.setAttribute('aria-expanded', 'false');
+        boton.addEventListener('click', () => {
+          boton.setAttribute('aria-expanded', String(boton.getAttribute('aria-expanded') !== 'true'));
+        });
       });
     });
   });

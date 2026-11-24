@@ -44,6 +44,8 @@ const { lang, tipo } = Astro.props;
 }
 
 <script>
+  import { enCadaPagina } from '../scripts/pagina';
+
   // ---- Modo ----
   const sistema = matchMedia('(prefers-color-scheme: dark)');
   const temaActual = () => document.documentElement.dataset['theme'] ?? (sistema.matches ? 'dark' : 'light');
@@ -55,47 +57,57 @@ const { lang, tipo } = Astro.props;
     });
   };
 
-  document.querySelectorAll<HTMLButtonElement>('[data-toggle-modo] [data-tema]').forEach((b) => {
-    b.addEventListener('click', () => {
-      const tema = b.dataset['tema'];
-      if (tema !== 'light' && tema !== 'dark') return;
-      document.documentElement.dataset['theme'] = tema;
-      try {
-        localStorage.setItem('tema', tema);
-      } catch {
-        /* sin storage: el modo vale solo para esta página */
-      }
-      pintar();
-    });
-  });
-  sistema.addEventListener('change', pintar);
-  pintar();
-
   // ---- Idioma: misma página y misma posición ----
   const CLAVE = 'scroll-idioma';
-  document.querySelectorAll<HTMLAnchorElement>('[data-toggle-idioma] a:not([aria-current])').forEach((a) => {
-    a.addEventListener('click', () => {
-      const alto = document.documentElement.scrollHeight - innerHeight;
-      try {
-        sessionStorage.setItem(CLAVE, JSON.stringify({ path: new URL(a.href).pathname, ratio: alto > 0 ? scrollY / alto : 0 }));
-      } catch {
-        /* sin storage: se cambia de idioma igual, arriba de todo */
-      }
-    });
-  });
 
-  try {
-    const guardado = sessionStorage.getItem(CLAVE);
-    if (guardado) {
+  /** Tras cambiar de idioma, vuelve a la misma altura relativa. Con ClientRouter corre en
+   *  astro:after-swap (después del scroll del router y antes de que se tome la vista nueva). */
+  const restaurar = () => {
+    try {
+      const guardado = sessionStorage.getItem(CLAVE);
+      if (!guardado) return;
       sessionStorage.removeItem(CLAVE);
       const { path, ratio } = JSON.parse(guardado) as { path: string; ratio: number };
       if (path === location.pathname && !location.hash) {
-        scrollTo(0, ratio * (document.documentElement.scrollHeight - innerHeight));
+        scrollTo({ top: ratio * (document.documentElement.scrollHeight - innerHeight), behavior: 'instant' });
       }
+    } catch {
+      /* nada que restaurar */
     }
-  } catch {
-    /* nada que restaurar */
-  }
+  };
+  restaurar();
+  document.addEventListener('astro:after-swap', restaurar);
+
+  enCadaPagina(() => {
+    document.querySelectorAll<HTMLButtonElement>('[data-toggle-modo] [data-tema]').forEach((b) => {
+      b.addEventListener('click', () => {
+        const tema = b.dataset['tema'];
+        if (tema !== 'light' && tema !== 'dark') return;
+        document.documentElement.dataset['theme'] = tema;
+        try {
+          localStorage.setItem('tema', tema);
+        } catch {
+          /* sin storage: el modo vale solo para esta página */
+        }
+        pintar();
+      });
+    });
+    pintar();
+
+    document.querySelectorAll<HTMLAnchorElement>('[data-toggle-idioma] a:not([aria-current])').forEach((a) => {
+      a.addEventListener('click', () => {
+        const alto = document.documentElement.scrollHeight - innerHeight;
+        try {
+          sessionStorage.setItem(CLAVE, JSON.stringify({ path: new URL(a.href).pathname, ratio: alto > 0 ? scrollY / alto : 0 }));
+        } catch {
+          /* sin storage: se cambia de idioma igual, arriba de todo */
+        }
+      });
+    });
+
+    sistema.addEventListener('change', pintar);
+    return () => sistema.removeEventListener('change', pintar);
+  });
 </script>
 
 <style>

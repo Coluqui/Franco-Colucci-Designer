@@ -124,47 +124,50 @@ const resortes = ['snap', 'soft', 'press'] as const;
   import { animar, resorte, reducido, alCambiarReducido, type Resorte } from '../scripts/motion/base';
   import { flip, medir } from '../scripts/motion/flip';
   import { alEntrar } from '../scripts/motion/observer';
+  import { enCadaPagina } from '../scripts/pagina';
 
-  const estado = document.querySelector('[data-estado-reducido]');
-  const pintar = (r: boolean) => estado && (estado.textContent = r ? 'activo' : 'no');
-  pintar(reducido());
-  alCambiarReducido(pintar);
+  enCadaPagina(() => {
+    const estado = document.querySelector('[data-estado-reducido]');
+    const pintar = (r: boolean) => estado && (estado.textContent = r ? 'activo' : 'no');
+    pintar(reducido());
+    alCambiarReducido(pintar);
 
-  // Resortes: ida y vuelta con interrupción.
-  document.querySelectorAll<HTMLButtonElement>('[data-resorte]').forEach((b) => {
-    let ida = true;
-    b.addEventListener('click', () => {
-      const r = b.dataset['resorte'] as Resorte;
-      const marco = document.querySelector<HTMLElement>(`[data-marco="${r}"]`);
-      const pista = marco?.parentElement;
-      if (!marco || !pista) return;
-      const x = ida ? pista.clientWidth - marco.offsetWidth : 0;
-      animar(marco, { transform: `translateX(${x}px)` }, resorte(r));
-      ida = !ida;
+    // Resortes: ida y vuelta con interrupción.
+    document.querySelectorAll<HTMLButtonElement>('[data-resorte]').forEach((b) => {
+      let ida = true;
+      b.addEventListener('click', () => {
+        const r = b.dataset['resorte'] as Resorte;
+        const marco = document.querySelector<HTMLElement>(`[data-marco="${r}"]`);
+        const pista = marco?.parentElement;
+        if (!marco || !pista) return;
+        const x = ida ? pista.clientWidth - marco.offsetWidth : 0;
+        animar(marco, { transform: `translateX(${x}px)` }, resorte(r));
+        ida = !ida;
+      });
     });
-  });
 
-  // FLIP: medir, reordenar, invertir y soltar con el resorte de la grilla.
-  const lista = document.querySelector<HTMLElement>('[data-flip]');
-  document.querySelector('[data-mezclar]')?.addEventListener('click', () => {
-    if (!lista) return;
-    const items = [...lista.children] as HTMLElement[];
-    const antes = new Map(items.map((el) => [el, medir(el)]));
-    items
-      .map((el) => ({ el, k: Math.random() }))
-      .sort((a, b) => a.k - b.k)
-      .forEach(({ el }) => lista.append(el));
-    items.forEach((el) => flip(el, antes.get(el)!, resorte('soft')));
-  });
+    // FLIP: medir, reordenar, invertir y soltar con el resorte de la grilla.
+    const lista = document.querySelector<HTMLElement>('[data-flip]');
+    document.querySelector('[data-mezclar]')?.addEventListener('click', () => {
+      if (!lista) return;
+      const items = [...lista.children] as HTMLElement[];
+      const antes = new Map(items.map((el) => [el, medir(el)]));
+      items
+        .map((el) => ({ el, k: Math.random() }))
+        .sort((a, b) => a.k - b.k)
+        .forEach(({ el }) => lista.append(el));
+      items.forEach((el) => flip(el, antes.get(el)!, resorte('soft')));
+    });
 
-  // Observer: una vez por bloque.
-  document.querySelectorAll<HTMLElement>('[data-entrada]').forEach((el) =>
-    alEntrar(el, () => {
-      el.dataset['dentro'] = '';
-      const s = el.querySelector('[data-entrada-estado]');
-      if (s) s.textContent = 'entró (una vez)';
-    }),
-  );
+    // Observer: una vez por bloque.
+    document.querySelectorAll<HTMLElement>('[data-entrada]').forEach((el) =>
+      alEntrar(el, () => {
+        el.dataset['dentro'] = '';
+        const s = el.querySelector('[data-entrada-estado]');
+        if (s) s.textContent = 'entró (una vez)';
+      }),
+    );
+  });
 </script>
 
 <style>

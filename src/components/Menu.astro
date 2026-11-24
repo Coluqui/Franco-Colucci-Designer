@@ -71,22 +71,25 @@ const links: Array<{ clave: UiKey; href: string }> = [
 
 <script>
   import { respirarEntrada } from '../scripts/motion/respiracion';
+  import { enCadaPagina } from '../scripts/pagina';
 
-  const menu = document.querySelector<HTMLDialogElement>('[data-menu]');
-  const abridores = document.querySelectorAll<HTMLElement>('[data-abre-menu]');
-  if (menu) {
-    const marcar = (abierto: boolean) => abridores.forEach((b) => b.setAttribute('aria-expanded', String(abierto)));
-    abridores.forEach((b) =>
-      b.addEventListener('click', () => {
-        menu.showModal();
-        marcar(true);
-        respirarEntrada([...menu.querySelectorAll<HTMLElement>('.menu__link')]);
-      }),
-    );
-    menu.querySelector('[data-cierra-menu]')?.addEventListener('click', () => menu.close());
-    // ESC (nativo) y close(): el navegador devuelve el foco al botón que lo abrió.
-    menu.addEventListener('close', () => marcar(false));
-  }
+  enCadaPagina(() => {
+    const menu = document.querySelector<HTMLDialogElement>('[data-menu]');
+    const abridores = document.querySelectorAll<HTMLElement>('[data-abre-menu]');
+    if (menu) {
+      const marcar = (abierto: boolean) => abridores.forEach((b) => b.setAttribute('aria-expanded', String(abierto)));
+      abridores.forEach((b) =>
+        b.addEventListener('click', () => {
+          menu.showModal();
+          marcar(true);
+          respirarEntrada([...menu.querySelectorAll<HTMLElement>('.menu__link')]);
+        }),
+      );
+      menu.querySelector('[data-cierra-menu]')?.addEventListener('click', () => menu.close());
+      // ESC (nativo) y close(): el navegador devuelve el foco al botón que lo abrió.
+      menu.addEventListener('close', () => marcar(false));
+    }
+  });
 </script>
 
 <style>

@@ -67,35 +67,39 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
 </div>
 
 <script>
-  document.querySelectorAll<HTMLElement>('[data-filtros]').forEach((grupo) => {
-    const objetivo = document.getElementById(grupo.dataset['objetivo'] ?? '');
-    const param = grupo.dataset['param'] ?? 'filtro';
-    const estado = grupo.querySelector('[data-filtros-estado]');
-    const botones = [...grupo.querySelectorAll<HTMLButtonElement>('.filtro')];
-    if (!objetivo) return;
-    grupo.dataset['listo'] = '';
+  import { enCadaPagina } from '../scripts/pagina';
 
-    const aplicar = (valor: string, anunciar: boolean) => {
-      if (!botones.some((b) => b.dataset['valor'] === valor)) valor = '';
-      botones.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset['valor'] === valor)));
-      let visibles = 0;
-      objetivo.querySelectorAll<HTMLElement>('[data-filtro]').forEach((el) => {
-        const ok = valor === '' || (el.dataset['filtro'] ?? '').split(' ').includes(valor);
-        el.hidden = !ok;
-        if (ok) visibles++;
-      });
-      const url = new URL(location.href);
-      if (valor) url.searchParams.set(param, valor);
-      else url.searchParams.delete(param);
-      history.replaceState(history.state, '', url);
-      if (anunciar && estado) {
-        const plantilla = (visibles === 1 ? grupo.dataset['textoUno'] : grupo.dataset['textoVarios']) ?? '';
-        estado.textContent = plantilla.replace('{n}', String(visibles));
-      }
-    };
+  enCadaPagina(() => {
+    document.querySelectorAll<HTMLElement>('[data-filtros]').forEach((grupo) => {
+      const objetivo = document.getElementById(grupo.dataset['objetivo'] ?? '');
+      const param = grupo.dataset['param'] ?? 'filtro';
+      const estado = grupo.querySelector('[data-filtros-estado]');
+      const botones = [...grupo.querySelectorAll<HTMLButtonElement>('.filtro')];
+      if (!objetivo) return;
+      grupo.dataset['listo'] = '';
 
-    botones.forEach((b) => b.addEventListener('click', () => aplicar(b.dataset['valor'] ?? '', true)));
-    aplicar(new URL(location.href).searchParams.get(param) ?? '', false);
+      const aplicar = (valor: string, anunciar: boolean) => {
+        if (!botones.some((b) => b.dataset['valor'] === valor)) valor = '';
+        botones.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset['valor'] === valor)));
+        let visibles = 0;
+        objetivo.querySelectorAll<HTMLElement>('[data-filtro]').forEach((el) => {
+          const ok = valor === '' || (el.dataset['filtro'] ?? '').split(' ').includes(valor);
+          el.hidden = !ok;
+          if (ok) visibles++;
+        });
+        const url = new URL(location.href);
+        if (valor) url.searchParams.set(param, valor);
+        else url.searchParams.delete(param);
+        history.replaceState(history.state, '', url);
+        if (anunciar && estado) {
+          const plantilla = (visibles === 1 ? grupo.dataset['textoUno'] : grupo.dataset['textoVarios']) ?? '';
+          estado.textContent = plantilla.replace('{n}', String(visibles));
+        }
+      };
+
+      botones.forEach((b) => b.addEventListener('click', () => aplicar(b.dataset['valor'] ?? '', true)));
+      aplicar(new URL(location.href).searchParams.get(param) ?? '', false);
+    });
   });
 </script>
 

@@ -5,6 +5,7 @@
  * Sin JS no corre nada de esto y todo se ve.
  */
 
+import { alSalir } from '../pagina';
 import { alCambiarReducido, animar, numero, resorte } from './base';
 
 type Aviso = (entrada: IntersectionObserverEntry) => void;
@@ -20,6 +21,12 @@ const observador = () =>
     (entradas) => entradas.forEach((e) => avisos.get(e.target)?.forEach((f) => f(e))),
     { threshold: [0, UMBRAL_ENTRADA] },
   ));
+
+// Al navegar (ClientRouter) la página se reemplaza: se deja de observar todo lo de la anterior.
+document.addEventListener('astro:before-swap', () => {
+  io?.disconnect();
+  avisos.clear();
+});
 
 /** Observa un elemento. Devuelve cómo dejar de observarlo. */
 export function observar(el: Element, cb: Aviso): () => void {
@@ -95,5 +102,5 @@ export function entrar(disparador: Element, partes: Parte[]) {
   const dejar = alEntrar(disparador, revelar);
   partes.forEach((p) => p.el.addEventListener('focusin', revelar));
   // Si el usuario pide movimiento reducido con la página abierta, lo pendiente aparece ya.
-  alCambiarReducido((r) => r && revelar());
+  alSalir(alCambiarReducido((r) => r && revelar()));
 }

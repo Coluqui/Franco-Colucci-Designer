@@ -90,11 +90,14 @@ const Titulo = nivel;
 <script>
   import { ms } from '../scripts/motion/base';
   import { entrar } from '../scripts/motion/observer';
+  import { enCadaPagina } from '../scripts/pagina';
 
-  document.querySelectorAll<HTMLElement>('[data-fila]').forEach((fila) => {
-    const panel = fila.querySelector<HTMLElement>('.fila');
-    const media = fila.querySelector<HTMLElement>('.fila__media');
-    if (panel && media) entrar(fila, [{ el: panel }, { el: media, retraso: ms('--stagger'), soloOpacidad: true }]);
+  enCadaPagina(() => {
+    document.querySelectorAll<HTMLElement>('[data-fila]').forEach((fila) => {
+      const panel = fila.querySelector<HTMLElement>('.fila');
+      const media = fila.querySelector<HTMLElement>('.fila__media');
+      if (panel && media) entrar(fila, [{ el: panel }, { el: media, retraso: ms('--stagger'), soloOpacidad: true }]);
+    });
   });
 </script>
 

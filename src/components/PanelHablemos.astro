@@ -66,49 +66,53 @@ const { lang } = Astro.props;
 </dialog>
 
 <script>
-  const panel = document.querySelector<HTMLDialogElement>('[data-panel]');
-  if (panel) {
-    document.querySelectorAll<HTMLAnchorElement>('[data-abre-panel]').forEach((a) => {
-      // Recién con JS el link abre un diálogo: antes es un link común a /hablemos/.
-      a.setAttribute('aria-haspopup', 'dialog');
-      a.addEventListener('click', (e) => {
-        e.preventDefault();
-        panel.showModal();
-      });
-    });
-    panel.querySelector('[data-cierra-panel]')?.addEventListener('click', () => panel.close());
-    // Clic en el velo: el evento llega al <dialog> mismo (fuera del interior).
-    panel.addEventListener('click', (e) => {
-      if (e.target === panel) panel.close();
-    });
+  import { enCadaPagina } from '../scripts/pagina';
 
-    // Copiar mail (M30 anima el cambio en la Fase 6; acá, el cambio de texto y el aviso).
-    const copiar = panel.querySelector<HTMLButtonElement>('[data-copiar]');
-    const texto = copiar?.querySelector('[data-copiar-texto]');
-    const aviso = panel.querySelector('[data-copiar-estado]');
-    copiar?.addEventListener('click', async () => {
-      const mail = copiar.dataset['copiar'];
-      if (!mail || !texto) return;
-      try {
-        await navigator.clipboard.writeText(mail);
-      } catch {
-        // Sin permiso de portapapeles: se anuncia y se muestra el mail para copiarlo a mano.
-        const error = (copiar.dataset['textoError'] ?? '').replace('{mail}', mail);
-        texto.textContent = error;
-        if (aviso) aviso.textContent = error;
-        return;
-      }
-      texto.textContent = copiar.dataset['textoOk'] ?? '';
-      if (aviso) aviso.textContent = copiar.dataset['textoOk'] ?? '';
-      copiar.dataset['estado'] = 'ok';
-      const espera = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hold-feedback')) || 0;
-      setTimeout(() => {
-        texto.textContent = copiar.dataset['texto'] ?? '';
-        delete copiar.dataset['estado'];
-        if (aviso) aviso.textContent = '';
-      }, espera);
-    });
-  }
+  enCadaPagina(() => {
+    const panel = document.querySelector<HTMLDialogElement>('[data-panel]');
+    if (panel) {
+      document.querySelectorAll<HTMLAnchorElement>('[data-abre-panel]').forEach((a) => {
+        // Recién con JS el link abre un diálogo: antes es un link común a /hablemos/.
+        a.setAttribute('aria-haspopup', 'dialog');
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          panel.showModal();
+        });
+      });
+      panel.querySelector('[data-cierra-panel]')?.addEventListener('click', () => panel.close());
+      // Clic en el velo: el evento llega al <dialog> mismo (fuera del interior).
+      panel.addEventListener('click', (e) => {
+        if (e.target === panel) panel.close();
+      });
+
+      // Copiar mail (M30 anima el cambio en la Fase 6; acá, el cambio de texto y el aviso).
+      const copiar = panel.querySelector<HTMLButtonElement>('[data-copiar]');
+      const texto = copiar?.querySelector('[data-copiar-texto]');
+      const aviso = panel.querySelector('[data-copiar-estado]');
+      copiar?.addEventListener('click', async () => {
+        const mail = copiar.dataset['copiar'];
+        if (!mail || !texto) return;
+        try {
+          await navigator.clipboard.writeText(mail);
+        } catch {
+          // Sin permiso de portapapeles: se anuncia y se muestra el mail para copiarlo a mano.
+          const error = (copiar.dataset['textoError'] ?? '').replace('{mail}', mail);
+          texto.textContent = error;
+          if (aviso) aviso.textContent = error;
+          return;
+        }
+        texto.textContent = copiar.dataset['textoOk'] ?? '';
+        if (aviso) aviso.textContent = copiar.dataset['textoOk'] ?? '';
+        copiar.dataset['estado'] = 'ok';
+        const espera = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hold-feedback')) || 0;
+        setTimeout(() => {
+          texto.textContent = copiar.dataset['texto'] ?? '';
+          delete copiar.dataset['estado'];
+          if (aviso) aviso.textContent = '';
+        }, espera);
+      });
+    }
+  });
 </script>
 
 <style>

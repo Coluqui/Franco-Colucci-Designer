@@ -84,55 +84,59 @@ const varios = total > 1;
 </section>
 
 <script>
-  document.querySelectorAll<HTMLElement>('[data-testimonios]').forEach((raiz) => {
-    const pista = raiz.querySelector<HTMLElement>('[data-pista]');
-    const anterior = raiz.querySelector<HTMLButtonElement>('[data-anterior]');
-    const siguiente = raiz.querySelector<HTMLButtonElement>('[data-siguiente]');
-    const contador = raiz.querySelector('[data-contador]');
-    const contadorTexto = raiz.querySelector('[data-contador-texto]');
-    if (!pista || !anterior || !siguiente) return;
-    const items = [...pista.children] as HTMLElement[];
-    let actual = 0;
+  import { enCadaPagina } from '../scripts/pagina';
 
-    const marcar = (i: number) => {
-      if (i === actual) return;
-      actual = i;
-      if (contador) contador.textContent = String(i + 1).padStart(2, '0');
-      if (contadorTexto) contadorTexto.textContent = items[i]?.getAttribute('aria-label') ?? '';
-      // Si la flecha con foco se deshabilita, el foco pasa a la otra (nunca al body).
-      const focoAnterior = document.activeElement === anterior;
-      const focoSiguiente = document.activeElement === siguiente;
-      anterior.disabled = i === 0;
-      siguiente.disabled = i === items.length - 1;
-      if (focoAnterior && anterior.disabled) siguiente.focus();
-      if (focoSiguiente && siguiente.disabled) anterior.focus();
-    };
+  enCadaPagina(() => {
+    document.querySelectorAll<HTMLElement>('[data-testimonios]').forEach((raiz) => {
+      const pista = raiz.querySelector<HTMLElement>('[data-pista]');
+      const anterior = raiz.querySelector<HTMLButtonElement>('[data-anterior]');
+      const siguiente = raiz.querySelector<HTMLButtonElement>('[data-siguiente]');
+      const contador = raiz.querySelector('[data-contador]');
+      const contadorTexto = raiz.querySelector('[data-contador-texto]');
+      if (!pista || !anterior || !siguiente) return;
+      const items = [...pista.children] as HTMLElement[];
+      let actual = 0;
 
-    const ir = (i: number) => {
-      const destino = items[Math.max(0, Math.min(items.length - 1, i))];
-      if (!destino) return;
-      // El contador cambia con el clic; scrollend lo reconcilia si el usuario desliza.
-      marcar(items.indexOf(destino));
-      // Suave solo si el usuario no pidió menos movimiento (lo decide el CSS de la pista).
-      pista.scrollTo({ left: destino.offsetLeft - pista.offsetLeft });
-    };
+      const marcar = (i: number) => {
+        if (i === actual) return;
+        actual = i;
+        if (contador) contador.textContent = String(i + 1).padStart(2, '0');
+        if (contadorTexto) contadorTexto.textContent = items[i]?.getAttribute('aria-label') ?? '';
+        // Si la flecha con foco se deshabilita, el foco pasa a la otra (nunca al body).
+        const focoAnterior = document.activeElement === anterior;
+        const focoSiguiente = document.activeElement === siguiente;
+        anterior.disabled = i === 0;
+        siguiente.disabled = i === items.length - 1;
+        if (focoAnterior && anterior.disabled) siguiente.focus();
+        if (focoSiguiente && siguiente.disabled) anterior.focus();
+      };
 
-    anterior.addEventListener('click', () => ir(actual - 1));
-    siguiente.addEventListener('click', () => ir(actual + 1));
-    pista.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        ir(actual - 1);
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        ir(actual + 1);
-      }
-    });
+      const ir = (i: number) => {
+        const destino = items[Math.max(0, Math.min(items.length - 1, i))];
+        if (!destino) return;
+        // El contador cambia con el clic; scrollend lo reconcilia si el usuario desliza.
+        marcar(items.indexOf(destino));
+        // Suave solo si el usuario no pidió menos movimiento (lo decide el CSS de la pista).
+        pista.scrollTo({ left: destino.offsetLeft - pista.offsetLeft });
+      };
 
-    // Al terminar de desplazarse (dedo, rueda o flechas), el testimonio más cercano es el actual.
-    pista.addEventListener('scrollend', () => {
-      const posiciones = items.map((it) => Math.abs(it.offsetLeft - pista.offsetLeft - pista.scrollLeft));
-      marcar(posiciones.indexOf(Math.min(...posiciones)));
+      anterior.addEventListener('click', () => ir(actual - 1));
+      siguiente.addEventListener('click', () => ir(actual + 1));
+      pista.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          ir(actual - 1);
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          ir(actual + 1);
+        }
+      });
+
+      // Al terminar de desplazarse (dedo, rueda o flechas), el testimonio más cercano es el actual.
+      pista.addEventListener('scrollend', () => {
+        const posiciones = items.map((it) => Math.abs(it.offsetLeft - pista.offsetLeft - pista.scrollLeft));
+        marcar(posiciones.indexOf(Math.min(...posiciones)));
+      });
     });
   });
 </script>

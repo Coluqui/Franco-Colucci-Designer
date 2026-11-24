@@ -90,140 +90,153 @@ const formatos = [
   import { alCambiarReducido, animar, curva, detener, numero, reducido, resorte, token } from '../scripts/motion/base';
   import { encastrar, marcoEn, medida, proporcion, recorte } from '../scripts/motion/encastre';
   import { observar } from '../scripts/motion/observer';
+  import { alSalir, enCadaPagina } from '../scripts/pagina';
 
-  const loop = document.querySelector<HTMLElement>('[data-loop]');
-  if (loop) {
-    const tira = loop.querySelector<HTMLElement>('[data-loop-tira]')!;
-    const escena = loop.querySelector<HTMLElement>('[data-loop-escena]')!;
-    const capa = loop.querySelector<HTMLElement>('[data-loop-capa]')!;
-    const etiqueta = loop.querySelector<HTMLElement>('[data-loop-etiqueta]')!;
-    const pausa = loop.querySelector<HTMLButtonElement>('[data-loop-pausa]')!;
-    const piezas = [...loop.querySelectorAll<HTMLElement>('[data-loop-pieza]')];
-    const formato = (k: number) => piezas[k]!.dataset['loopPieza'] ?? '';
-    const texto = (k: number) => `${loop.dataset['campana']} · ${formato(k)}`;
+  enCadaPagina(() => {
+    const loop = document.querySelector<HTMLElement>('[data-loop]');
+    if (loop) {
+      const tira = loop.querySelector<HTMLElement>('[data-loop-tira]')!;
+      const escena = loop.querySelector<HTMLElement>('[data-loop-escena]')!;
+      const capa = loop.querySelector<HTMLElement>('[data-loop-capa]')!;
+      const etiqueta = loop.querySelector<HTMLElement>('[data-loop-etiqueta]')!;
+      const pausa = loop.querySelector<HTMLButtonElement>('[data-loop-pausa]')!;
+      const piezas = [...loop.querySelectorAll<HTMLElement>('[data-loop-pieza]')];
+      const formato = (k: number) => piezas[k]!.dataset['loopPieza'] ?? '';
+      const texto = (k: number) => `${loop.dataset['campana']} · ${formato(k)}`;
 
-    let actual = 0;
-    let activo = false;
-    let visible = false;
-    let pausadoPorUsuario = false;
-    /** La escena se monta recién la primera vez que el loop corre (pestaña de fondo o hero fuera de
-     *  pantalla: hasta entonces queda la tira, sin una etiqueta que no coincide con lo que se ve). */
-    let montada = false;
-    /** El reloj del hold es una animación sin efecto: se pausa y se retoma igual que el resto. */
-    let reloj: Animation | null = null;
+      let actual = 0;
+      let activo = false;
+      let visible = false;
+      let pausadoPorUsuario = false;
+      /** La escena se monta recién la primera vez que el loop corre (pestaña de fondo o hero fuera de
+       *  pantalla: hasta entonces queda la tira, sin una etiqueta que no coincide con lo que se ve). */
+      let montada = false;
+      /** El reloj del hold es una animación sin efecto: se pausa y se retoma igual que el resto. */
+      let reloj: Animation | null = null;
 
-    /** "Un protagonista por pantalla": mientras se lee la frase-problema (M15), el loop espera. */
-    const leyendo = () => document.documentElement.hasAttribute('data-leyendo');
-    const corre = () => activo && visible && !pausadoPorUsuario && !document.hidden && !leyendo();
+      /** "Un protagonista por pantalla": mientras se lee la frase-problema (M15), el loop espera. */
+      const leyendo = () => document.documentElement.hasAttribute('data-leyendo');
+      const corre = () => activo && visible && !pausadoPorUsuario && !document.hidden && !leyendo();
 
-    /** Pausa o retoma TODO lo del loop donde está (reloj, marco, piezas, etiqueta). */
-    const todas = () => [...(reloj ? [reloj] : []), ...loop.getAnimations({ subtree: true })];
-    const terminarTransiciones = () =>
-      loop.getAnimations({ subtree: true }).forEach((a) => a.playState === 'running' && a.finish());
+      /** Pausa o retoma TODO lo del loop donde está (reloj, marco, piezas, etiqueta). */
+      const todas = () => [...(reloj ? [reloj] : []), ...loop.getAnimations({ subtree: true })];
+      const terminarTransiciones = () =>
+        loop.getAnimations({ subtree: true }).forEach((a) => a.playState === 'running' && a.finish());
 
-    const sincronizar = () => {
-      const si = corre();
-      if (si && !montada) return montar();
-      if (si) return todas().forEach((a) => a.playState === 'paused' && a.play());
-      const pausar = () => todas().forEach((a) => a.playState === 'running' && a.pause());
-      if (!visible || document.hidden) return pausar();
-      // A la vista, nunca se congela a mitad (etiqueta a media opacidad, dos piezas superpuestas):
-      // termina el formato en curso y recién ahí se detiene. La entrada de la etiqueta nueva arranca
-      // al terminar la salida, así que se termina también en el cuadro siguiente.
-      terminarTransiciones();
-      requestAnimationFrame(() => {
-        if (corre()) return;
+      const sincronizar = () => {
+        const si = corre();
+        if (si && !montada) return montar();
+        if (si) return todas().forEach((a) => a.playState === 'paused' && a.play());
+        const pausar = () => todas().forEach((a) => a.playState === 'running' && a.pause());
+        if (!visible || document.hidden) return pausar();
+        // A la vista, nunca se congela a mitad (etiqueta a media opacidad, dos piezas superpuestas):
+        // termina el formato en curso y recién ahí se detiene. La entrada de la etiqueta nueva arranca
+        // al terminar la salida, así que se termina también en el cuadro siguiente.
         terminarTransiciones();
-        pausar();
+        requestAnimationFrame(() => {
+          if (corre()) return;
+          terminarTransiciones();
+          pausar();
+        });
+      };
+
+      const recorteDe = (k: number) => {
+        const caja = medida(capa);
+        return recorte(caja, marcoEn(caja, proporcion(formato(k))), token('--radius-sm'));
+      };
+
+      const esperar = () => {
+        reloj?.cancel();
+        reloj = new Animation(new KeyframeEffect(null, null, { duration: resorte('snap').duration + numero('--loop-hold') }));
+        reloj.play();
+        reloj.finished.then(paso, () => {});
+        sincronizar();
+      };
+
+      const paso = () => {
+        const anterior = actual;
+        actual = (actual + 1) % piezas.length;
+        const alSetenta = { delay: resorte('snap').duration * 0.7 };
+        encastrar(capa, recorteDe(actual));
+        animar(piezas[anterior]!, { opacity: 0 }, { ...curva('out', 'fast'), ...alSetenta });
+        animar(piezas[actual]!, { opacity: 1 }, { ...curva('out', 'fast'), ...alSetenta, fill: 'both', desde: { opacity: 0 } });
+        // La etiqueta rueda: la vieja sube y sale, la nueva entra desde abajo junto con la pieza nueva.
+        const roll = `${numero('--shift-sm')}px`;
+        const salida = curva('in', 'fast');
+        const retraso = Math.max(0, alSetenta.delay - salida.duration);
+        animar(etiqueta, { transform: `translateY(-${roll})`, opacity: 0 }, { ...salida, delay: retraso }).finished.then(() => {
+          etiqueta.textContent = texto(actual);
+          animar(etiqueta, { transform: 'none', opacity: 1 }, { ...curva('out', 'fast'), desde: { transform: `translateY(${roll})`, opacity: 0 } });
+        }, () => {});
+        esperar();
+      };
+
+      const iniciar = () => {
+        if (activo) return;
+        activo = true;
+        sincronizar();
+      };
+
+      const montar = () => {
+        montada = true;
+        actual = 0;
+        piezas.forEach((p, k) => (p.style.opacity = k === 0 ? '1' : '0'));
+        etiqueta.textContent = texto(0);
+        loop.dataset['activo'] = '';
+        capa.style.clipPath = recorteDe(0);
+        // La escena aparece sobre la tira; la tira se apaga (sigue para lectores de pantalla).
+        animar(escena, { opacity: 1 }, { ...curva('out', 'base'), desde: { opacity: 0 } });
+        animar(tira, { opacity: 0 }, curva('out', 'base'));
+        esperar();
+      };
+
+      const terminar = () => {
+        if (!activo) return;
+        activo = false;
+        montada = false;
+        reloj?.cancel();
+        reloj = null;
+        [capa, tira, escena, etiqueta, ...piezas].forEach((el) => {
+          detener(el);
+          el.style.opacity = '';
+          el.style.transform = '';
+        });
+        delete loop.dataset['activo'];
+      };
+
+      pausa.addEventListener('click', () => {
+        pausadoPorUsuario = !pausadoPorUsuario;
+        pausa.setAttribute('aria-pressed', String(pausadoPorUsuario));
+        sincronizar();
       });
-    };
-
-    const recorteDe = (k: number) => {
-      const caja = medida(capa);
-      return recorte(caja, marcoEn(caja, proporcion(formato(k))), token('--radius-sm'));
-    };
-
-    const esperar = () => {
-      reloj?.cancel();
-      reloj = new Animation(new KeyframeEffect(null, null, { duration: resorte('snap').duration + numero('--loop-hold') }));
-      reloj.play();
-      reloj.finished.then(paso, () => {});
-      sincronizar();
-    };
-
-    const paso = () => {
-      const anterior = actual;
-      actual = (actual + 1) % piezas.length;
-      const alSetenta = { delay: resorte('snap').duration * 0.7 };
-      encastrar(capa, recorteDe(actual));
-      animar(piezas[anterior]!, { opacity: 0 }, { ...curva('out', 'fast'), ...alSetenta });
-      animar(piezas[actual]!, { opacity: 1 }, { ...curva('out', 'fast'), ...alSetenta, fill: 'both', desde: { opacity: 0 } });
-      // La etiqueta rueda: la vieja sube y sale, la nueva entra desde abajo junto con la pieza nueva.
-      const roll = `${numero('--shift-sm')}px`;
-      const salida = curva('in', 'fast');
-      const retraso = Math.max(0, alSetenta.delay - salida.duration);
-      animar(etiqueta, { transform: `translateY(-${roll})`, opacity: 0 }, { ...salida, delay: retraso }).finished.then(() => {
-        etiqueta.textContent = texto(actual);
-        animar(etiqueta, { transform: 'none', opacity: 1 }, { ...curva('out', 'fast'), desde: { transform: `translateY(${roll})`, opacity: 0 } });
-      }, () => {});
-      esperar();
-    };
-
-    const iniciar = () => {
-      if (activo) return;
-      activo = true;
-      sincronizar();
-    };
-
-    const montar = () => {
-      montada = true;
-      actual = 0;
-      piezas.forEach((p, k) => (p.style.opacity = k === 0 ? '1' : '0'));
-      etiqueta.textContent = texto(0);
-      loop.dataset['activo'] = '';
-      capa.style.clipPath = recorteDe(0);
-      // La escena aparece sobre la tira; la tira se apaga (sigue para lectores de pantalla).
-      animar(escena, { opacity: 1 }, { ...curva('out', 'base'), desde: { opacity: 0 } });
-      animar(tira, { opacity: 0 }, curva('out', 'base'));
-      esperar();
-    };
-
-    const terminar = () => {
-      if (!activo) return;
-      activo = false;
-      montada = false;
-      reloj?.cancel();
-      reloj = null;
-      [capa, tira, escena, etiqueta, ...piezas].forEach((el) => {
-        detener(el);
-        el.style.opacity = '';
-        el.style.transform = '';
+      observar(loop, (e) => {
+        visible = e.isIntersecting;
+        sincronizar();
       });
-      delete loop.dataset['activo'];
-    };
+      document.addEventListener('visibilitychange', sincronizar);
+      document.addEventListener('motion:lectura', sincronizar);
+      // Si cambia el tamaño, el marco se reacomoda al formato actual sin animar.
+      const ro = new ResizeObserver(() => {
+        if (!montada) return;
+        detener(capa);
+        capa.style.clipPath = recorteDe(actual);
+      });
+      ro.observe(capa);
 
-    pausa.addEventListener('click', () => {
-      pausadoPorUsuario = !pausadoPorUsuario;
-      pausa.setAttribute('aria-pressed', String(pausadoPorUsuario));
-      sincronizar();
-    });
-    observar(loop, (e) => {
-      visible = e.isIntersecting;
-      sincronizar();
-    });
-    document.addEventListener('visibilitychange', sincronizar);
-    document.addEventListener('motion:lectura', sincronizar);
-    // Si cambia el tamaño, el marco se reacomoda al formato actual sin animar.
-    new ResizeObserver(() => {
-      if (!montada) return;
-      detener(capa);
-      capa.style.clipPath = recorteDe(actual);
-    }).observe(capa);
+      // Movimiento reducido: tira estática, sin loop (única rama `reducido` permitida además de FLIP).
+      if (!reducido()) iniciar();
+      const dejarReducido = alCambiarReducido((r) => (r ? terminar() : iniciar()));
 
-    // Movimiento reducido: tira estática, sin loop (única rama `reducido` permitida además de FLIP).
-    if (!reducido()) iniciar();
-    alCambiarReducido((r) => (r ? terminar() : iniciar()));
-  }
+      // Al navegar a otra página (ClientRouter): el loop se detiene y se sueltan las escuchas.
+      alSalir(() => {
+        terminar();
+        ro.disconnect();
+        dejarReducido();
+        document.removeEventListener('visibilitychange', sincronizar);
+        document.removeEventListener('motion:lectura', sincronizar);
+      });
+    }
+  });
 </script>
 
 <style>

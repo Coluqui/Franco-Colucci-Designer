@@ -10,6 +10,7 @@
  * Sin JS se ve completa. Reducido: --reveal-dim vale 1, así que se ve completa desde el inicio.
  * No usa animation-timeline: view() porque no es monotónico.
  */
+import { alSalir } from '../pagina';
 import { alCambiarReducido, ms, numero } from './base';
 import { observar } from './observer';
 
@@ -168,4 +169,9 @@ export function lectura(el: HTMLElement) {
   });
 
   if (completa) terminar();
+  // Al navegar a otra página: se suelta todo (y el loop del hero deja de esperar).
+  else alSalir(() => {
+    if (!completa) terminar();
+    else if (activas.delete(el)) avisar();
+  });
 }
