@@ -63,13 +63,31 @@ export interface OpcionesAnimar extends KeyframeAnimationOptions {
 export function animar(el: HTMLElement, hasta: Keyframe, { desde, soltar = false, ...opciones }: OpcionesAnimar): Animation {
   const previa = enCurso.get(el);
   const interrumpe = previa?.playState === 'running';
+  const propsDe = (k: Keyframe) => Object.keys(k).filter((p) => p !== 'offset' && p !== 'easing' && p !== 'composite' && p !== 'computedOffset');
+  const propsPrevias = interrumpe ? (previa!.effect as KeyframeEffect).getKeyframes().flatMap(propsDe) : [];
   if (previa) {
     if (interrumpe) previa.commitStyles();
     previa.cancel();
   }
-  const props = Object.keys(hasta).filter((k) => k !== 'offset' && k !== 'easing' && k !== 'composite');
+  const props = propsDe(hasta);
   el.style.willChange = props.map(aKebab).join(', ');
-  const frames = desde && !interrumpe ? [desde, hasta] : [hasta];
+  let frames: Keyframe[] = desde && !interrumpe ? [desde, hasta] : [hasta];
+  if (soltar && interrumpe) {
+    // Sigue desde lo que se ve y termina en su CSS: lo que fijó la interrupción pasa al primer cuadro
+    // y se borra del estilo en línea (si no, quedaría pegado, p. ej. una opacidad a medias).
+    const estilo = el.style as unknown as Record<string, string>;
+    const todas = [...new Set([...propsPrevias, ...props])];
+    const inicio: Keyframe = {};
+    todas.forEach((p) => {
+      inicio[p] = estilo[p] || getComputedStyle(el).getPropertyValue(aKebab(p));
+      estilo[p] = '';
+    });
+    const fin: Keyframe = { ...hasta };
+    todas.forEach((p) => {
+      if (!(p in fin)) fin[p] = getComputedStyle(el).getPropertyValue(aKebab(p));
+    });
+    frames = [inicio, fin];
+  }
   const anim = el.animate(frames, { fill: soltar ? 'backwards' : 'forwards', ...opciones });
   enCurso.set(el, anim);
   anim.finished

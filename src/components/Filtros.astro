@@ -52,6 +52,7 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
       [todas, ...opciones].map((o) => (
         <li>
           <button class="filtro" type="button" aria-pressed={o.valor === '' ? 'true' : 'false'} data-valor={o.valor}>
+            <span class="filtro__fondo" aria-hidden="true" />
             <span class="filtro__punto" aria-hidden="true" />
             {o.nombre}
             <span class="filtro__cantidad" aria-hidden="true">· {o.cantidad}</span>
@@ -68,6 +69,92 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
 
 <script>
   import { enCadaPagina } from '../scripts/pagina';
+  import { animar, curva, detener, ms, reducido, resorte } from '../scripts/motion/base';
+
+  /**
+   * M12 · el fondo del filtro activo y su punto viajan al nuevo (FLIP, --spring-snap). En la grilla,
+   * lo que queda se reacomoda (FLIP, --spring-soft), lo que sale se desvanece fuera del flujo y lo
+   * que entra aparece con --stagger-fast. Reducido: cambio instantáneo (rama permitida para FLIP).
+   */
+  const viajarActivo = (antes: HTMLButtonElement | undefined, ahora: HTMLButtonElement | undefined) => {
+    if (!antes || !ahora || antes === ahora || reducido()) return;
+    const fondoAntes = antes.querySelector<HTMLElement>('.filtro__fondo')!.getBoundingClientRect();
+    const puntoAntes = antes.querySelector<HTMLElement>('.filtro__punto')!.getBoundingClientRect();
+    const fondo = ahora.querySelector<HTMLElement>('.filtro__fondo')!;
+    const punto = ahora.querySelector<HTMLElement>('.filtro__punto')!;
+    const f = fondo.getBoundingClientRect();
+    const p = punto.getBoundingClientRect();
+    // El fondo es un rectángulo de color (no una pieza): puede cambiar de ancho al viajar.
+    const desdeFondo = `translate(${fondoAntes.left - f.left}px, ${fondoAntes.top - f.top}px) scale(${fondoAntes.width / f.width}, ${fondoAntes.height / f.height})`;
+    animar(fondo, { transform: 'none' }, { ...resorte('snap'), desde: { transform: desdeFondo }, soltar: true });
+    // El punto no se deforma: solo se traslada.
+    const desdePunto = `translate(${puntoAntes.left - p.left}px, ${puntoAntes.top - p.top}px)`;
+    animar(punto, { transform: 'none' }, { ...resorte('snap'), desde: { transform: desdePunto }, soltar: true });
+  };
+
+  /** Lo que sale queda fuera del flujo (en su lugar) mientras se desvanece; después, hidden. */
+  const salientes = new Map<HTMLElement, Animation>();
+
+  const terminarSalida = (el: HTMLElement) => {
+    salientes.get(el)?.cancel();
+    salientes.delete(el);
+    for (const p of ['position', 'insetInlineStart', 'insetBlockStart', 'inlineSize', 'opacity'] as const) el.style[p] = '';
+  };
+
+  const reacomodar = (objetivo: HTMLElement, quedan: (el: HTMLElement) => boolean) => {
+    const items = [...objetivo.querySelectorAll<HTMLElement>('[data-filtro]')];
+    // Si había salidas a medias, terminan ya (el nuevo pedido manda).
+    items.forEach((el) => salientes.has(el) && (terminarSalida(el), (el.hidden = true)));
+
+    if (reducido()) {
+      items.forEach((el) => (el.hidden = !quedan(el)));
+      return;
+    }
+    if (getComputedStyle(objetivo).position === 'static') objetivo.style.position = 'relative';
+    const antes = new Map(items.filter((el) => !el.hidden).map((el) => [el, el.getBoundingClientRect()]));
+    const contenedor = objetivo.getBoundingClientRect();
+    const salen = items.filter((el) => !el.hidden && !quedan(el));
+    const entran = items.filter((el) => el.hidden && quedan(el));
+
+    // Las que salen: fuera del flujo, en el mismo lugar, para que el resto pueda reacomodarse.
+    salen.forEach((el) => {
+      const r = antes.get(el)!;
+      Object.assign(el.style, {
+        position: 'absolute',
+        insetInlineStart: `${r.left - contenedor.left}px`,
+        insetBlockStart: `${r.top - contenedor.top}px`,
+        inlineSize: `${r.width}px`,
+      });
+    });
+    entran.forEach((el) => (el.hidden = false));
+
+    // Las que quedan: FLIP (misma medida, solo se trasladan).
+    antes.forEach((r, el) => {
+      if (salen.includes(el)) return;
+      const d = el.getBoundingClientRect();
+      const dx = r.left - d.left;
+      const dy = r.top - d.top;
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
+      animar(el, { transform: 'none' }, { ...resorte('soft'), desde: { transform: `translate(${dx}px, ${dy}px)` }, soltar: true });
+    });
+
+    salen.forEach((el) => {
+      const a = animar(el, { opacity: '0' }, curva('in', 'fast'));
+      salientes.set(el, a);
+      a.finished
+        .then(() => {
+          if (salientes.get(el) !== a) return;
+          terminarSalida(el);
+          el.hidden = true;
+        })
+        .catch(() => {});
+    });
+
+    const paso = ms('--stagger-fast');
+    entran.forEach((el, k) =>
+      animar(el, { opacity: '1' }, { ...resorte('soft'), delay: k * paso, desde: { opacity: '0' }, soltar: true }),
+    );
+  };
 
   enCadaPagina(() => {
     document.querySelectorAll<HTMLElement>('[data-filtros]').forEach((grupo) => {
@@ -80,13 +167,16 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
 
       const aplicar = (valor: string, anunciar: boolean) => {
         if (!botones.some((b) => b.dataset['valor'] === valor)) valor = '';
+        const previo = botones.find((b) => b.getAttribute('aria-pressed') === 'true');
         botones.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset['valor'] === valor)));
-        let visibles = 0;
-        objetivo.querySelectorAll<HTMLElement>('[data-filtro]').forEach((el) => {
-          const ok = valor === '' || (el.dataset['filtro'] ?? '').split(' ').includes(valor);
-          el.hidden = !ok;
-          if (ok) visibles++;
-        });
+        const quedan = (el: HTMLElement) => valor === '' || (el.dataset['filtro'] ?? '').split(' ').includes(valor);
+        const visibles = [...objetivo.querySelectorAll<HTMLElement>('[data-filtro]')].filter(quedan).length;
+        if (anunciar) {
+          viajarActivo(previo, botones.find((b) => b.dataset['valor'] === valor));
+          reacomodar(objetivo, quedan);
+        } else {
+          objetivo.querySelectorAll<HTMLElement>('[data-filtro]').forEach((el) => (el.hidden = !quedan(el)));
+        }
         const url = new URL(location.href);
         if (valor) url.searchParams.set(param, valor);
         else url.searchParams.delete(param);
@@ -97,9 +187,15 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
         }
       };
 
-      botones.forEach((b) => b.addEventListener('click', () => aplicar(b.dataset['valor'] ?? '', true)));
+      botones.forEach((b) =>
+        b.addEventListener('click', () => {
+          if (b.getAttribute('aria-pressed') === 'true') return;
+          aplicar(b.dataset['valor'] ?? '', true);
+        }),
+      );
       aplicar(new URL(location.href).searchParams.get(param) ?? '', false);
     });
+    return () => salientes.forEach((_, el) => terminarSalida(el));
   });
 </script>
 
@@ -128,6 +224,7 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
 
   .filtro {
     position: relative;
+    isolation: isolate;
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
@@ -145,6 +242,17 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
     transition:
       background-color var(--duration-fast) var(--ease-out),
       color var(--duration-fast) var(--ease-out);
+  }
+
+  /* Fondo del activo: una capa propia (debajo del texto) para que pueda viajar de un filtro a otro (M12). */
+  .filtro__fondo {
+    position: absolute;
+    inset: 0; /* el borde del activo ya es --color-text-primary: juntos se ven como un solo bloque */
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--color-text-primary);
+    opacity: 0;
+    transform-origin: 0 0;
   }
 
   /* Área táctil de 44 px sobre un chip de 36. */
@@ -177,8 +285,11 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
 
   .filtro[aria-pressed="true"] {
     border-color: var(--color-text-primary);
-    background: var(--color-text-primary);
     color: var(--color-bg);
+  }
+
+  .filtro[aria-pressed="true"] .filtro__fondo {
+    opacity: 1;
   }
 
   .filtro[aria-pressed="true"] .filtro__cantidad {
