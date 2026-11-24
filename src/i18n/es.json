@@ -64,6 +64,8 @@
     "invalidEmail": "Revisá el email: parece que falta algo.",
     "closePanel": "Cerrar panel",
     "requiredMark": "(obligatorio)",
+    "titleError": "Error",
+    "titleSent": "Enviado",
     "honeypot": "Si sos una persona, dejá este campo vacío."
   },
   "case": {

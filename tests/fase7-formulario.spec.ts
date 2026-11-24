@@ -2,17 +2,17 @@ import { test, expect, type Page } from '@playwright/test';
 
 /**
  * Formulario Hablemos (Fase 7, M32). Ninguna prueba manda un mail de verdad:
- * - "éxito" usa un `t` recién puesto: la acción lo trata como spam y responde "enviado" sin enviar;
+ * - "éxito" completa el campo trampa: la acción lo trata como spam y responde "enviado" sin enviar;
  * - "error de envío" responde 503 desde la ruta de la acción.
  */
 const ACCION = '**/_actions/contacto**';
 
-const llenar = async (page: Page, prefijo: string, { reciente }: { reciente: boolean }) => {
+const llenar = async (page: Page, prefijo: string, { trampa }: { trampa: boolean }) => {
   await page.fill(`#${prefijo}-nombre`, 'Ana Prueba');
   await page.fill(`#${prefijo}-email`, 'ana@ejemplo.com');
   await page.fill(`#${prefijo}-mensaje`, 'Hola, esto es una prueba.');
-  const t = reciente ? Date.now() : Date.now() - 60_000;
-  await page.locator(`#${prefijo}-nombre`).evaluate((el, v) => ((el as HTMLInputElement).form!.elements.namedItem('t') as HTMLInputElement).value = String(v), t);
+  await page.locator(`#${prefijo}-nombre`).evaluate((el) => ((el as HTMLInputElement).form!.elements.namedItem('t') as HTMLInputElement).value = String(Date.now() - 60_000));
+  if (trampa) await page.locator(`#${prefijo}-web`).fill('spam', { force: true });
 };
 
 const abrirPanel = async (page: Page) => {
@@ -43,7 +43,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     test('error de envío: Reintentar + mail, sin perder lo escrito', async ({ page }) => {
       await page.route(ACCION, (r) => r.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ type: 'AstroActionError', code: 'SERVICE_UNAVAILABLE', status: 503, message: '' }) }));
       await abrirPanel(page);
-      await llenar(page, 'panel', { reciente: false });
+      await llenar(page, 'panel', { trampa: false });
       const boton = page.locator('[data-panel] button[type="submit"]');
       await boton.click();
       await expect(page.locator('[data-panel] [data-error-envio]')).toBeVisible();
@@ -60,7 +60,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
         await r.continue();
       });
       await abrirPanel(page);
-      await llenar(page, 'panel', { reciente: true });
+      await llenar(page, 'panel', { trampa: true });
       const boton = page.locator('[data-panel] button[type="submit"]');
       await boton.click();
       await expect(boton).toHaveAttribute('aria-busy', 'true');
@@ -75,6 +75,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       const exito = page.locator('[data-panel] [data-exito]');
       await expect(exito).toBeVisible();
       await expect(exito).toBeFocused();
+      await expect(page.locator('[data-panel] .form-hablemos__cuerpo')).toHaveJSProperty('inert', true);
       await expect(page.locator('[data-panel] .form-hablemos__cuerpo')).toHaveCSS('visibility', 'hidden');
       expect(envios).toBe(0);
     });
@@ -96,6 +97,22 @@ test.describe('página sin JS', () => {
     await expect(page.locator('#pagina-email-error')).toBeVisible();
     await expect(page.locator('#pagina-mensaje')).toHaveValue('Mi mensaje');
     await expect(page.locator('#pagina-mensaje')).not.toHaveAttribute('aria-invalid');
+    await expect(page).toHaveTitle(/^Error: /);
+  });
+
+  test('demasiado rápido: error que se puede reintentar, y al reintentar cuenta desde el primer envío', async ({ page }) => {
+    await page.goto('/es/hablemos/');
+    await page.fill('#pagina-nombre', 'Ana');
+    await page.fill('#pagina-email', 'ana@ejemplo.com');
+    await page.fill('#pagina-mensaje', 'Hola');
+    await page.locator('main button[type="submit"]').click();
+    await expect(page.locator('main [data-error-envio]')).toBeVisible();
+    await expect(page.locator('main [data-error-envio]')).toBeFocused();
+    await expect(page.locator('#pagina-mensaje')).toHaveValue('Hola');
+    // El momento del primer envío vuelve en la página (no el de este redibujo).
+    const t = Number(await page.locator('main input[name="t"]').inputValue());
+    expect(Date.now() - t).toBeGreaterThan(0);
+    expect(await page.locator('main input[name="t"]').inputValue()).not.toBe('');
   });
 
   test('éxito (camino del anti-spam: no manda nada)', async ({ page }) => {
@@ -103,7 +120,10 @@ test.describe('página sin JS', () => {
     await page.fill('#pagina-nombre', 'Ana');
     await page.fill('#pagina-email', 'ana@ejemplo.com');
     await page.fill('#pagina-mensaje', 'Hola');
+    await page.locator('#pagina-web').fill('spam', { force: true });
     await page.locator('main button[type="submit"]').click();
+    await expect(page).toHaveTitle(/^Sent: /);
+    await expect(page.locator('main [data-exito]')).toBeFocused();
     await expect(page.locator('main [data-exito]')).toBeVisible();
     await expect(page.locator('main [data-exito]')).toContainText('Thanks');
   });

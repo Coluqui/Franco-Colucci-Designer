@@ -23,22 +23,27 @@ const resultado = Astro.getActionResult(actions.contacto);
 let estado: 'exito' | 'error' | undefined;
 let errores: Record<string, string> = {};
 let valores: Record<string, string> = {};
+// Al reintentar cuenta desde que se mostró el formulario la primera vez (si no, "demasiado rápido" otra vez).
+let momento = Date.now();
 if (resultado?.error) {
   // Lo escrito vuelve a los campos (PRD §11: error sin perder lo escrito).
   const datos = await Astro.request.formData().catch(() => null);
+  momento = Number(datos?.get('t')) || momento;
   valores = Object.fromEntries(['nombre', 'email', 'mensaje'].map((c) => [c, String(datos?.get(c) ?? '')]));
   if (isInputError(resultado.error)) errores = Object.fromEntries(Object.entries(resultado.error.fields).map(([c, m]) => [c, String(m?.[0] ?? '')]));
   else estado = 'error';
 } else if (resultado) {
   estado = 'exito';
 }
+// El título dice qué pasó: es lo primero que lee un lector de pantalla en la página nueva.
+const prefijo = resultado?.error ? `${t(lang, 'form.titleError')}: ` : resultado ? `${t(lang, 'form.titleSent')}: ` : '';
 ---
 
-<Base lang={lang} title={`${t(lang, 'pages.talk.title')} · Franco Colucci`} description={t(lang, 'pages.talk.description')} chrome>
+<Base lang={lang} title={`${prefijo}${t(lang, 'pages.talk.title')} · Franco Colucci`} description={t(lang, 'pages.talk.description')} chrome>
   <div class="container hablemos">
     <h1>{t(lang, 'talk.title')}</h1>
     <p class="t-lead">{t(lang, 'form.intro')}</p>
-    <FormHablemos lang={lang} id="pagina" {valores} {errores} {estado} momento={Date.now()} />
+    <FormHablemos lang={lang} id="pagina" {valores} {errores} {estado} {momento} />
     <section class="hablemos__directo" aria-labelledby="hablemos-directo">
       <h2 id="hablemos-directo" class="t-h3">{t(lang, 'contact.direct')}</h2>
       <ul role="list">

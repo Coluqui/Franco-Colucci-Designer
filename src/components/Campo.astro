@@ -33,6 +33,7 @@ const estado = error ? 'error' : exito ? 'exito' : undefined;
 <div class="campo" data-estado={estado}>
   <label class="campo__label" for={id}>
     {label}
+    {required && textoObligatorio && ' '}
     {required && textoObligatorio && <span class="campo__obligatorio">{textoObligatorio}</span>}
   </label>
   <div class="campo__control">

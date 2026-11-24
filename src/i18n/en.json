@@ -64,6 +64,8 @@
     "invalidEmail": "Check the email: something seems to be missing.",
     "closePanel": "Close panel",
     "requiredMark": "(required)",
+    "titleError": "Error",
+    "titleSent": "Sent",
     "honeypot": "If you are a person, leave this field empty."
   },
   "case": {

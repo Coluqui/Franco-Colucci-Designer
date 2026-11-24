@@ -58,8 +58,11 @@ const primerError = (['nombre', 'email', 'mensaje'] as const).find((c) => errore
           <input id={`${id}-web`} name="web" type="text" tabindex="-1" autocomplete="off" />
         </div>
         <input type="hidden" name="t" value={momento ?? ''} />
+        <!-- "Enviando": el texto del botón con foco no se vuelve a leer; este aviso sí. -->
+        <span class="visually-hidden" aria-live="polite" data-aviso-envio></span>
 
-        <p class="form-hablemos__error-envio" role="alert" data-error-envio hidden={estado !== 'error'}>
+        <!-- Sin JS, el resultado llega en una página nueva: recibe el foco (un alert presente desde la carga no se anuncia). -->
+        <p class="form-hablemos__error-envio" role="alert" data-error-envio tabindex="-1" autofocus={estado === 'error'} hidden={estado !== 'error'}>
           <Icono nombre="error" />
           <span class="form-hablemos__resultado-texto">
             {t(lang, 'form.error')}
@@ -74,7 +77,7 @@ const primerError = (['nombre', 'email', 'mensaje'] as const).find((c) => errore
     </div>
   </div>
 
-  <p class="form-hablemos__exito" data-exito tabindex="-1" hidden={estado !== 'exito'}>
+  <p class="form-hablemos__exito" data-exito tabindex="-1" autofocus={estado === 'exito'} hidden={estado !== 'exito'}>
     <Icono nombre="check" />
     <span>{t(lang, 'form.success')}</span>
   </p>
@@ -135,7 +138,9 @@ const primerError = (['nombre', 'email', 'mensaje'] as const).find((c) => errore
         return k >= 0;
       };
 
+      const aviso = raiz.querySelector<HTMLElement>('[data-aviso-envio]')!;
       const cargando = (si: boolean) => {
+        aviso.textContent = si ? (raiz.dataset['textoEnviando'] ?? '') : '';
         if (si) {
           boton.setAttribute('aria-busy', 'true');
           boton.setAttribute('aria-disabled', 'true');
@@ -176,6 +181,8 @@ const primerError = (['nombre', 'email', 'mensaje'] as const).find((c) => errore
         // Éxito: el formulario se cierra (CSS, como M29) y entra la confirmación, que recibe el foco.
         // M03 (el glifo re-encastra) llega con marca-formato.svg.
         raiz.dataset['estado'] = 'exito';
+        // Fuera del foco y de los lectores ya, no al final del cierre (visibility espera la animación).
+        raiz.querySelector<HTMLElement>('.form-hablemos__cuerpo')!.inert = true;
         exito.hidden = false;
         exito.focus();
         animar(exito, { opacity: '1' }, { ...curva('out', 'fast'), desde: { opacity: '0' }, soltar: true });

@@ -27,8 +27,11 @@ export const server = {
       t: z.coerce.number().optional(),
     }),
     handler: async ({ nombre, email, mensaje, web, t }) => {
-      // Spam: se responde "enviado" para no darle pistas al bot, pero no se manda nada.
-      if (web || !t || Date.now() - t < MIN_LLENADO_MS) return { enviado: true };
+      // Campo trampa: se responde "enviado" para no darle pistas al bot, pero no se manda nada.
+      if (web) return { enviado: true };
+      // Demasiado rápido (o sin momento): error que se puede reintentar. Una persona muy rápida no
+      // pierde el mensaje creyendo que salió; al reintentar ya pasaron los 3 s.
+      if (!t || Date.now() - t < MIN_LLENADO_MS) throw new ActionError({ code: 'TOO_MANY_REQUESTS' });
 
       if (!RESEND_API_KEY || !CONTACTO_DESTINO) {
         console.error('[contacto] Faltan RESEND_API_KEY o CONTACTO_DESTINO (ver .env.example).');
