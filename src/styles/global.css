@@ -122,6 +122,25 @@ a {
   transition: color var(--duration-fast) var(--ease-out);
 }
 
+/* M26 · en los links el subrayado es una línea propia de 2 px a media escala: en hover pasa a 2 px
+   (scaleY, 200 · out). Con borde (no fondo) para que se vea con colores forzados. */
+a.link {
+  position: relative;
+  text-decoration-line: none;
+}
+
+a.link::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  border-block-end: 2px solid currentColor;
+  transform: scaleY(0.5);
+  transform-origin: bottom;
+  transition: transform var(--duration-fast) var(--ease-out);
+  pointer-events: none;
+}
+
 .link .icono {
   margin-inline-start: 0.2em;
 }
@@ -129,7 +148,10 @@ a {
 @media (hover: hover) and (pointer: fine) {
   a.link:hover {
     color: var(--color-accent-hover);
-    text-decoration-thickness: 2px;
+  }
+
+  a.link:hover::after {
+    transform: none;
   }
 }
 
@@ -139,6 +161,11 @@ a {
   display: inline-flex;
   align-items: center;
   min-block-size: var(--control-height);
+}
+
+/* El subrayado (M26) va debajo del texto, no en el borde de la caja de 44 px. */
+a.link--suelto::after {
+  inset-block-end: calc((100% - 1lh) / 2);
 }
 
 .link--pendiente {

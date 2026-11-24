@@ -259,8 +259,24 @@ const Titulo = nivel;
       opacity: 1;
     }
 
-    .fila:hover .fila__media :global(img) {
+    .fila:hover .fila__media :global(img),
+    .fila:has(.fila__link:focus-visible) .fila__media :global(img) {
       transform: scale(var(--scale-media-hover));
+    }
+  }
+
+  /* M27 · la flecha de "Ver caso" avanza --shift-xs con la fila (700 · soft). */
+  .fila__ver :global(.icono) {
+    transition: transform var(--spring-soft-duration) var(--spring-soft);
+  }
+
+  .fila:has(.fila__link:focus-visible) .fila__ver :global(.icono) {
+    transform: translateX(var(--shift-xs));
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .fila:hover .fila__ver :global(.icono) {
+      transform: translateX(var(--shift-xs));
     }
   }
 </style>

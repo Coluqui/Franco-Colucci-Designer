@@ -197,6 +197,7 @@
   --reveal-idle: 1200ms;       /* M15: sin scroll este tiempo, la frase se completa sola */
 
   /* Distancias y escalas */
+  --shift-xs: 4px;             /* M27 flecha de "Ver caso", M32 mensaje de error */
   --shift-sm: 8px;
   --shift-md: 24px;
   --glyph-gap: 1.5px;          /* desencastre del glifo en hover */
@@ -293,7 +294,7 @@
   :root {
     --duration-fast: 0ms; --duration-base: 120ms; --duration-slow: 120ms; --duration-page: 120ms;
     --stagger: 0ms; --stagger-fast: 0ms; --stagger-words: 0ms; --reveal-per-char: 0ms; --reveal-dim: 1;
-    --shift-sm: 0px; --shift-md: 0px; --glyph-gap: 0px; --scale-media-hover: 1; --scale-press: 1;
+    --shift-xs: 0px; --shift-sm: 0px; --shift-md: 0px; --glyph-gap: 0px; --scale-media-hover: 1; --scale-press: 1;
     /* Resortes → fundido corto sin rebote */
     --spring-snap: var(--ease-out); --spring-soft: var(--ease-out); --spring-press: var(--ease-out);
     --spring-snap-duration: 120ms; --spring-soft-duration: 120ms; --spring-press-duration: 0ms;
