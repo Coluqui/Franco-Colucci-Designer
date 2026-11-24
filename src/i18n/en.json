@@ -152,9 +152,7 @@
     }
   },
   "hero": {
-    "tagline": "I design pieces your team can publish today and measure tomorrow.",
-    "formatsLabel": "A selection of pieces",
-    "pause": "Pause the pieces animation"
+    "tagline": "I design pieces your team can publish today and measure tomorrow."
   },
   "problem": {
     "text": "A campaign can have the best offer and still lose clicks because the piece doesn’t read in a second."

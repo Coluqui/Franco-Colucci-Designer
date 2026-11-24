@@ -152,9 +152,7 @@
     }
   },
   "hero": {
-    "tagline": "Diseño piezas que tu equipo puede publicar hoy y medir mañana.",
-    "formatsLabel": "Una selección de piezas",
-    "pause": "Pausar la animación de piezas"
+    "tagline": "Diseño piezas que tu equipo puede publicar hoy y medir mañana."
   },
   "problem": {
     "text": "Una campaña puede tener la mejor oferta y perder clics porque la pieza no se entiende en un segundo."

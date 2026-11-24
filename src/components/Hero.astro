@@ -1,24 +1,13 @@
 ---
 /**
- * Hero de la home · PRD §5 · design system §2, §4 y §8.
- * Wordmark "FRANC▣ / COLUCCI" a todo el ancho (H1 real: "Franco Colucci") + bajada + tira de formatos.
- * La tira muestra las mejores piezas (src/config/hero.ts, PRD v4.0), cada una en su proporción.
- * Se rehace con GSAP en la Fase 10.3 (motion v3.0, efectos 4.2 y 4.3).
- * Nada arranca escondido: todo se ve en el primer frame.
- *
- * M04 · loop de formatos: con JS y sin movimiento reducido, una escena del MISMO tamaño que la
- * tira se monta encima (CLS 0) y la tira se apaga (opacidad: sigue en el árbol de accesibilidad).
- * El marco es el recorte de una capa fija y pasa por los 5 formatos con --spring-snap; la pieza
- * nueva entra al 70 %; la etiqueta rueda 8 px; cada formato se queda --loop-hold.
- * Pausa visible (aria-pressed). Se detiene fuera de pantalla y con la pestaña oculta (WCAG 2.2.2).
- * Movimiento reducido: no hay loop, queda la tira estática.
+ * Hero de la home · PRD v4.0 §5 · design system §2, §4 y §8.
+ * Wordmark "FRANC▣ / COLUCCI" a todo el ancho (H1 real: "Franco Colucci") + bajada. Sin piezas:
+ * Franco prefiere que el trabajo aparezca al scrollear (24 nov).
+ * Ocupa la primera pantalla; el resto de la home se descubre al bajar (motion v3.0).
+ * Motion: 4.2 (el wordmark se arma por letras en su máscara) y 4.3 (al scrollear se achica y se va).
+ * Hooks: data-hero, data-hero-linea, data-hero-bajada (src/motion/hero.ts).
  */
-import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
 import Glifo from './Glifo.astro';
-import Icono from './Icono.astro';
-import { aspecto } from './tipos';
-import { piezasHero } from '../config/hero';
 import { t, type Lang } from '../i18n';
 
 interface Props {
@@ -26,230 +15,28 @@ interface Props {
 }
 
 const { lang } = Astro.props;
-
-const coleccion = await getCollection('piezas');
-const casos = await getCollection('casos');
-const formatos = piezasHero.map((slug) => {
-  const p = coleccion.find((x) => x.id === slug)?.data;
-  if (!p) throw new Error(`hero: no existe la pieza "${slug}" (src/config/hero.ts)`);
-  const cliente = casos.find((c) => c.id === p.caso)?.data.cliente ?? p.caso;
-  return { aspecto: aspecto(p.ratio), etiqueta: `${cliente} · ${t(lang, `formats.${p.formato}`)}`, slide: p.slides[0]!, titulo: p.titulo[lang] };
-});
-const sizes = '(min-width: 82rem) 18rem, (min-width: 48rem) 22vw, 30vw';
 ---
 
-<section class="hero">
+<section class="hero" data-hero>
   <div class="container hero__caja">
     <h1 class="hero__titulo">
       <span class="visually-hidden">Franco Colucci</span>
-      <span class="t-wordmark hero__wordmark" aria-hidden="true">
-        <span class="hero__linea">Franc<Glifo class="hero__glifo" /></span>
-        <span class="hero__linea">Colucci</span>
+      <span class="t-wordmark hero__wordmark" aria-hidden="true" data-hero-wordmark>
+        <span class="hero__mascara"><span class="hero__linea" data-hero-linea>Franc<Glifo class="hero__glifo" /></span></span>
+        <span class="hero__mascara"><span class="hero__linea" data-hero-linea>Colucci</span></span>
       </span>
     </h1>
-    <p class="t-lead hero__bajada">{t(lang, 'hero.tagline')}</p>
-  </div>
-
-  <div class="container">
-    <div class="hero__loop" data-loop>
-    <ul class="hero__formatos" role="list" aria-label={t(lang, 'hero.formatsLabel')} data-loop-tira>
-      {
-        formatos.map((f, i) => (
-          <>
-          {i === 3 && <li class="hero__corte" aria-hidden="true" />}
-          <li class="hero__formato" style={`--aspecto: ${f.aspecto}`}>
-            <span class="hero__marco">
-              <Image src={f.slide.src} alt={`${f.etiqueta}: ${f.titulo}`} widths={[240, 400, 640]} sizes={sizes} loading="eager" />
-            </span>
-          </li>
-          </>
-        ))
-      }
-    </ul>
-
-    <div class="hero__escena" aria-hidden="true" data-loop-escena>
-      <div class="hero__capa" data-loop-capa>
-        {
-          formatos.map((f) => (
-            <span class="hero__pieza" style={`--aspecto: ${f.aspecto}`} data-loop-pieza={f.etiqueta}>
-              <Image src={f.slide.src} alt="" widths={[400, 640, 960]} sizes="(min-width: 82rem) 40rem, 90vw" loading="lazy" />
-            </span>
-          ))
-        }
-      </div>
-    </div>
-
-    <div class="hero__controles" data-loop-controles>
-      <p class="t-label hero__etiqueta" aria-hidden="true"><span data-loop-etiqueta></span></p>
-      <button class="hero__pausa" type="button" aria-pressed="false" aria-label={t(lang, 'hero.pause')} data-loop-pausa>
-        <Icono nombre="pausa" class="hero__icono-pausa" />
-        <Icono nombre="play" class="hero__icono-play" />
-      </button>
-    </div>
-    </div>
+    <p class="t-lead hero__bajada" data-hero-bajada>{t(lang, 'hero.tagline')}</p>
   </div>
 </section>
 
-<script>
-  import { alCambiarReducido, animar, curva, detener, numero, reducido, resorte, token } from '../scripts/motion/base';
-  import { encastrar, marcoEn, medida, proporcion, recorte } from '../scripts/motion/encastre';
-  import { observar } from '../scripts/motion/observer';
-  import { alSalir, enCadaPagina } from '../scripts/pagina';
-
-  enCadaPagina(() => {
-    const loop = document.querySelector<HTMLElement>('[data-loop]');
-    if (loop) {
-      const tira = loop.querySelector<HTMLElement>('[data-loop-tira]')!;
-      const escena = loop.querySelector<HTMLElement>('[data-loop-escena]')!;
-      const capa = loop.querySelector<HTMLElement>('[data-loop-capa]')!;
-      const etiqueta = loop.querySelector<HTMLElement>('[data-loop-etiqueta]')!;
-      const pausa = loop.querySelector<HTMLButtonElement>('[data-loop-pausa]')!;
-      const piezas = [...loop.querySelectorAll<HTMLElement>('[data-loop-pieza]')];
-      const formato = (k: number) => piezas[k]!.dataset['loopPieza'] ?? '';
-      const texto = (k: number) => formato(k);
-
-      let actual = 0;
-      let activo = false;
-      let visible = false;
-      let pausadoPorUsuario = false;
-      /** La escena se monta recién la primera vez que el loop corre (pestaña de fondo o hero fuera de
-       *  pantalla: hasta entonces queda la tira, sin una etiqueta que no coincide con lo que se ve). */
-      let montada = false;
-      /** El reloj del hold es una animación sin efecto: se pausa y se retoma igual que el resto. */
-      let reloj: Animation | null = null;
-
-      /** "Un protagonista por pantalla": mientras se lee la frase-problema (M15), el loop espera. */
-      const leyendo = () => document.documentElement.hasAttribute('data-leyendo');
-      const corre = () => activo && visible && !pausadoPorUsuario && !document.hidden && !leyendo();
-
-      /** Pausa o retoma TODO lo del loop donde está (reloj, marco, piezas, etiqueta). */
-      const todas = () => [...(reloj ? [reloj] : []), ...loop.getAnimations({ subtree: true })];
-      const terminarTransiciones = () =>
-        loop.getAnimations({ subtree: true }).forEach((a) => a.playState === 'running' && a.finish());
-
-      const sincronizar = () => {
-        const si = corre();
-        if (si && !montada) return montar();
-        if (si) return todas().forEach((a) => a.playState === 'paused' && a.play());
-        const pausar = () => todas().forEach((a) => a.playState === 'running' && a.pause());
-        if (!visible || document.hidden) return pausar();
-        // A la vista, nunca se congela a mitad (etiqueta a media opacidad, dos piezas superpuestas):
-        // termina el formato en curso y recién ahí se detiene. La entrada de la etiqueta nueva arranca
-        // al terminar la salida, así que se termina también en el cuadro siguiente.
-        terminarTransiciones();
-        requestAnimationFrame(() => {
-          if (corre()) return;
-          terminarTransiciones();
-          pausar();
-        });
-      };
-
-      const recorteDe = (k: number) => {
-        const caja = medida(capa);
-        return recorte(caja, marcoEn(caja, proporcion(formato(k))), token('--radius-sm'));
-      };
-
-      const esperar = () => {
-        reloj?.cancel();
-        reloj = new Animation(new KeyframeEffect(null, null, { duration: resorte('snap').duration + numero('--loop-hold') }));
-        reloj.play();
-        reloj.finished.then(paso, () => {});
-        sincronizar();
-      };
-
-      const paso = () => {
-        const anterior = actual;
-        actual = (actual + 1) % piezas.length;
-        const alSetenta = { delay: resorte('snap').duration * 0.7 };
-        encastrar(capa, recorteDe(actual));
-        animar(piezas[anterior]!, { opacity: 0 }, { ...curva('out', 'fast'), ...alSetenta });
-        animar(piezas[actual]!, { opacity: 1 }, { ...curva('out', 'fast'), ...alSetenta, fill: 'both', desde: { opacity: 0 } });
-        // La etiqueta rueda: la vieja sube y sale, la nueva entra desde abajo junto con la pieza nueva.
-        const roll = `${numero('--shift-sm')}px`;
-        const salida = curva('in', 'fast');
-        const retraso = Math.max(0, alSetenta.delay - salida.duration);
-        animar(etiqueta, { transform: `translateY(-${roll})`, opacity: 0 }, { ...salida, delay: retraso }).finished.then(() => {
-          etiqueta.textContent = texto(actual);
-          animar(etiqueta, { transform: 'none', opacity: 1 }, { ...curva('out', 'fast'), desde: { transform: `translateY(${roll})`, opacity: 0 } });
-        }, () => {});
-        esperar();
-      };
-
-      const iniciar = () => {
-        if (activo) return;
-        activo = true;
-        sincronizar();
-      };
-
-      const montar = () => {
-        montada = true;
-        actual = 0;
-        piezas.forEach((p, k) => (p.style.opacity = k === 0 ? '1' : '0'));
-        etiqueta.textContent = texto(0);
-        loop.dataset['activo'] = '';
-        capa.style.clipPath = recorteDe(0);
-        // La escena aparece sobre la tira; la tira se apaga (sigue para lectores de pantalla).
-        animar(escena, { opacity: 1 }, { ...curva('out', 'base'), desde: { opacity: 0 } });
-        animar(tira, { opacity: 0 }, curva('out', 'base'));
-        esperar();
-      };
-
-      const terminar = () => {
-        if (!activo) return;
-        activo = false;
-        montada = false;
-        reloj?.cancel();
-        reloj = null;
-        [capa, tira, escena, etiqueta, ...piezas].forEach((el) => {
-          detener(el);
-          el.style.opacity = '';
-          el.style.transform = '';
-        });
-        delete loop.dataset['activo'];
-      };
-
-      pausa.addEventListener('click', () => {
-        pausadoPorUsuario = !pausadoPorUsuario;
-        pausa.setAttribute('aria-pressed', String(pausadoPorUsuario));
-        sincronizar();
-      });
-      observar(loop, (e) => {
-        visible = e.isIntersecting;
-        sincronizar();
-      });
-      document.addEventListener('visibilitychange', sincronizar);
-      document.addEventListener('motion:lectura', sincronizar);
-      // Si cambia el tamaño, el marco se reacomoda al formato actual sin animar.
-      const ro = new ResizeObserver(() => {
-        if (!montada) return;
-        detener(capa);
-        capa.style.clipPath = recorteDe(actual);
-      });
-      ro.observe(capa);
-
-      // Movimiento reducido: tira estática, sin loop (única rama `reducido` permitida además de FLIP).
-      if (!reducido()) iniciar();
-      const dejarReducido = alCambiarReducido((r) => (r ? terminar() : iniciar()));
-
-      // Al navegar a otra página (ClientRouter): el loop se detiene y se sueltan las escuchas.
-      alSalir(() => {
-        terminar();
-        ro.disconnect();
-        dejarReducido();
-        document.removeEventListener('visibilitychange', sincronizar);
-        document.removeEventListener('motion:lectura', sincronizar);
-      });
-    }
-  });
-</script>
-
 <style>
+  /* Primera pantalla completa (menos el header sticky): el trabajo se descubre recién al bajar. */
   .hero {
     display: grid;
-    gap: var(--space-8);
-    /* El header es sticky: ya ocupa su alto. Abajo, el aire de sección más el alto de los controles
-       del loop (etiqueta + pausa), siempre reservado: no se pegan a la frase-problema. */
-    padding-block: var(--space-6) calc(var(--space-section) + var(--control-height) + var(--space-2));
+    align-items: end;
+    min-block-size: calc(100dvh - var(--header-height, 0px));
+    padding-block: var(--space-6) var(--space-section);
   }
 
   /* El wordmark se mide contra este contenedor (t-wordmark usa cqi). */
@@ -269,6 +56,14 @@ const sizes = '(min-width: 82rem) 18rem, (min-width: 48rem) 22vw, 30vw';
   .hero__wordmark {
     display: grid;
     color: var(--color-text-primary);
+    transform-origin: left bottom;
+  }
+
+  /* Máscara de cada línea (4.2): las letras suben desde abajo sin verse fuera de la línea. */
+  .hero__mascara {
+    display: block;
+    overflow: clip;
+    overflow-clip-margin: 0.08em;
   }
 
   .hero__linea {
@@ -284,176 +79,8 @@ const sizes = '(min-width: 82rem) 18rem, (min-width: 48rem) 22vw, 30vw';
 
   .hero__bajada {
     max-inline-size: var(--measure);
+    margin: 0;
     color: var(--color-text-secondary);
     text-wrap: balance;
-  }
-
-  /* Tira de formatos: flex-grow proporcional al ancho de cada formato + base 0 →
-     todos los marcos de una fila quedan a la misma altura sin calcular nada. */
-  .hero__formatos {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: var(--grid-gutter);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .hero__formato {
-    flex: calc(var(--aspecto)) 1 0;
-    min-inline-size: 0;
-  }
-
-  /* Angosto: dos filas (3 + 2) para que las piezas no queden diminutas. El corte es un ítem vacío
-     de ancho completo, oculto para lectores de pantalla. */
-  .hero__corte {
-    flex-basis: 100%;
-    block-size: 0;
-  }
-
-  /* Sin row-gap (si no, el corte sumaría dos): la segunda fila se separa con su margen. */
-  .hero__formatos:has(.hero__corte) {
-    row-gap: 0;
-  }
-
-  .hero__corte ~ .hero__formato {
-    margin-block-start: var(--grid-gutter);
-  }
-
-  /* ≥ 48rem: las cinco piezas en una fila (todas son verticales o cuadradas). */
-  @media (min-width: 48rem) {
-    .hero__corte {
-      display: none;
-    }
-
-    .hero__corte ~ .hero__formato {
-      margin-block-start: 0;
-    }
-  }
-
-  .hero__marco {
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-    aspect-ratio: var(--aspecto);
-    border-radius: var(--radius-sm);
-    background: var(--color-stage);
-    color: var(--color-text-secondary);
-  }
-
-  /* ---- M04: la escena ocupa exactamente la caja de la tira (no mueve nada) ---- */
-  .hero__loop {
-    position: relative;
-  }
-
-  .hero__escena,
-  .hero__controles {
-    display: none;
-  }
-
-  /* Sin eventos de puntero: la exploración táctil de un lector de pantalla llega a la tira. */
-  .hero__loop[data-activo] .hero__escena {
-    position: absolute;
-    inset: 0;
-    display: block;
-    pointer-events: none;
-    container-type: size;
-  }
-
-  .hero__capa {
-    display: grid;
-    place-items: center;
-    inline-size: 100cqi;
-    block-size: 100cqb;
-    background: var(--color-stage);
-  }
-
-  .hero__pieza {
-    grid-area: 1 / 1;
-    display: grid;
-    place-items: center;
-    inline-size: min(100cqi, calc(100cqb * var(--aspecto)));
-    aspect-ratio: var(--aspecto);
-    color: var(--color-text-secondary);
-  }
-
-  /* La pieza llena su marco sin estirarse. */
-  .hero__marco :global(img),
-  .hero__pieza :global(:is(img, video)) {
-    grid-area: 1 / 1;
-    inline-size: 100%;
-    block-size: 100%;
-    object-fit: cover;
-  }
-
-  /* Etiqueta y pausa debajo, sobre el aire inferior del hero: tampoco mueven el layout. */
-  .hero__loop[data-activo] .hero__controles {
-    position: absolute;
-    inset-block-start: calc(100% + var(--space-2));
-    inset-inline: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4);
-  }
-
-  .hero__etiqueta {
-    margin: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    color: var(--color-text-secondary);
-  }
-
-  .hero__etiqueta span {
-    display: inline-block;
-  }
-
-  .hero__pausa {
-    display: inline-grid;
-    place-items: center;
-    min-inline-size: var(--control-height);
-    min-block-size: var(--control-height);
-    border: var(--border-control);
-    border-radius: var(--radius-xs);
-    background: transparent;
-    color: var(--color-text-primary);
-    cursor: pointer;
-    transition: background-color var(--duration-fast) var(--ease-out);
-  }
-
-  .hero__pausa :global(.icono) {
-    grid-area: 1 / 1;
-  }
-
-  .hero__pausa :global(.hero__icono-play),
-  .hero__pausa[aria-pressed='true'] :global(.hero__icono-pausa) {
-    visibility: hidden;
-  }
-
-  .hero__pausa[aria-pressed='true'] :global(.hero__icono-play) {
-    visibility: visible;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .hero__pausa:hover {
-      background: var(--color-surface);
-    }
-  }
-
-  /* ≥ 1280: la tira a 10 columnas, centrada (5 piezas verticales en una fila; deja lugar a la pausa). */
-  @media (min-width: 80rem) {
-    .hero__loop {
-      max-inline-size: calc((100% + var(--grid-gutter)) * 10 / 12 - var(--grid-gutter));
-      margin-inline: auto;
-    }
-
-    /* La pausa tiene que verse con el loop: a la derecha, arriba (debajo quedaba fuera de pantalla). */
-    .hero__loop[data-activo] .hero__controles {
-      inset-block-start: 0;
-      inset-inline: calc(100% + var(--grid-gutter)) auto;
-      flex-direction: column;
-      align-items: flex-start;
-    }
   }
 </style>

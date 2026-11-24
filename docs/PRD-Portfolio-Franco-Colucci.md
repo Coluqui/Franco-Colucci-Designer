@@ -27,7 +27,7 @@ La nueva dirección toma la estructura y el tono de **jeppesen.dev**, adaptados 
 
 | Fecha | Versión | Cambio |
 | --- | --- | --- |
-| 24 nov 2026 | 4.0 | Motion v3.0 "Desglose" con GSAP (ScrollTrigger, ScrollSmoother, SplitText): el portfolio se desglosa al scrollear; reemplaza a "Formato vivo". El caso deja de ser "problema / objetivo / resultado": es la empresa, el rol de Franco, cómo fue el proyecto y sus piezas agrupadas por tipo. Se quita la FAQ y entra **Skills** con los logos del software. El hero muestra las mejores piezas en lugar del loop de una campaña. Bio, experiencia y herramientas desde portfolio2026-twhh.vercel.app. Reel nuevo en Qué hago |
+| 24 nov 2026 | 4.0 | Motion v3.0 "Desglose" con GSAP (ScrollTrigger, ScrollSmoother, SplitText): el portfolio se desglosa al scrollear; reemplaza a "Formato vivo". El caso deja de ser "problema / objetivo / resultado": es la empresa, el rol de Franco, cómo fue el proyecto y sus piezas agrupadas por tipo. Se quita la FAQ y entra **Skills** con los logos del software. El hero queda solo con el wordmark y la bajada (Franco, 24 nov: sin piezas); el trabajo aparece al scrollear. Bio, experiencia y herramientas desde portfolio2026-twhh.vercel.app. Reel nuevo en Qué hago |
 | 23 nov 2026 | 3.2 | Motion aprobado con las tres opciones más trabajosas: frase ligada al scroll (con resguardos), ancho que respira y menú que crece desde el botón. Ruta de los trabajos: `C:\Users\FRANCO\Portfolio\dist\proyectos` |
 | 23 nov 2026 | 3.1 | Motion "Formato vivo": encastre (los marcos cambian de formato), respiración (el ancho de Archivo pasa de 112 a 125) y lectura (la frase aparece al ritmo de lectura). Resortes calculados con física real como tokens. 32 interacciones especificadas. Tokens v2.1, design system v2.1, regla de motion para Claude Code |
 | 23 nov 2026 | 3.0 | Cambio de dirección: referencia jeppesen.dev, wireframes v4 (home con wordmark, frase-problema, trabajos en filas, servicios, testimonios, FAQ; páginas Trabajos y Sobre mí; panel Hablemos), design system v2 "Formato" (Archivo expandida, cobalto, grano, glifo de marcos encastrados). Motion a rehacer |
@@ -54,7 +54,7 @@ El portfolio existe para conseguir entrevistas en empresas, remotas o locales, e
 
 | Métrica | Cómo se mide | Meta inicial |
 | --- | --- | --- |
-| Trabajo visible al entrar | Las mejores piezas (reales) asoman en el primer viewport en 1440×900 y 360×780 | Sí, sin scroll |
+| Trabajo visible pronto | La primera card de proyecto aparece con el primer scroll en 1440×900 y 360×780 | Sí, ≤ 1 viewport |
 | Contactos recibidos | Envíos del panel Hablemos + clics en mail, LinkedIn y WhatsApp | A definir tras el lanzamiento |
 | Descargas del CV | Clics en "CV", por idioma | A definir tras el lanzamiento |
 | Casos abiertos por visita | Visitas a páginas de caso / visitas a la home | A definir tras el lanzamiento |
@@ -109,7 +109,7 @@ Tendencias que respaldan la dirección: fondo neutro tipo Cloud Dancer, azul fr�
 
 | Página | Contenido |
 | --- | --- |
-| Home `/[lang]/` | Hero (wordmark + bajada + las mejores piezas) · Frase-problema · Clientes + Testimonios (invertida) · Trabajos (una card por proyecto) · Qué hago (servicios + vista previa + reel) · Skills (logos del software) · Sobre mí (resumen) · Cierre con la frase + Hablemos · Footer con glifo |
+| Home `/[lang]/` | Hero (wordmark + bajada) · Frase-problema · Clientes + Testimonios (invertida) · Trabajos (una card por proyecto) · Qué hago (servicios + vista previa + reel) · Skills (logos del software) · Sobre mí (resumen) · Cierre con la frase + Hablemos · Footer con glifo |
 | Trabajos `/[lang]/trabajos/` | Una card por proyecto (empresa, rol, cantidad de piezas) + filtro por tipo de pieza |
 | Proyecto `/[lang]/trabajos/<slug>/` × 4 | Empresa + rol de Franco · qué es la empresa y cómo fue el proyecto (un párrafo) · hero · **piezas agrupadas por tipo** (Redes, Ads, Documentos, Lanzamientos…) + visor · Siguiente proyecto. Sin objetivo, problema, pasos, resultado ni métricas |
 | Sobre mí `/[lang]/sobre-mi/` | Retrato (duotono), bio, datos con etiqueta (base, idiomas, modalidad), experiencia con fechas, cómo uso la IA, CV |
@@ -121,7 +121,7 @@ Tendencias que respaldan la dirección: fondo neutro tipo Cloud Dancer, azul fr�
 - [ ] Header mínimo: glifo + "▣ Hablemos" + "Menú"
 - [ ] Menú a pantalla completa (Inicio, Trabajos, Sobre mí + mail, LinkedIn, WhatsApp, CV, ES/EN, modo)
 - [ ] Panel Hablemos: formulario corto (nombre, email, mensaje) con estados + copiar mail, WhatsApp, LinkedIn, CV
-- [ ] Hero con las mejores piezas, que crecen hacia la grilla al scrollear (motion 4.3)
+- [ ] Hero con wordmark y bajada que se achica y se desvanece al scrollear (motion 4.3)
 - [ ] Frase-problema que se revela al scrollear
 - [ ] Servicios con vista previa que cambia de formato y ancho que respira (desktop) y acordeón (mobile)
 - [ ] Testimonios 01/03 con flechas y arrastre con inercia
@@ -166,7 +166,7 @@ Accesibilidad: "Slide 4 de 7" con `aria-live="polite"`, alt por slide, `aria-rol
 Siempre: glifo (inicio) · ▣ Hablemos (panel) · Menú (pantalla completa) · barra Hablemos/CV en mobile
 
 /[lang]/  Home
-├── Hero: wordmark + mejores piezas
+├── Hero: wordmark + bajada
 ├── Frase-problema
 ├── Clientes + Testimonios (invertida)
 ├── Trabajos destacados ──(fila)──────────────┐
@@ -195,7 +195,7 @@ tipo) ──(card)──► proyecto      Visor (pantalla completa)
 | --- | --- | --- | --- |
 | Hero, frase-problema y cierre | Ambos | Franco + Claude | Borrador (sección 3) |
 | 6 servicios con descripción + una pieza de vista previa para cada uno, en el formato de ese servicio (Ads 1:1, Redes 4:5, Reels 9:16, Mail 3:1, Web 16:10, Branding 4:5) | Ambos | Claude propone, Franco elige las piezas | Borrador en wireframes v4 |
-| **Hero:** las mejores piezas del portfolio (de distintos proyectos y formatos) | — | Claude propone, Franco aprueba | En curso (Fase 9B) |
+| ~~**Hero:** las mejores piezas~~ | — | — | Descartado (24 nov): el hero no lleva piezas |
 | **Reel de Qué hago** | — | Franco (video del 16 nov) | Entregado; falta exportarlo liviano (H.264, ~2 MB) |
 | **3 testimonios** (nombre, cargo, empresa, 1–2 frases, foto opcional) | Ambos | Franco los pide a clientes | Falta. Si no hay 3, la sección arranca con 1–2 |
 | Skills: herramientas agrupadas con su logo y para qué las usa | Ambos | De portfolio2026-twhh.vercel.app | En curso (Fase 9B) |
@@ -240,7 +240,7 @@ Especificación completa en `docs/motion.md` v3.0, que nace del `MOTION_SPEC.md`
 | --- | --- | --- |
 | Todo el sitio | Smooth scroll solo en desktop con puntero fino | 4.1 |
 | Carga | El wordmark se arma por letras dentro de una máscara (≤ 1,6 s, sin bloquear) | 4.2 |
-| Hero | Al scrollear, el wordmark se achica y la pieza destacada crece hacia la grilla (≤ 80 % del viewport) | 4.3 |
+| Hero | Al scrollear, el wordmark se achica y la bajada se desvanece (≤ 80 % del viewport) | 4.3 |
 | Títulos y párrafos | Revelado por palabras o líneas, una vez | 4.4 |
 | Frase-problema y cierre | Pasan de granulado a sólido palabra por palabra con el scroll | 4.5 |
 | Clientes y Skills | La sección se abre con una máscara y su contenido entra escalonado | 4.6 |
@@ -282,7 +282,7 @@ Especificación completa en `docs/motion.md` v3.0, que nace del `MOTION_SPEC.md`
 | --- | --- | --- |
 | 4 · Ajuste de wireframes v4 | Aplicar los 7 ajustes de la sección 5 | Este PRD |
 | 6 · Motion | Cerrada: se implementa en la Fase 6 de Claude Code | — |
-| 7 · Diseño final | Todas las páginas, desktop y mobile, claro y oscuro, ES y EN | Piezas del hero y de servicios, testimonios, textos de proyecto |
+| 7 · Diseño final | Todas las páginas, desktop y mobile, claro y oscuro, ES y EN | Piezas de servicios, testimonios, textos de proyecto |
 | 8 · Handoff | Specs por página, criterios de aceptación, tareas, CLAUDE.md | Etapa 7 aprobada |
 | 9 · QA y lanzamiento | Revisión completa en dispositivos reales | Sitio implementado |
 
@@ -291,7 +291,7 @@ Especificación completa en `docs/motion.md` v3.0, que nace del `MOTION_SPEC.md`
 | Riesgo | Por qué importa | Mitigación |
 | --- | --- | --- |
 | Parecer "otro Jeppesen" | La estructura es muy reconocible | Glifo, tipografía y color propios; nada de ✱, Clash Grotesk ni sus textos; la home suma Skills y foco en recruiters |
-| El trabajo tarda en aparecer | El wordmark ocupa el primer viewport | Las mejores piezas asoman sin scroll; ningún efecto esconde contenido más de ~1 viewport |
+| El trabajo tarda en aparecer | El wordmark ocupa el primer viewport | El hero se achica al primer scroll y la primera card entra enseguida; ningún efecto esconde contenido más de ~1 viewport |
 | Peso de GSAP | ~60 kB gzip más de JS | Plugins registrados una vez; Lighthouse ≥ 90 como criterio de cierre |
 | Testimonios que no llegan | La sección invertida depende de ellos | Pedirlos ya; si hay menos de 3, se muestran los que haya; nunca inventados |
 | Grano que pese o ensucie | Afecta legibilidad y performance | SVG de 1 KB, opacidad baja, nunca sobre piezas ni texto chico; se apaga con transparencia reducida |

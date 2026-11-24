@@ -11,7 +11,7 @@ Todo lo que está como `PENDIENTE` en el sitio o espera una decisión de Franco.
 | `public/brand/grain.svg` | Grano global | Falta. Hoy: `public/dev/grain-provisorio.svg` (`src/styles/global.css`) |
 | CV en PDF, ES y EN | Menú, barra mobile, panel, Sobre mí | Falta. Hay uno en `C:\Users\FRANCO\Portfolio\public\cv-franco-colucci.pdf` (¿vigente?) |
 | Originales de mayor calidad | Visor y heros de caso | Ver `docs/inventario.md` |
-| ~~Campaña del loop del hero~~ | Hero | Reemplazado en PRD v4.0: el hero muestra las mejores piezas (`src/config/hero.ts`) |
+| ~~Campaña del loop del hero~~ | Hero | Reemplazado: el hero queda sin piezas (Franco, 24 nov) |
 | Logos de clientes en SVG monocromo | Grilla de clientes | Solo JPG |
 
 ## Tokens que faltan en `design-system/tokens.css`
@@ -84,7 +84,7 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 ## Fase 6 · motion (paso 2: M04 y M05)
 
 - **Decisión de Franco · M05 con movimiento reducido.** `docs/motion.md` pide "fundido de 120 ms, el marco salta". Hoy el marco encastra en 120 ms con `--ease-out` y la pieza cambia sin fundido (`--duration-fast` vale 0 en reducido). Para cumplirlo al pie de la letra hace falta (a) un token de duración del encastre que valga 0 en reducido, o (b) permitir una rama `reducido()` en M05 (hoy `.claude/rules/motion.md` solo la permite en M04 y FLIP). La otra salida es actualizar la columna "Reducido" de M05 en `docs/motion.md`.
-- **Campaña del loop (M04).** Cuando llegue: cada `.hero__pieza` lleva su imagen (la regla `object-fit: cover` ya está) y el texto oculto de cada `<li>` de la tira nombra la campaña ("ISCAMEN · 4:5" + una descripción breve), para que el lector no diga menos que la pantalla. `hero.campaignPending` se reemplaza por el nombre real.
+- ~~**Campaña del loop (M04).**~~ Obsoleto: el hero ya no lleva piezas.
 - **Paso 3 (M15).** "Un protagonista por pantalla": a 360 px la frase-problema entra en el primer viewport con el loop andando. Cuando M15 esté activa, el loop se pausa mientras la frase se enciende.
 - **Paso 4 (`<ClientRouter />`).** Los scripts de M04 y M05 tienen que correr en `astro:page-load` y liberar en `astro:before-swap`; si no, al volver a la home no hay loop ni hover en servicios.
 - **QA de cierre.** El CLS de carga se mide con el build de producción (`astro preview`): en dev, Vite inyecta estilos tarde y con el server cargado el wordmark baja unos px (en producción, 0 en 8 cargas en paralelo).
@@ -189,7 +189,7 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
 
 ## Fase 9 · contenido (PRD v4.0)
 
-- **Franco · confirmar las piezas del hero** (`src/config/hero.ts`): Condimento "No necesitás otra campaña", MoonDesk "Nacimos de un error", ISCAMEN "La mujer en la ciencia", mockup de Carpa y ebook de MoonDesk. Propuesta de Claude: una por proyecto, en formatos distintos.
+- ~~**Franco · confirmar las piezas del hero**~~ Descartado (24 nov): el hero queda solo con wordmark y bajada.
 - **Franco · reel liviano.** `public/reels/reel.mp4` es el video de WhatsApp tal cual (58 s, 1080 × 1920, 9 MB). Se carga recién al abrir Reels (`preload="none"`), pero conviene exportarlo en H.264 a 720 × 1280 y ~2 MB. El póster sale del segundo 1,5.
 - **Franco · CV en inglés.** El CV en español es el de la web anterior (`public/cv/franco-colucci-cv.pdf`); `site.cv.en` sigue en null.
 - **Franco · fechas de experiencia.** Sobre mí usa la bio de la web anterior; solo ISCAMEN tiene fecha (desde 2021).

@@ -55,14 +55,6 @@ test('el modo elegido sobrevive a la navegación', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('data-js', '');
 });
 
-test('el loop del hero vuelve a correr después de ir y volver', async ({ page }) => {
-  test.skip(test.info().project.name.startsWith('360'), 'el loop se prueba en ancho');
-  await page.goto('/es/');
-  await navegar(page, '/es/trabajos/');
-  await navegar(page, '/es/');
-  await expect(page.locator('[data-loop]')).toHaveAttribute('data-activo', '');
-});
-
 test('cambiar de idioma: el header pasa al otro idioma y la posición se conserva', async ({ page }) => {
   await page.goto('/es/');
   await page.evaluate(() => scrollTo(0, (document.documentElement.scrollHeight - innerHeight) / 2));
