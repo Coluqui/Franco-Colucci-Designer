@@ -252,6 +252,8 @@ const formatos = [
   .hero__caja {
     container-type: inline-size;
     display: grid;
+    /* La columna no crece con el wordmark (sin espacios entre letras propios del usuario, 1.4.12): la bajada siempre entra. */
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-6);
   }
 

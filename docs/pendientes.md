@@ -151,3 +151,10 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
   - **M32 · Fase 7.** Al mostrar un error desde JS, sumar `aria-invalid`, `aria-describedby` y mover el foco al primer error.
   - **M32 · valores sueltos.** La barra de "Enviando" usa `block-size: 2px` y `opacity: 0.6` (de la Fase 3). Deuda: pasarlos a tokens.
   - **M28 · Safari iOS.** El contador se sincroniza con `scrollend`; hay que probarlo en un iPhone y, si falta, sumar un respaldo con `scroll`.
+
+## Fase 6 · QA de cierre
+
+- **Decisión de Franco · el punto del filtro activo.** Al activarse, el chip suma el punto y se ensancha 8 px: los filtros vecinos se corren en el mismo clic. CLS sigue en 0 (es respuesta al clic), pero se ve. Para evitarlo, todos los chips reservan el lugar del punto (los inactivos quedan un poco más anchos).
+- **M06 en un Android real.** En el Chromium de prueba (sin GPU) la transición rinde ~40 fps incluso sin throttling; el hilo principal está libre. Confirmar en un teléfono de gama media.
+- **1.4.12 · servicios a 360.** Con el espaciado máximo de WCAG, el servicio más largo sobresale 9 px (M13 lo obliga a una línea). No se pierde contenido.
+- **Tabla de cumplimiento completa:** `docs/motion-cumplimiento.md`.
