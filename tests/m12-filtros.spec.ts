@@ -66,5 +66,31 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       await expect(items.locator('visible=true')).toHaveCount(await items.count());
       expect(await items.evaluateAll((els) => els.every((e) => (e as HTMLElement).style.cssText === ''))).toBe(true);
     });
+
+    test('lo que sale no se puede tocar; un anuncio igual al anterior se vuelve a escribir', async ({ page }) => {
+      const items = page.locator('#piezas-caso [data-filtro]');
+      await page.locator('.filtro').nth(1).click();
+      if (!reducido) expect(await items.evaluateAll((els) => els.filter((e) => (e as HTMLElement).inert).length)).toBeGreaterThan(0);
+      await quieto(page);
+      expect(await items.evaluateAll((els) => els.some((e) => (e as HTMLElement).inert))).toBe(false);
+      // El anuncio se vacía y se escribe en el cuadro siguiente (los lectores leen aunque se repita).
+      await page.locator('.filtro').nth(0).click();
+      await page.locator('[data-filtros-estado]').evaluate((el) => {
+        const w = window as unknown as { __vacio: boolean };
+        w.__vacio = false;
+        new MutationObserver(() => el.textContent === '' && (w.__vacio = true)).observe(el, { childList: true, characterData: true, subtree: true });
+      });
+      const texto = await page.locator('[data-filtros-estado]').textContent();
+      await page.locator('.filtro').nth(1).click();
+      await page.locator('.filtro').nth(0).click();
+      await expect(page.locator('[data-filtros-estado]')).toHaveText(texto!);
+      expect(await page.evaluate(() => (window as unknown as { __vacio: boolean }).__vacio)).toBe(true);
+    });
+
+    test('alto contraste: el filtro activo se distingue', async ({ page }) => {
+      await page.emulateMedia({ forcedColors: 'active', reducedMotion });
+      const fondos = () => page.locator('.filtro').evaluateAll((els) => els.slice(0, 2).map((e) => getComputedStyle(e).backgroundColor));
+      await expect.poll(async () => new Set(await fondos()).size).toBe(2);
+    });
   });
 }

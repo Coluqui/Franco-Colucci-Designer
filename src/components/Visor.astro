@@ -103,7 +103,7 @@ const { lang, piezas } = Astro.props;
 <script>
   import { alSalir, enCadaPagina } from '../scripts/pagina';
   import { animar, curva, detener, ms, numero, reducido, resorte } from '../scripts/motion/base';
-  import { cajaContenida, hacia } from '../scripts/motion/flip';
+  import { cajaContenida } from '../scripts/motion/flip';
   import { enPantalla } from '../scripts/motion/observer';
 
   /** Arrastre vertical que cierra el visor (M09): fracción del alto de la pantalla. */
@@ -239,6 +239,7 @@ const { lang, piezas } = Astro.props;
        * sale, el último manda. Reducido: los tokens lo dejan en un fundido de 120 ms.
        */
       const cambiarPieza = async (delta: number, alFinal = false) => {
+        if (cerrando) return;
         const lista = visibles();
         const nueva = lista[lista.indexOf(objetivo) + delta];
         if (nueva === undefined) return;
@@ -259,6 +260,7 @@ const { lang, piezas } = Astro.props;
       };
 
       const moverSlide = (delta: number) => {
+        if (cerrando) return;
         const nuevo = slide + delta;
         if (nuevo >= total) cambiarPieza(1);
         else if (nuevo < 0) cambiarPieza(-1, true);
@@ -295,16 +297,47 @@ const { lang, piezas } = Astro.props;
         return t && t.offsetParent && enPantalla(t) ? t : null;
       };
 
-      /** La pieza (no su caja: el visor la muestra con contain) se lleva a `destino`. */
-      const hastaTile = (img: HTMLImageElement, destino: DOMRect) => {
-        img.style.transform = '';
-        img.style.transformOrigin = '0 0';
-        return hacia(img, cajaContenida(img), destino);
+      /**
+       * El viaje lo hace una copia fija por encima de todo: la pista recorta, y la pieza real no podría
+       * salir de su franja. La copia va de lo que se ve ahora (o de donde estaba la copia anterior, si
+       * se interrumpe) a `hasta`, con escala uniforme. La pieza real queda oculta mientras tanto.
+       */
+      let vuelo: { copia: HTMLImageElement; anim: Animation } | null = null;
+      const soltarVuelo = () => {
+        vuelo?.anim.cancel();
+        vuelo?.copia.remove();
+        vuelo = null;
+      };
+      const volar = (img: HTMLImageElement, desde: DOMRect, hasta: DOMRect, fuente: string, opciones: { easing: string; duration: number }) => {
+        const inicio = vuelo ? vuelo.copia.getBoundingClientRect() : desde;
+        soltarVuelo();
+        const copia = document.createElement('img');
+        copia.className = 'visor__vuelo';
+        copia.alt = '';
+        copia.src = fuente;
+        Object.assign(copia.style, {
+          left: `${hasta.left}px`,
+          top: `${hasta.top}px`,
+          width: `${hasta.width}px`,
+          height: `${hasta.height}px`,
+        });
+        visor.append(copia);
+        img.style.opacity = '0';
+        const desdeT = `translate(${inicio.left - hasta.left}px, ${inicio.top - hasta.top}px) scale(${inicio.width / hasta.width})`;
+        const anim = copia.animate([{ transform: desdeT }, { transform: 'none' }], { ...opciones, fill: 'forwards' });
+        vuelo = { copia, anim };
+        return anim;
       };
 
+      /** Espera a que la pieza grande esté decodificada, como mucho --duration-fast (si no, vuela la del tile). */
+      const decodificada = (img: HTMLImageElement) =>
+        Promise.race([img.decode().catch(() => {}), new Promise((r) => setTimeout(r, ms('--duration-fast')))]);
+
       /** M08 · 560 · snap. Fondo en 300 · out; contador y controles 200 ms después. Reducido: fundido de 120 ms. */
-      const entrarVisor = () => {
+      const entrarVisor = async () => {
         cerrando = false;
+        delete visor.dataset['cerrando'];
+        const mio = ++turno;
         fundirFondo(1, curva('out', 'base'));
         cromo().forEach((el) =>
           animar(el, { opacity: '1' }, { ...curva('out', 'fast'), delay: ms('--duration-fast'), desde: { opacity: '0' }, soltar: true }),
@@ -312,15 +345,24 @@ const { lang, piezas } = Astro.props;
         const img = imgActual();
         const tile = tileVisible();
         if (!img) return;
-        if (tile && !reducido()) {
-          detener(img);
-          const actual = img.style.transform;
-          const desde = hastaTile(img, tile.getBoundingClientRect());
-          animar(img, { transform: 'none' }, { ...resorte('snap'), desde: { transform: actual || desde }, soltar: true });
-        } else {
+        img.loading = 'eager';
+        if (!tile || reducido()) {
+          soltarVuelo();
+          ocultarTile(imgTile());
           animar(img, { opacity: '1' }, { ...curva('out', 'base'), desde: { opacity: '0' }, soltar: true });
+          return;
         }
-        ocultarTile(imgTile());
+        img.style.opacity = '0';
+        const enVuelo = vuelo !== null;
+        if (!enVuelo) await decodificada(img);
+        if (mio !== turno || !visor.open) return;
+        const fuente = img.complete && img.currentSrc ? img.currentSrc : tile.currentSrc;
+        const anim = volar(img, tile.getBoundingClientRect(), cajaContenida(img), fuente, resorte('snap'));
+        ocultarTile(tile);
+        await anim.finished.catch(() => {});
+        if (vuelo?.anim !== anim) return;
+        soltarVuelo();
+        img.style.opacity = '';
       };
 
       /**
@@ -333,15 +375,20 @@ const { lang, piezas } = Astro.props;
         turno++;
         fundirFondo(0, curva('in', 'base'));
         cromo().forEach((el) => animar(el, { opacity: '0' }, curva('in', 'fast')));
+        visor.dataset['cerrando'] = '';
         const img = imgActual();
         const tile = tileVisible();
         let principal: Animation;
-        if (img && tile && !reducido()) {
+        // Vuelve volando solo desde el slide 1: es el que muestra el tile (si no, se funde).
+        if (img && tile && slide === 0 && !reducido()) {
           detener(img);
-          const actual = img.style.transform || 'none';
-          const destino = hastaTile(img, tile.getBoundingClientRect());
-          principal = animar(img, { transform: destino }, { ...resorte('soft'), desde: { transform: actual } });
+          const fuente = img.currentSrc || tile.currentSrc;
+          const desde = vuelo ? vuelo.copia.getBoundingClientRect() : cajaContenida(img);
+          principal = volar(img, desde, tile.getBoundingClientRect(), fuente, resorte('soft'));
+          // La copia nueva parte de donde se ve ahora (cajaContenida ya incluye el arrastre).
+          ocultarTile(tile);
         } else {
+          soltarVuelo();
           ocultarTile(null);
           principal = animar(pista, { opacity: '0' }, curva('in', 'base'));
         }
@@ -377,11 +424,28 @@ const { lang, piezas } = Astro.props;
         cerrarVisor();
       });
 
+      /** La pieza vuelve desde donde la dejó el dedo y termina en su CSS (sin estilo en línea). */
+      const volverAlLugar = () => {
+        const img = imgActual();
+        if (img) {
+          const desde = { transform: img.style.transform || 'none' };
+          img.style.transform = '';
+          animar(img, { transform: 'none' }, { ...resorte('soft'), desde, soltar: true });
+        }
+        fundirFondo(1, resorte('soft'));
+      };
+
       // Táctil: arrastrar la pieza hacia arriba o abajo la cierra; si no llega, vuelve (el dedo manda).
       let arrastre: { id: number; x: number; y: number; activo: boolean; dy: number } | null = null;
       escena.addEventListener('pointerdown', (e) => {
         const ev = e as PointerEvent;
         if (ev.pointerType !== 'touch' || cerrando) return;
+        // Un segundo dedo es un pellizco (zoom): el arrastre se anula y la pieza vuelve.
+        if (arrastre && arrastre.id !== ev.pointerId) {
+          if (arrastre.activo) volverAlLugar();
+          arrastre = null;
+          return;
+        }
         arrastre = { id: ev.pointerId, x: ev.clientX, y: ev.clientY, activo: false, dy: 0 };
       });
       escena.addEventListener('pointermove', (e) => {
@@ -410,16 +474,7 @@ const { lang, piezas } = Astro.props;
         arrastre = null;
         if (!activo) return;
         if (e.type === 'pointerup' && Math.abs(dy) > innerHeight * UMBRAL_CIERRE) cerrarVisor();
-        else {
-          const img = imgActual();
-          if (img) {
-            // Vuelve desde donde la dejó el dedo y termina en su CSS (sin estilo en línea).
-            const desde = { transform: img.style.transform || 'none' };
-            img.style.transform = '';
-            animar(img, { transform: 'none' }, { ...resorte('soft'), desde, soltar: true });
-          }
-          fundirFondo(1, resorte('soft'));
-        }
+        else volverAlLugar();
       };
       escena.addEventListener('pointerup', soltarArrastre);
       escena.addEventListener('pointercancel', soltarArrastre);
@@ -433,6 +488,8 @@ const { lang, piezas } = Astro.props;
       // En document y no en el dialog: el teclado sigue andando aunque el foco quede en cualquier lado.
       const alTeclado = (e: KeyboardEvent) => {
         if (!visor.open) return;
+        // Mientras se cierra, los controles ya no se ven: el foco no se mueve a ellos.
+        if (cerrando && e.key === 'Tab') e.preventDefault();
         const map: Record<string, () => void> = {
           ArrowRight: () => moverSlide(1),
           ArrowLeft: () => moverSlide(-1),
@@ -462,6 +519,8 @@ const { lang, piezas } = Astro.props;
 
       visor.addEventListener('close', () => {
         cerrando = false;
+        delete visor.dataset['cerrando'];
+        soltarVuelo();
         turno++;
         fondo?.cancel();
         fondo = null;
@@ -570,7 +629,7 @@ const { lang, piezas } = Astro.props;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     /* El navegador se queda con el gesto horizontal (slides); el vertical es del visor (cerrar, M09). */
-    touch-action: pan-x;
+    touch-action: pan-x pinch-zoom;
   }
 
   /* M10 · con botones y teclado la pista desliza; con el dedo manda la inercia del sistema. */
@@ -722,6 +781,32 @@ const { lang, piezas } = Astro.props;
 
   .visor__segmentos :global(li[data-activo] button)::after {
     transform: scaleX(1);
+  }
+
+  /* Alto contraste: las barras se dibujan con colores del sistema (el fondo se fuerza a Canvas). */
+  @media (forced-colors: active) {
+    .visor__segmentos :global(button)::before {
+      background: GrayText;
+    }
+
+    .visor__segmentos :global(button)::after {
+      background: CanvasText;
+    }
+  }
+
+  /* Mientras se cierra, nada responde al puntero (los controles ya no se ven). */
+  .visor[data-cerrando] {
+    pointer-events: none;
+  }
+
+  /* La copia que viaja entre el tile y el visor (M08, M09), por encima de la pista que recorta. */
+  .visor__vuelo {
+    position: fixed;
+    z-index: 1;
+    margin: 0;
+    object-fit: cover;
+    transform-origin: 0 0;
+    pointer-events: none;
   }
 
   .visor__piezas {

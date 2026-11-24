@@ -1,6 +1,8 @@
 /**
- * Tipo de cada navegación con <ClientRouter />: si se cambió de idioma (M24), la View Transition
- * lleva el tipo "idioma" (sus curvas en src/styles/transiciones.css) y no hay entrada de bloques.
+ * Tipo de cada navegación con <ClientRouter />: si se cambió de idioma (M24), <html> lleva
+ * data-vt="idioma" mientras dura la View Transition (sus curvas en src/styles/transiciones.css) y no
+ * hay entrada de bloques. Se pone antes de la captura y se repone después del cambio de página
+ * (Astro copia los atributos de <html> de la página nueva).
  *
  * M06 · al llegar a un caso con <ClientRouter />, su contenido entra subiendo --shift-md con
  * --spring-soft, máx. 4 bloques con --stagger (los marcados con data-entra, en orden). La media y el
@@ -14,18 +16,21 @@ const MAX = 4;
 
 let tipo: 'idioma' | null = null;
 
+const html = document.documentElement;
+
 document.addEventListener('astro:before-preparation', (e) => {
   const origen = (e as Event & { sourceElement?: Element }).sourceElement;
   tipo = origen?.closest('[data-toggle-idioma]') ? 'idioma' : null;
+  if (tipo) html.dataset['vt'] = tipo;
 });
 
 document.addEventListener('astro:before-swap', (e) => {
   const vt = (e as Event & { viewTransition?: ViewTransition }).viewTransition;
-  // Sin tipos de View Transition (navegadores viejos) queda el fundido de página común.
-  if (tipo && vt && 'types' in vt) (vt.types as Set<string>).add(tipo);
+  if (tipo) vt?.finished.finally(() => delete html.dataset['vt']);
 });
 
 document.addEventListener('astro:after-swap', () => {
+  if (tipo) html.dataset['vt'] = tipo;
   if (tipo === 'idioma' || matchMedia('(forced-colors: active)').matches) return;
   const bloques = [...document.querySelectorAll<HTMLElement>('main [data-entra]')].slice(0, MAX);
   const desde = { opacity: '0', transform: `translateY(${numero('--shift-md')}px)` };

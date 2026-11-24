@@ -142,6 +142,10 @@ const links: Array<{ clave: UiKey; href: string }> = [
     abridores.forEach((b) => b.addEventListener('click', () => abrir(b), { signal }));
     cerrar?.addEventListener('click', cerrarMenu, { signal });
     // ESC: el menú se cierra con su animación (si el navegador igual lo cierra, close limpia).
+    // Mientras se cierra, el foco no se mueve a lo que ya se está escondiendo.
+    menu.addEventListener('keydown', (e) => {
+      if (cerrando && e.key === 'Tab') e.preventDefault();
+    }, { signal });
     menu.addEventListener('cancel', (e) => {
       e.preventDefault();
       cerrarMenu();

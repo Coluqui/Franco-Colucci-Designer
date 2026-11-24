@@ -10,7 +10,7 @@
  * - Nombre de la fila → H1 del caso (y "Siguiente caso" → H1 del siguiente): viaja con la media.
  * Los nombres los pone transition:name (caso-<slug>-media / -titulo); la clase agrupa a todos.
  * - M23 · cambio de modo (html[data-vt="tema"]): fundido cruzado 300 · in-out.
- * - M24 · cambio de idioma (tipo "idioma"): fundido cruzado 200 · out; el header no se mueve y la
+ * - M24 · cambio de idioma (html[data-vt="idioma"]): fundido cruzado 200 · out; el header no se mueve y la
  *   posición se conserva (Toggle.astro).
  */
 
@@ -67,6 +67,11 @@
   animation-timing-function: var(--ease-out);
 }
 
+/* El título viejo se va rápido: si cambia el corte de línea (h3 → H1), no se ve texto doble. */
+::view-transition-old(*.caso-titulo) {
+  animation-duration: var(--duration-fast);
+}
+
 @keyframes vt-sale {
   to {
     opacity: 0;
@@ -77,6 +82,12 @@
   from {
     opacity: 0;
   }
+}
+
+/* En modo e idioma nada viaja: sin nombres, las filas no se capturan aparte (si no, se dibujarían
+   por encima del menú, desde donde se cambian). */
+:root[data-vt] :is(.fila__media, .caso__hero, .fila__nombre, .caso__nombre, .siguiente__nombre) {
+  view-transition-name: none !important;
 }
 
 /* M23 · modo claro / oscuro: todo se funde a la vez; nada se mueve. */
@@ -96,17 +107,17 @@
 }
 
 /* M24 · idioma: los textos se funden (200 · out). Lo que tiene nombre queda en su lugar y se funde igual. */
-:root:active-view-transition-type(idioma)::view-transition-old(root) {
+:root[data-vt="idioma"]::view-transition-old(root) {
   animation: vt-sale var(--duration-fast) var(--ease-out) both;
 }
 
-:root:active-view-transition-type(idioma)::view-transition-new(root) {
+:root[data-vt="idioma"]::view-transition-new(root) {
   animation: vt-entra var(--duration-fast) var(--ease-out) both;
 }
 
-:root:active-view-transition-type(idioma)::view-transition-group(*),
-:root:active-view-transition-type(idioma)::view-transition-old(*),
-:root:active-view-transition-type(idioma)::view-transition-new(*) {
+:root[data-vt="idioma"]::view-transition-group(*),
+:root[data-vt="idioma"]::view-transition-old(*),
+:root[data-vt="idioma"]::view-transition-new(*) {
   animation-duration: var(--duration-fast);
   animation-timing-function: var(--ease-out);
 }
@@ -132,15 +143,14 @@
     animation: vt-entra var(--duration-base) var(--ease-out) both !important;
   }
 
-  /* M23 y M24 en reducido: instantáneos. (Reglas separadas: un navegador sin
-     :active-view-transition-type descartaría la lista entera.) */
+  /* M23 y M24 en reducido: instantáneos. */
   :root[data-vt="tema"]::view-transition-old(root),
   :root[data-vt="tema"]::view-transition-new(root) {
     animation: none !important;
   }
 
-  :root:active-view-transition-type(idioma)::view-transition-old(root),
-  :root:active-view-transition-type(idioma)::view-transition-new(root) {
+  :root[data-vt="idioma"]::view-transition-old(root),
+  :root[data-vt="idioma"]::view-transition-new(root) {
     animation: none !important;
   }
 }

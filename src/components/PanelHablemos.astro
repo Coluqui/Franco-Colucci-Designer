@@ -136,6 +136,10 @@ const { lang } = Astro.props;
     panel.addEventListener('click', (e) => {
       if (e.target === panel) cerrarPanel();
     }, { signal });
+    // Mientras se cierra, el foco no se mueve a lo que ya sale de pantalla.
+    panel.addEventListener('keydown', (e) => {
+      if (cerrando && e.key === 'Tab') e.preventDefault();
+    }, { signal });
     panel.addEventListener('cancel', (e) => {
       e.preventDefault();
       cerrarPanel();

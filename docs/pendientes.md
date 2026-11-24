@@ -124,4 +124,11 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
   - el idioma usa la salida de página (200 · in).
 - **Astro y movimiento reducido.** El `<ClientRouter />` apaga todas las animaciones de la transición con `!important`. `src/styles/transiciones.css` recupera el fundido de 120 ms que pide M06/M07.
 - **QA de cierre.** El perfil de rendimiento de M06 con CPU 4× va en la QA de cierre: la transición captura la página entera.
+- **Revisiones del paso 4: lo que quedó sin corregir (menor).**
+  - **M20 · "Menú" y "Cerrar" de distinto ancho.** En el primer cuadro, "Cerrar" se ve recortado dentro de la caja de "Menú" ("Close"/"Menu" en inglés). Si molesta: un ancho mínimo común para los dos.
+  - **M09 · proporción del tile.** El vuelo escala por el ancho. Si `ratio` en `pieza.json` no coincide con la proporción real de la portada, al aterrizar hay un salto de alto. Hay que verificarlo cuando se carguen piezas nuevas.
+  - **M08 · foco al abrir.** La × tiene el foco unos 400 ms antes de verse (los controles entran 200 ms después). Es aceptable; en reducido no pasa.
+  - **M22 · foco al cerrar.** El foco vuelve a "Hablemos" mientras la barra todavía sube (700 ms).
+  - **M19 · fundido del header.** Durante los 300 ms del fundido, los textos del header quedan sobre el contenido. Es transitorio.
+  - **M12 · posición de la grilla.** `position: relative` se pone en línea sobre la grilla filtrada (`Filtros.astro`). Podría pasar al CSS de cada página.
 

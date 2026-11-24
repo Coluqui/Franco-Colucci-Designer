@@ -43,12 +43,21 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       // Reducido: --duration-fast vale 0, así que aparecen con el fondo (que se funde en 120 ms).
       if (reducido) expect(barra.every((a) => a.retraso === 0)).toBe(true);
       else expect(barra[0]?.retraso).toBe(200);
-      const pieza = await imgVisor(page).evaluate((el) => (el.getAnimations()[0]?.effect as KeyframeEffect | undefined)?.getKeyframes()[0]);
-      if (reducido) expect(pieza?.['opacity']).toBe('0');
-      else expect(String(pieza?.['transform'])).toContain('scale(');
+      if (reducido) {
+        const pieza = await imgVisor(page).evaluate((el) => (el.getAnimations()[0]?.effect as KeyframeEffect | undefined)?.getKeyframes()[0]);
+        expect(pieza?.['opacity']).toBe('0');
+      } else {
+        // Viaja una copia fija por encima de la pista (que recorta), desde la caja del tile.
+        const copia = page.locator('[data-visor] .visor__vuelo');
+        await expect(copia).toHaveCount(1);
+        const desde = await copia.evaluate((el) => String((el.getAnimations()[0]?.effect as KeyframeEffect).getKeyframes()[0]?.['transform']));
+        expect(desde).toContain('scale(');
+      }
       // Una sola copia a la vista: el tile queda vacío mientras su pieza está en el visor.
-      expect(await page.locator('[data-abre-visor] img').first().evaluate((e) => e.style.opacity)).toBe('0');
+      await expect.poll(() => page.locator('[data-abre-visor] img').first().evaluate((e) => e.style.opacity)).toBe('0');
       await quieto(page);
+      await expect(page.locator('[data-visor] .visor__vuelo')).toHaveCount(0);
+      expect(await imgVisor(page).evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
       // Termina en su CSS: la pieza sin transformación, sin deformarse (contain).
       expect(await imgVisor(page).evaluate((e) => getComputedStyle(e).transform)).toBe('none');
       expect(await imgVisor(page).evaluate((e) => getComputedStyle(e).objectFit)).toBe('contain');
@@ -61,8 +70,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       if (!reducido) {
         // Durante el regreso el visor sigue abierto (la pieza viaja).
         await expect(page.locator('[data-visor]')).toHaveAttribute('open', '');
-        const vuelta = await imgVisor(page).evaluate((el) => (el.getAnimations()[0]?.effect as KeyframeEffect | undefined)?.getKeyframes().at(-1));
-        expect(String(vuelta?.['transform'])).toContain('scale(');
+        await expect(page.locator('[data-visor] .visor__vuelo')).toHaveCount(1);
       }
       await expect(page.locator('[data-visor]')).not.toHaveAttribute('open', '');
       await expect(tile).toBeFocused();
@@ -135,6 +143,19 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       await expect.poll(async () => n(await page.locator('[data-visor-contador]').textContent())).toBe(actual + 2);
       await quieto(page);
       expect(await page.locator('[data-visor-pista]').evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
+    });
+
+    test('mientras se cierra, el teclado no cambia de pieza y el foco vuelve al tile que la abrió', async ({ page }) => {
+      const tile = await abrir(page);
+      await quieto(page);
+      const antes = await page.locator('[data-visor-contador]').textContent();
+      await page.keyboard.press('Escape');
+      await page.keyboard.press('PageDown');
+      await page.keyboard.press('ArrowRight');
+      await page.keyboard.press('Tab');
+      expect(await page.locator('[data-visor-contador]').textContent()).toBe(antes);
+      await expect(page.locator('[data-visor]')).not.toHaveAttribute('open', '');
+      await expect(tile).toBeFocused();
     });
   });
 }

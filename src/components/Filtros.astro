@@ -54,7 +54,7 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
           <button class="filtro" type="button" aria-pressed={o.valor === '' ? 'true' : 'false'} data-valor={o.valor}>
             <span class="filtro__fondo" aria-hidden="true" />
             <span class="filtro__punto" aria-hidden="true" />
-            {o.nombre}
+            <span class="filtro__nombre">{o.nombre}</span>
             <span class="filtro__cantidad" aria-hidden="true">· {o.cantidad}</span>
             <span class="visually-hidden">
               {o.cantidad === 1 ? t(lang, claveUno) : tf(lang, claveVarios, { n: o.cantidad })}
@@ -82,6 +82,11 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
     const puntoAntes = antes.querySelector<HTMLElement>('.filtro__punto')!.getBoundingClientRect();
     const fondo = ahora.querySelector<HTMLElement>('.filtro__fondo')!;
     const punto = ahora.querySelector<HTMLElement>('.filtro__punto')!;
+    // Si todavía viajaban (clics rápidos), se mide su lugar real, no el desplazado.
+    [fondo, punto].forEach((el) => {
+      detener(el);
+      el.style.transform = '';
+    });
     const f = fondo.getBoundingClientRect();
     const p = punto.getBoundingClientRect();
     // El fondo es un rectángulo de color (no una pieza): puede cambiar de ancho al viajar.
@@ -98,6 +103,7 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
   const terminarSalida = (el: HTMLElement) => {
     salientes.get(el)?.cancel();
     salientes.delete(el);
+    el.inert = false;
     for (const p of ['position', 'insetInlineStart', 'insetBlockStart', 'inlineSize', 'opacity'] as const) el.style[p] = '';
   };
 
@@ -115,10 +121,20 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
     const contenedor = objetivo.getBoundingClientRect();
     const salen = items.filter((el) => !el.hidden && !quedan(el));
     const entran = items.filter((el) => el.hidden && quedan(el));
+    // Si se estaban reacomodando o entrando, se sigue desde lo que se ve: el FLIP parte de `antes` (no
+    // del desplazamiento viejo) y una entrada a medias termina de aparecer desde su opacidad actual.
+    const opacidad = new Map<HTMLElement, string>();
+    antes.forEach((_, el) => {
+      detener(el);
+      if (el.style.opacity) opacidad.set(el, el.style.opacity);
+      el.style.transform = '';
+      el.style.opacity = '';
+    });
 
     // Las que salen: fuera del flujo, en el mismo lugar, para que el resto pueda reacomodarse.
     salen.forEach((el) => {
       const r = antes.get(el)!;
+      el.inert = true;
       Object.assign(el.style, {
         position: 'absolute',
         insetInlineStart: `${r.left - contenedor.left}px`,
@@ -134,8 +150,18 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
       const d = el.getBoundingClientRect();
       const dx = r.left - d.left;
       const dy = r.top - d.top;
-      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
-      animar(el, { transform: 'none' }, { ...resorte('soft'), desde: { transform: `translate(${dx}px, ${dy}px)` }, soltar: true });
+      const desde: Keyframe = {};
+      const hasta: Keyframe = {};
+      if (Math.abs(dx) >= 0.5 || Math.abs(dy) >= 0.5) {
+        desde['transform'] = `translate(${dx}px, ${dy}px)`;
+        hasta['transform'] = 'none';
+      }
+      const o = opacidad.get(el);
+      if (o) {
+        desde['opacity'] = o;
+        hasta['opacity'] = '1';
+      }
+      if (Object.keys(hasta).length) animar(el, hasta, { ...resorte('soft'), desde, soltar: true });
     });
 
     salen.forEach((el) => {
@@ -183,7 +209,9 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
         history.replaceState(history.state, '', url);
         if (anunciar && estado) {
           const plantilla = (visibles === 1 ? grupo.dataset['textoUno'] : grupo.dataset['textoVarios']) ?? '';
-          estado.textContent = plantilla.replace('{n}', String(visibles));
+          // Se vacía y se escribe en el cuadro siguiente: un anuncio igual al anterior también se lee.
+          estado.textContent = '';
+          requestAnimationFrame(() => (estado.textContent = plantilla.replace('{n}', String(visibles))));
         }
       };
 
@@ -224,7 +252,6 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
 
   .filtro {
     position: relative;
-    isolation: isolate;
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
@@ -239,16 +266,26 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
     line-height: var(--leading-ui);
     white-space: nowrap;
     cursor: pointer;
+    /* El color del texto cambia a mitad del viaje del fondo (M12): nunca texto claro sobre claro. */
     transition:
       background-color var(--duration-fast) var(--ease-out),
-      color var(--duration-fast) var(--ease-out);
+      color var(--duration-fast) var(--ease-out) calc(var(--spring-snap-duration) / 2);
+  }
+
+  /* Los textos van encima de cualquier fondo, también del que viaja desde otro filtro
+     (sin isolation: todos los fondos y textos del grupo comparten capa). */
+  .filtro__punto,
+  .filtro__nombre,
+  .filtro__cantidad {
+    position: relative;
+    z-index: 1;
   }
 
   /* Fondo del activo: una capa propia (debajo del texto) para que pueda viajar de un filtro a otro (M12). */
   .filtro__fondo {
     position: absolute;
     inset: 0; /* el borde del activo ya es --color-text-primary: juntos se ven como un solo bloque */
-    z-index: -1;
+    z-index: 0;
     border-radius: inherit;
     background: var(--color-text-primary);
     opacity: 0;
@@ -298,5 +335,24 @@ const todas: Opcion = { valor: '', nombre: t(lang, 'filters.all'), cantidad: tot
 
   .filtro[aria-pressed="true"] .filtro__punto {
     display: block;
+  }
+
+  /* Alto contraste: el activo se marca con los colores del sistema (el fondo se fuerza a Canvas). */
+  @media (forced-colors: active) {
+    .filtro[aria-pressed="true"] {
+      forced-color-adjust: none;
+      border-color: Highlight;
+      background: Highlight;
+      color: HighlightText;
+    }
+
+    .filtro__fondo,
+    .filtro[aria-pressed="true"] .filtro__punto {
+      display: none;
+    }
+
+    .filtro[aria-pressed="true"] .filtro__cantidad {
+      color: HighlightText;
+    }
   }
 </style>

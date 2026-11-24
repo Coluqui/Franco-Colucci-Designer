@@ -32,15 +32,3 @@ export function cajaContenida(img: HTMLImageElement): DOMRect {
   return new DOMRect(caja.left + (caja.width - ancho) / 2, caja.top + (caja.height - alto) / 2, ancho, alto);
 }
 
-/**
- * La transformación (origen 0 0, escala uniforme) que lleva `contenido`, una caja dentro de `el`,
- * a ocupar `destino`. Para el visor: la pieza (no su caja) viaja al tile y vuelve (M08, M09).
- * Mide `el` sin la transformación que tenga ahora.
- */
-export function hacia(el: HTMLElement, contenido: DOMRect, destino: DOMRect) {
-  const caja = el.getBoundingClientRect();
-  const s = destino.width / contenido.width;
-  const tx = destino.left - caja.left - s * (contenido.left - caja.left);
-  const ty = destino.top - caja.top - s * (contenido.top - caja.top);
-  return `translate(${tx}px, ${ty}px) scale(${s})`;
-}

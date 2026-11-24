@@ -71,6 +71,9 @@ const { lang, tipo } = Astro.props;
       if (path === location.pathname && !location.hash) {
         scrollTo({ top: ratio * (document.documentElement.scrollHeight - innerHeight), behavior: 'instant' });
       }
+      // El foco queda en el toggle (el del footer: el menú de la página nueva está cerrado), no al
+      // principio de la página: quien usa teclado sigue donde estaba.
+      document.querySelector<HTMLElement>('footer [data-toggle-idioma] [aria-current]')?.focus({ preventScroll: true });
     } catch {
       /* nada que restaurar */
     }
@@ -163,5 +166,15 @@ const { lang, tipo } = Astro.props;
 
   .segmentado__opcion:focus-visible {
     outline-offset: var(--focus-offset);
+  }
+
+  /* Alto contraste: la opción activa se marca con los colores del sistema. */
+  @media (forced-colors: active) {
+    .segmentado__opcion[aria-current],
+    .segmentado__opcion[aria-pressed="true"] {
+      forced-color-adjust: none;
+      background: Highlight;
+      color: HighlightText;
+    }
   }
 </style>

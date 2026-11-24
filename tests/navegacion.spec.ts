@@ -76,3 +76,10 @@ test('cambiar de idioma: el header pasa al otro idioma y la posición se conserv
   const despues = await page.evaluate(() => scrollY / (document.documentElement.scrollHeight - innerHeight));
   expect(Math.abs(despues - antes)).toBeLessThan(0.05);
 });
+
+test('después de cambiar de idioma, el foco queda en el toggle (no vuelve al principio)', async ({ page }) => {
+  await page.goto('/es/');
+  await page.locator('footer [data-toggle-idioma] a:not([aria-current])').evaluate((a) => (a as HTMLElement).click());
+  await page.waitForURL('**/en/');
+  await expect(page.locator('footer [data-toggle-idioma] [aria-current]')).toBeFocused();
+});
