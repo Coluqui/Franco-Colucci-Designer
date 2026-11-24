@@ -57,6 +57,8 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       const grupo = anims.find((a) => a.pseudo === `::view-transition-group(caso-${slug}-media)`);
       const titulo = anims.find((a) => a.pseudo === `::view-transition-group(caso-${slug}-titulo)`);
       const salida = anims.find((a) => a.pseudo === '::view-transition-old(root)');
+      // Solo viaja el caso elegido: ni las otras filas ni "Siguiente caso".
+      expect(anims.filter((a) => a.pseudo.includes('(caso-') && !a.pseudo.includes(`(caso-${slug}-`))).toEqual([]);
       if (reducido) {
         // Fundido cruzado de 120 ms; nada viaja.
         expect(grupo).toBeUndefined();
@@ -95,6 +97,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       await expect.poll(async () => (await ultima(page)).some((a) => a.pseudo.includes('root'))).toBe(true);
       const atras = await ultima(page);
       if (!reducido) expect(atras.some((a) => a.pseudo === `::view-transition-group(caso-${slug}-media)`)).toBe(true);
+      expect(atras.filter((a) => a.pseudo.includes('(caso-') && !a.pseudo.includes(`(caso-${slug}-`))).toEqual([]);
 
       // Siguiente caso.
       await page.goto(href);
