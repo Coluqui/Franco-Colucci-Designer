@@ -2,7 +2,8 @@
 /**
  * Proyecto · PRD v4.0 §5: empresa (H1) + rol · qué es la empresa y cómo fue el proyecto · hero
  * · piezas agrupadas por tipo (Redes, Ads, Documentos…) + visor · Siguiente proyecto (invertido).
- * Sin hero propio, el hero es la portada de la primera pieza (se recorta, nunca se deforma).
+ * Sin hero propio, el hero es la portada de la primera pieza: entera sobre su escenario, a lo sumo
+ * 80 % del alto de pantalla (auditoría 25 nov: recortada a 1300 px no se leía).
  * transition:name en la media y el título: la card de la home se convierte en este hero.
  */
 import type { GetStaticPaths } from 'astro';
@@ -59,7 +60,7 @@ const piezas = grupos.flatMap((g) => g.piezas);
         </div>
         <div>
           <dt class="t-dato">{t(lang, 'caseDetail.pieces')}</dt>
-          <dd class="t-body">{grupos.map((g) => `${g.nombre} ${g.cantidad}`).join(' · ')}</dd>
+          <dd class="t-body">{grupos.map((g) => <span class="caso__tipo">{g.nombre}: {g.cantidad}</span>)}</dd>
         </div>
       </dl>
     </header>
@@ -161,6 +162,7 @@ const piezas = grupos.flatMap((g) => g.piezas);
   }
 
   .caso__datos dd {
+    display: grid;
     margin: 0;
   }
 
@@ -181,16 +183,22 @@ const piezas = grupos.flatMap((g) => g.piezas);
     display: grid;
     place-items: center;
     aspect-ratio: var(--ratio-case-hero);
+    position: relative;
+    max-block-size: 80dvh;
+    inline-size: 100%;
     overflow: hidden;
     border-radius: var(--radius-sm);
     background: var(--color-stage);
     color: var(--color-text-secondary);
   }
 
+  /* Absoluta: el alto de la imagen sigue al de la caja (con max-block-size un 100 % no resuelve). */
   .caso__hero :global(img) {
+    position: absolute;
+    inset: 0;
     inline-size: 100%;
     block-size: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 
   .caso__bloque {
