@@ -33,8 +33,9 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       const link = page.locator('a.link:not(.link--suelto)').first();
       const linea = () => link.evaluate((a) => getComputedStyle(a, '::after').transform);
       expect(await linea()).toBe('matrix(1, 0, 0, 0.5, 0, 0)');
-      // Ese link está más abajo: con ScrollSmoother hay que esperar a que el contenido se asiente.
-      await link.scrollIntoViewIfNeeded();
+      // Ese link está en el footer: con 4.13 el interior llega a su lugar recién al final de la página
+      // (antes queda recortado), y con ScrollSmoother hay que esperar a que el contenido se asiente.
+      await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
       await page.waitForTimeout(1500);
       await link.hover();
       await expect.poll(linea).toBe('none');
