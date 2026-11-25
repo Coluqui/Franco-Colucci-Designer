@@ -103,7 +103,7 @@ El grano vive **detrás del contenido**, sobre el fondo de la página (`--z-grai
 
 ## 6. Espaciado, grilla y radios
 
-- Escala base 4 px: `--space-1` (4) a `--space-10` (128). Entre secciones: `--space-section` (80 → 160).
+- Escala base 4 px: `--space-1` (4) a `--space-10` (128). Entre secciones: `--space-section` (64 → 128; era 80 → 160 hasta el 25 nov, el ritmo se sentía flojo).
 - Grilla: 4 / 8 / 12 columnas; márgenes de 20 / 32 / 48 / 64 px; gutters de 16 / 20 / 24 px. Contenedor de texto y grillas: 1312 px. El wordmark y la lista de servicios pueden usar todo el ancho menos los márgenes.
 - Radios: `--radius-xs` 2 px (botones, chips, inputs), `--radius-sm` 4 px (paneles, tarjetas, imágenes), `--radius-full` solo para el pulgar del toggle y puntos de estado.
 - Sin sombras en la interfaz. Solo `--shadow-mockup` en marcos de dispositivo.
@@ -115,7 +115,7 @@ Todo interactivo tiene: default, hover (solo con `@media (hover: hover) and (poi
 | Componente | Default | Hover · active | Otros estados |
 | --- | --- | --- | --- |
 | **Header** | Glifo a la izquierda; a la derecha "▣ Hablemos" (primario) + "Menú" (secundario). Fondo transparente sobre el hero; al scrollear, `--color-bg` con `--border-hairline` abajo | — | Sobre secciones invertidas, los colores se invierten |
-| **Botón primario** | Fondo `--color-text-primary`, texto `--color-bg`, `--text-ui` 600, alto 36 px (área táctil 44), padding 0 14 px, `--radius-xs`, glifo opcional | Fondo `--color-accent`, texto `--color-on-accent`; el glifo desencastra (M02) · `scale(0.98)` y vuelve con `--spring-press` | Loading: texto "Enviando" + barra indeterminada en la base; disabled: `--color-surface` + `--color-text-disabled` |
+| **Botón primario** | Fondo `--color-text-primary`, texto `--color-bg`, `--text-ui` 600, alto 36 px (área táctil 44), padding 0 14 px, `--radius-xs`, glifo opcional. En el cierre de la home, versión grande: `--text-h3`, alto `--control-height` + `--space-4` | Fondo `--color-accent`, texto `--color-on-accent`; el glifo desencastra (M02) · `scale(0.98)` y vuelve con `--spring-press` | Loading: texto "Enviando" + barra indeterminada en la base; disabled: `--color-surface` + `--color-text-disabled` |
 | **Botón secundario** | Borde `--border-control`, texto primario, fondo transparente | Fondo `--color-surface` · `scale(0.98)` | Disabled: borde y texto `--color-text-disabled` |
 | **Link** | `--color-accent`, subrayado 1 px separado 4 px | `--color-accent-hover`, subrayado 2 px | — |
 | **Menú (pantalla completa)** | Crece desde el botón "Menú" hasta cubrir la pantalla (M20), con `--color-raised`; links en `--text-services` con `wdth` 112; a la derecha mail, LinkedIn, WhatsApp, CV y toggles ES/EN y modo | Link en hover: color primario y `wdth` 125 (M14); activo: color primario | Foco atrapado; ESC cierra y devuelve el foco a "Menú" |

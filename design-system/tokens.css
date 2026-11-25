@@ -118,7 +118,7 @@
   --space-1: 0.25rem;  --space-2: 0.5rem;  --space-3: 0.75rem; --space-4: 1rem;
   --space-5: 1.5rem;   --space-6: 2rem;    --space-7: 3rem;    --space-8: 4rem;
   --space-9: 6rem;     --space-10: 8rem;
-  --space-section: clamp(5rem, 3.33rem + 7.4vw, 10rem);        /* 80 → 160 */
+  --space-section: clamp(4rem, 2.667rem + 5.926vw, 8rem);      /* 64 → 128 (25 nov: ritmo más firme) */
 
   /* ---- Grilla y layout (mobile-first) ---- */
   --grid-columns: 4;
