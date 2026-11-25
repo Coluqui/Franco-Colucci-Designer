@@ -2,10 +2,10 @@
 /**
  * Menú a pantalla completa · design system §7 · PRD §5.
  * <dialog> modal: foco atrapado e inerte el resto (nativo), ESC cierra, el foco vuelve a "Menú".
- * Links en --text-services: wdth 112 en reposo, 125 en hover/foco y en la página actual.
+ * Links en --text-services; el actual, en hover y con foco, en --color-text-primary.
  * A la derecha: mail, LinkedIn, WhatsApp, CV y toggles ES/EN y modo.
- * 4.10: al abrir, los links suben y pasan de desenfocados a nítidos, escalonados (GSAP); en hover,
- * el link pasa a 125 y el resto queda en 112. El menú crece desde el botón "Menú" y los links
+ * 4.10: al abrir, los links suben y pasan de desenfocados a nítidos, escalonados (GSAP); en hover y
+ * en la página actual, el link pasa a --color-text-primary (sin la respiración de ancho de v2.0). El menú crece desde el botón "Menú" y los links
  * entran cuando llega al 60 %.
  */
 import Boton from './Boton.astro';
@@ -73,13 +73,12 @@ const links: Array<{ clave: UiKey; href: string }> = [
   import { enCadaPagina } from '../scripts/pagina';
   import { gsap } from '../motion/gsap';
   import { dur, ease, mov, stagger } from '../motion/tokens';
-  import { animar, curva, detener, numero, resorte, token } from '../motion/micro';
+  import { animar, curva, detener, numero, resorte } from '../motion/micro';
 
   /**
-   * M20 · el menú crece desde el botón "Menú": el rectángulo del botón cambia de formato hasta cubrir
-   * la pantalla (clip-path: inset(), radio --radius-xs → 0, --spring-snap). Al 60 % entran los links
-   * (M14). "Menú" ↔ "Cerrar" con roll vertical. Cerrar: vuelve a meterse en el botón (300 · in) y el
-   * foco vuelve a "Menú" (nativo del <dialog>).
+   * 4.10 · el menú se abre con un wipe de clip-path desde arriba (--spring-snap) y al 60 % entran los
+   * links. "Menú" ↔ "Cerrar" con roll vertical. Cerrar: el wipe vuelve hacia arriba, más rápido
+   * (300 · in), y el foco vuelve a "Menú" (nativo del <dialog>).
    */
   enCadaPagina(() => {
     const menu = document.querySelector<HTMLDialogElement>('[data-menu]');
@@ -97,14 +96,8 @@ const links: Array<{ clave: UiKey; href: string }> = [
     const marcar = (abierto: boolean) => abridores.forEach((b) => b.setAttribute('aria-expanded', String(abierto)));
     marcar(false);
 
-    /** El recorte que deja ver solo la caja de `el` (o null si no se ve). */
-    const recorteDe = (el: HTMLElement | null) => {
-      const r = el?.getBoundingClientRect();
-      if (!r || !r.width) return null;
-      const m = menu.getBoundingClientRect();
-      return `inset(${r.top - m.top}px ${m.right - r.right}px ${m.bottom - r.bottom}px ${r.left - m.left}px round ${token('--radius-xs')})`;
-    };
-    const completo = 'inset(0px 0px 0px 0px round 0px)';
+    const completo = 'inset(0px 0px 0px 0px)';
+    const arriba = 'inset(0px 0px 100% 0px)';
 
     /** Roll vertical de una etiqueta: entra desde abajo (abrir) o sale hacia abajo (cerrar). */
     const rollar = (el: HTMLElement | null, entra: boolean) => {
@@ -134,9 +127,7 @@ const links: Array<{ clave: UiKey; href: string }> = [
       if (!menu.open) menu.showModal();
       marcar(true);
       const snap = resorte('snap');
-      const desde = recorteDe(boton);
-      if (desde) animar(menu, { clipPath: completo }, { ...snap, desde: { clipPath: desde }, soltar: true });
-      else animar(menu, { opacity: '1' }, { ...curva('out', 'base'), desde: { opacity: '0' }, soltar: true });
+      animar(menu, { clipPath: completo }, { ...snap, desde: { clipPath: arriba }, soltar: true });
       rollar(etiquetaCerrar, true);
       entrarLinks(snap.duration * 0.6);
     };
@@ -145,10 +136,7 @@ const links: Array<{ clave: UiKey; href: string }> = [
       if (!menu.open || cerrando) return;
       cerrando = true;
       rollar(etiquetaCerrar, false);
-      const hasta = recorteDe(origen);
-      const a = hasta
-        ? animar(menu, { clipPath: hasta }, curva('in', 'base'))
-        : animar(menu, { opacity: '0' }, curva('in', 'base'));
+      const a = animar(menu, { clipPath: arriba }, curva('in', 'base'));
       await a.finished.catch(() => {});
       if (cerrando && menu.open) menu.close();
     };
@@ -268,21 +256,17 @@ const links: Array<{ clave: UiKey; href: string }> = [
     color: var(--color-text-secondary);
     text-decoration: none;
     white-space: nowrap;
-    transition:
-      font-stretch var(--duration-breathe) var(--spring-soft),
-      color var(--duration-fast) var(--ease-out);
+    transition: color var(--duration-fast) var(--ease-out);
   }
 
   .menu__link[aria-current="page"],
   .menu__link:focus-visible {
     color: var(--color-text-primary);
-    font-stretch: calc(var(--wdth-active) * 1%);
   }
 
   @media (hover: hover) and (pointer: fine) {
     .menu__link:hover {
       color: var(--color-text-primary);
-      font-stretch: calc(var(--wdth-active) * 1%);
     }
   }
 
