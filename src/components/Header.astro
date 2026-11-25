@@ -59,6 +59,7 @@ const { lang } = Astro.props;
 
 <script>
   import { enCadaPagina } from '../scripts/pagina';
+  import { ScrollTrigger } from '../motion/gsap';
 
   /** data-scrolled (scroll > 8 px) y data-invertido (la franja del header está sobre una sección invertida). */
   const actualizar = () => {
@@ -77,19 +78,12 @@ const { lang } = Astro.props;
   // antes de que la View Transition tome la vista nueva.
   document.addEventListener('astro:after-swap', actualizar);
 
+  // Con ScrollSmoother el contenido sigue moviéndose después del último evento `scroll`: ScrollTrigger
+  // se actualiza con el desplazamiento suavizado, así el color del header sigue a lo que se ve.
   enCadaPagina(() => {
-    let pendiente = false;
-    const alScroll = () => {
-      if (pendiente) return;
-      pendiente = true;
-      requestAnimationFrame(() => {
-        pendiente = false;
-        actualizar();
-      });
-    };
-    addEventListener('scroll', alScroll, { passive: true });
+    const seguimiento = ScrollTrigger.create({ start: 0, end: 'max', onUpdate: actualizar, onRefresh: actualizar });
     actualizar();
-    return () => removeEventListener('scroll', alScroll);
+    return () => seguimiento.kill();
   });
 </script>
 
@@ -188,6 +182,22 @@ const { lang } = Astro.props;
 
   .header__acciones :global(.segmentado) {
     padding: 0;
+  }
+
+  /* Controles de 36 px desde 48rem: área táctil de 44 px por arriba y por abajo (design system §7). */
+  .header__acciones :global(.segmentado__opcion),
+  .header__acciones :global(.tema-switch),
+  .header__icono {
+    position: relative;
+  }
+
+  .header__acciones :global(.segmentado__opcion)::before,
+  .header__acciones :global(.tema-switch)::before,
+  .header__icono::before {
+    content: "";
+    position: absolute;
+    inset-block: min(0px, calc((100% - var(--control-height)) / 2));
+    inset-inline: 0;
   }
 
   .header__acciones :global(.segmentado__opcion) {
