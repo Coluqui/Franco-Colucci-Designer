@@ -19,7 +19,29 @@ const todos = <T extends Element = HTMLElement>(sel: string) => [...document.que
 /** Los hijos directos de una sección con máscara ya entran con ella (4.6): no se animan dos veces. */
 const sinMascara = (el: Element) => !el.parentElement?.matches('[data-mask-content]');
 
+/**
+ * 4.8 · una tanda arrastra a sus vecinos de fila (misma grilla, se cruzan en vertical): en una grilla
+ * con proporciones mezcladas, la pieza más alta llega antes al disparador y entraba sola, dejando
+ * huecos (auditoría 25 nov). Cada elemento se anima una sola vez.
+ */
+const conFila = (animados: WeakSet<Element>) => (lote: Element[]) => {
+  const fila = new Set<Element>();
+  lote.forEach((el) => {
+    const r = el.getBoundingClientRect();
+    [...(el.parentElement?.children ?? [])]
+      .filter((v) => v.matches('[data-reveal-item]'))
+      .forEach((v) => {
+        const o = v.getBoundingClientRect();
+        if (v === el || (o.top < r.bottom && o.bottom > r.top)) fila.add(v);
+      });
+  });
+  const nuevos = [...fila].filter((el) => !animados.has(el));
+  nuevos.forEach((el) => animados.add(el));
+  return nuevos;
+};
+
 export function revelar(reducido: boolean) {
+  const filaDe = conFila(new WeakSet());
   if (reducido) {
     todos('[data-split], [data-reveal], [data-mask-content] > *').forEach((el) =>
       gsap.to(el, { opacity: 1, duration: dur.reducido, ease: 'none', scrollTrigger: una(el) }),
@@ -27,7 +49,7 @@ export function revelar(reducido: boolean) {
     ScrollTrigger.batch('[data-reveal-item]', {
       start: mov.inicio,
       once: true,
-      onEnter: (lote) => gsap.to(lote, { opacity: 1, duration: dur.reducido, ease: 'none' }),
+      onEnter: (lote) => gsap.to(filaDe(lote), { opacity: 1, duration: dur.reducido, ease: 'none' }),
     });
     return;
   }
@@ -68,7 +90,7 @@ export function revelar(reducido: boolean) {
   ScrollTrigger.batch('[data-reveal-item]', {
     start: mov.inicio,
     once: true,
-    onEnter: (lote) => gsap.fromTo(lote, { y: mov.subida, opacity: 0 }, { y: 0, opacity: 1, stagger: stagger.items, clearProps: 'transform' }),
+    onEnter: (lote) => gsap.fromTo(filaDe(lote), { y: mov.subida, opacity: 0 }, { y: 0, opacity: 1, stagger: stagger.items, clearProps: 'transform' }),
   });
 
   // 4.6 · secciones que se abren con máscara.
