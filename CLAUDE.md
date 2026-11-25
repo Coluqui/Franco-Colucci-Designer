@@ -45,7 +45,7 @@ src/i18n/             es.json, en.json, index.ts (t(), switchLangPath(), localiz
 src/content.config.ts colección `piezas`
 src/assets/trabajos/<slug>/   una carpeta por pieza: pieza.json + slides
 src/pages/[lang]/     páginas por idioma
-src/motion/           gsap.ts, tokens.ts, smooth.ts, reveals.ts, textNoise.ts, hoverPreview.ts, index.ts
+src/motion/           gsap.ts, tokens.ts, smooth.ts, reveals.ts, hero.ts, logo.ts, micro.ts (WAAPI), paginas.ts, index.ts
 src/config/site.ts    mail, WhatsApp, LinkedIn (PENDIENTE hasta que Franco los complete)
 ```
 

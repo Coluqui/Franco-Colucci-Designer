@@ -31,6 +31,8 @@ export const mov = {
   subidaCorta: 20,
   /** Contenido de la sección con máscara (4.6). */
   blur: 8,
+  /** Links del menú al entrar (4.10). */
+  blurMenu: 6,
   /** Escala final del wordmark al scrollear (4.3). */
   escalaHero: 0.85,
   /** La imagen de una media se asienta desde esta escala dentro de su máscara (4.8). */

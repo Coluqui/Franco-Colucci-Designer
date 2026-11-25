@@ -4,9 +4,9 @@
  * <dialog> modal: foco atrapado e inerte el resto (nativo), ESC cierra, el foco vuelve a "Menú".
  * Links en --text-services: wdth 112 en reposo, 125 en hover/foco y en la página actual.
  * A la derecha: mail, LinkedIn, WhatsApp, CV y toggles ES/EN y modo.
- * M14: al abrir, los links suben y respiran con --stagger-fast; en hover, el link pasa a 125 y el
- * resto queda en 112 (transición de font-stretch ⚠). Paso 4: crece desde el botón "Menú" (M20) y
- * los links entran cuando el menú llega al 60 %.
+ * 4.10: al abrir, los links suben y pasan de desenfocados a nítidos, escalonados (GSAP); en hover,
+ * el link pasa a 125 y el resto queda en 112. El menú crece desde el botón "Menú" y los links
+ * entran cuando llega al 60 %.
  */
 import Boton from './Boton.astro';
 import Glifo from './Glifo.astro';
@@ -71,8 +71,9 @@ const links: Array<{ clave: UiKey; href: string }> = [
 
 <script>
   import { enCadaPagina } from '../scripts/pagina';
-  import { respirarEntrada } from '../scripts/motion/respiracion';
-  import { animar, curva, detener, numero, resorte, token } from '../scripts/motion/base';
+  import { gsap } from '../motion/gsap';
+  import { dur, ease, mov, stagger } from '../motion/tokens';
+  import { animar, curva, detener, numero, resorte, token } from '../motion/micro';
 
   /**
    * M20 · el menú crece desde el botón "Menú": el rectángulo del botón cambia de formato hasta cubrir
@@ -113,6 +114,20 @@ const links: Array<{ clave: UiKey; href: string }> = [
       else animar(el, fuera, curva('in', 'fast'));
     };
 
+    /** 4.10 · links: yPercent 100 → 0 y blur → nítido, stagger.items, ease.expo. Reducido: fundido corto. */
+    const entrarLinks = (retrasoMs: number) => {
+      gsap.killTweensOf(links);
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        gsap.fromTo(links, { opacity: 0 }, { opacity: 1, duration: dur.reducido, ease: 'none', clearProps: 'opacity' });
+        return;
+      }
+      gsap.fromTo(
+        links,
+        { yPercent: 100, opacity: 0, filter: `blur(${mov.blurMenu}px)` },
+        { yPercent: 0, opacity: 1, filter: 'blur(0px)', duration: dur.base, ease: ease.expo, stagger: stagger.items, delay: retrasoMs / 1000, clearProps: 'transform,opacity,filter' },
+      );
+    };
+
     const abrir = (boton: HTMLElement) => {
       origen = boton;
       cerrando = false;
@@ -123,8 +138,7 @@ const links: Array<{ clave: UiKey; href: string }> = [
       if (desde) animar(menu, { clipPath: completo }, { ...snap, desde: { clipPath: desde }, soltar: true });
       else animar(menu, { opacity: '1' }, { ...curva('out', 'base'), desde: { opacity: '0' }, soltar: true });
       rollar(etiquetaCerrar, true);
-      // M14 al 60 % del encastre.
-      respirarEntrada(links, snap.duration * 0.6);
+      entrarLinks(snap.duration * 0.6);
     };
 
     const cerrarMenu = async () => {
@@ -159,6 +173,8 @@ const links: Array<{ clave: UiKey; href: string }> = [
         el.style.opacity = '';
         el.style.transform = '';
       });
+      gsap.killTweensOf(links);
+      gsap.set(links, { clearProps: 'transform,opacity,filter' });
       marcar(false);
       // "Menú" vuelve con su roll.
       rollar(origen?.querySelector<HTMLElement>('.boton__texto') ?? null, true);

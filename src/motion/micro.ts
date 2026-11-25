@@ -1,7 +1,9 @@
 /**
- * Base del motion "Formato vivo" (docs/motion.md §8).
- * - Valores: siempre desde design-system/tokens.css, nunca escritos acá.
- * - Movimiento reducido: los tokens ya pasan a 120 ms o 0; `reducido()` solo para M04 y FLIP.
+ * Micro-interacciones con Web Animations (visor, panel, menú, filtros, botones, formulario).
+ * El scroll y los revelados van con GSAP (src/motion/*); esto queda en WAAPI porque anima
+ * pseudo-elementos (::backdrop del panel, ::before del visor), que GSAP no alcanza.
+ * docs/motion.md v3.0 §3: las transiciones de interfaz toman sus valores de design-system/tokens.css.
+ * - Movimiento reducido: los tokens ya pasan a 120 ms o 0; `reducido()` solo para FLIP.
  * - Todo se interrumpe: `animar()` corta la animación en curso del elemento y sigue desde donde estaba.
  */
 
@@ -33,14 +35,6 @@ const consulta = () => matchMedia('(prefers-reduced-motion: reduce)');
 
 /** ¿Movimiento reducido? Solo para las dos ramas permitidas: loop del hero (M04) y FLIP (M08, M12). */
 export const reducido = () => consulta().matches;
-
-/** Avisa cuando cambia la preferencia (p. ej. para pausar o retomar el loop). Devuelve cómo dejar de escuchar. */
-export const alCambiarReducido = (cb: (reducido: boolean) => void) => {
-  const q = consulta();
-  const f = (e: MediaQueryListEvent) => cb(e.matches);
-  q.addEventListener('change', f);
-  return () => q.removeEventListener('change', f);
-};
 
 const enCurso = new WeakMap<Element, Animation>();
 
@@ -133,4 +127,21 @@ export async function rodarTexto(el: HTMLElement, texto: string, entrada = curva
   el.style.opacity = '';
   el.style.transform = '';
   animar(el, { opacity: '1', transform: 'none' }, { ...entrada, desde: { opacity: '0', transform: `translateY(${d}px)` }, soltar: true });
+}
+
+/** ¿Está el elemento (aunque sea en parte) dentro del viewport ahora? Para no animar lo que ya se ve. */
+export const enPantalla = (el: Element) => {
+  const r = el.getBoundingClientRect();
+  return r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
+};
+
+/** La caja que ocupa de verdad una imagen con object-fit: contain dentro de su elemento (visor). */
+export function cajaContenida(img: HTMLImageElement): DOMRect {
+  const caja = img.getBoundingClientRect();
+  const w = img.naturalWidth || Number(img.getAttribute('width')) || caja.width;
+  const h = img.naturalHeight || Number(img.getAttribute('height')) || caja.height;
+  const s = Math.min(caja.width / w, caja.height / h);
+  const ancho = w * s;
+  const alto = h * s;
+  return new DOMRect(caja.left + (caja.width - ancho) / 2, caja.top + (caja.height - alto) / 2, ancho, alto);
 }

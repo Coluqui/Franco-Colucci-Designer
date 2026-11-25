@@ -27,9 +27,12 @@ src/motion/
   textNoise.ts    texto que pasa de granulado a sólido (4.5)
   hoverPreview.ts vista previa que sigue al cursor (4.7)
   index.ts        initMotion() / destroyMotion()
+  micro.ts        micro-interacciones con WAAPI (visor, panel, menú, filtros, botones, formulario)
+  paginas.ts      tipo de navegación y entrada de bloques al llegar a un caso
 ```
 
-- Reemplaza a `src/scripts/motion/` (encastre, respiración, lectura, flip, observer), que se borra en la Fase 10.1.
+- Reemplaza a `src/scripts/motion/` (encastre, respiración, lectura, flip, observer): **borrado el 25 nov**. La lectura de la frase pasó a 4.4 (4.5 queda pendiente), el encastre de servicios a un fundido cruzado (4.7) y la entrada del menú a 4.10.
+- **Micro-interacciones en WAAPI** (`micro.ts`): el visor, el panel, el menú, los filtros, los botones y el formulario siguen con Web Animations y los tokens de `tokens.css`, porque animan pseudo-elementos (`::backdrop`, `::before`) que GSAP no alcanza. El scroll y los revelados son siempre GSAP.
 - Se activa por **data-attributes**, no por clases: `data-reveal`, `data-reveal="clip"`, `data-split`, `data-noise-text`, `data-hover-preview`, `data-magnetic`, `data-pin`.
 - Cada módulo usa `gsap.context()` / `gsap.matchMedia()` y hace **revert** al desmontar y en cada navegación: `astro:before-swap` → `destroyMotion()`, `astro:page-load` → `initMotion()`. Sin listeners ni ScrollTriggers duplicados al navegar.
 - `ScrollTrigger.refresh()` después de cargar fuentes (`document.fonts.ready`) e imágenes, al cambiar de idioma y al cambiar de tema si afecta el layout.

@@ -81,7 +81,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       await page.goto('/es/dev/componentes/');
       // En la página de componentes el panel tiene un mail de prueba si lo hay; si no, se prueba el roll directo.
       const roll = await page.evaluate(async () => {
-        const { rodarTexto } = await import('/src/scripts/motion/base.ts');
+        const { rodarTexto } = await import('/src/motion/micro.ts');
         const el = document.createElement('span');
         el.style.display = 'inline-block';
         el.textContent = 'Copiar mail';

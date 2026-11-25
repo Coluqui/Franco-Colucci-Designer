@@ -14,7 +14,7 @@
  * filas y "Siguiente caso" pierden su nombre en las dos capturas (si no, el título de la fila de otro
  * caso volaría hasta "Siguiente caso", que lleva el mismo nombre). Menos capas que capturar.
  */
-import { animar, ms, numero, resorte } from './base';
+import { animar, ms, numero, resorte } from './micro';
 
 const MAX = 4;
 

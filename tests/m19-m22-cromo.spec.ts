@@ -39,9 +39,8 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       await expect(menu).toHaveAttribute('open', '');
       const frames = await menu.evaluate((m) => (m.getAnimations()[0]?.effect as KeyframeEffect | undefined)?.getKeyframes().map((k) => String(k['clipPath'])));
       expect(frames?.[0]).toMatch(/^inset\(.*round 2px\)$/);
-      // Los links entran al 60 % del encastre.
-      const retraso = await page.locator('.menu__link').first().evaluate((l) => Number(l.getAnimations()[0]?.effect?.getTiming().delay));
-      expect(retraso).toBe(Math.round((reducido ? 120 : 560) * 0.6));
+      // Los links entran con GSAP (4.10) y terminan visibles y sin estilos en línea.
+      await expect.poll(() => page.locator('.menu__link').evaluateAll((els) => els.every((e) => getComputedStyle(e).opacity === '1' && !(e as HTMLElement).style.cssText))).toBe(true);
       await quieto(page, '[data-menu]');
       expect(await menu.evaluate((m) => getComputedStyle(m).clipPath)).toBe('none');
       expect(await boton.getAttribute('aria-expanded')).toBe('true');

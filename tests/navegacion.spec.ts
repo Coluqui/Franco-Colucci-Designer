@@ -35,9 +35,9 @@ test('navegar sin recargar: el header persiste y todo vuelve a arrancar', async 
   await expect(page.locator('[data-filtros]').first()).toHaveAttribute('data-listo', '');
 
   await navegar(page, '/es/');
-  // La home vuelve a arrancar: servicios con encastre, frase partida en palabras, loop montado.
+  // La home vuelve a arrancar: servicios con su recorte y la frase partida en palabras (4.4, SplitText).
   await expect(page.locator('[data-servicios]')).toHaveAttribute('data-encastre', '');
-  await expect(page.locator('[data-frase]').first()).toHaveAttribute('data-lectura', '');
+  await expect(page.locator('.frase').first()).toHaveAttribute('aria-label', /.+/);
   // Nadie quedó "leyendo" de la página anterior (el loop no espera de más).
   await expect(page.locator('html')).not.toHaveAttribute('data-leyendo', '');
   // El header reacciona al scroll en la página nueva.

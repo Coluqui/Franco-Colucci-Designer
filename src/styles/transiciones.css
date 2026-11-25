@@ -4,7 +4,7 @@
  * heredan sus custom properties.
  *
  * - Página: la anterior sale con fundido (200 · in). La nueva aparece debajo; en un caso, sus bloques
- *   entran subiendo (src/scripts/motion/paginas.ts).
+ *   entran subiendo (src/motion/paginas.ts).
  * - Media de la fila (16:10) → hero del caso (16:8): el marco cambia de formato mientras viaja
  *   (700 · snap) y la pieza se recorta adentro, nunca se estira (object-fit: cover). Un encastre.
  * - Nombre de la fila → H1 del caso (y "Siguiente caso" → H1 del siguiente): viaja con la media.
