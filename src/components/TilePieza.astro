@@ -2,7 +2,8 @@
 /**
  * Tile de pieza · design system §7 · PRD §6.
  * Portada (slide 1) en su aspect-ratio sobre --color-stage, --radius-sm, sin teñir ni deformar.
- * Debajo, en label: "cliente · formato"; si es carrusel, ícono + "7 slides".
+ * Debajo, en label: el formato; si es carrusel, ícono + "7 slides". Sin el cliente: el tile siempre va
+ * bajo el nombre de la empresa (auditoría 25 nov: en mobile repetía la empresa y partía en 3 líneas).
  * Hover: aparece "Ver pieza ↗". Táctil: los metadatos están siempre (no dependen del hover).
  * Es un link a la imagen grande (sin JS abre la imagen); con JS abre el visor en esa pieza.
  * Tile estático: solo carga la portada. Fase 6: tile → visor con FLIP (M08).
@@ -39,7 +40,6 @@ const esCarrusel = pieza.slides.length > 1;
     <span class="t-label tile__meta">
       {esCarrusel && <Icono nombre="carrusel" class="tile__icono" />}
       <span class="tile__segmentos">
-        <span class="tile__segmento">{pieza.cliente} ·</span>
         <span class="tile__segmento">{pieza.formato}{esCarrusel && ' ·'}</span>
         {esCarrusel && <span class="tile__segmento">{tf(lang, 'tile.slides', { n: pieza.slides.length })}</span>}
       </span>
@@ -104,7 +104,7 @@ const esCarrusel = pieza.slides.length > 1;
     }
   }
 
-  /* PRD §6: "cliente · Carrusel · 7 slides", con el ícono de carrusel adelante. */
+  /* "Carrusel · 7 slides", con el ícono de carrusel adelante. */
   .tile__meta {
     display: flex;
     align-items: flex-start;

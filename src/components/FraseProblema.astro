@@ -2,9 +2,9 @@
 /**
  * Frase-problema (y cierre) · PRD §3 · design system §4 y §8.
  * --text-display; ≥ 1280 hasta 10 columnas.
- * M15 · lectura ligada al scroll (src/scripts/motion/lectura.ts). Sin JS, completa y visible.
- * Con JS, atenuada desde el primer cuadro (CSS con html[data-js]) hasta que el script la parte en
- * palabras; si el script no corre, una animación de respaldo la deja completa a los --reveal-idle.
+ * Motion v3.0 · 4.5 (efecto firma): el texto se define con el scroll, de granulado a sólido, sobre una
+ * capa fantasma (data-noise-text, src/motion/textNoise.ts).
+ * Sin JS, completa y visible.
  */
 interface Props {
   texto: string;
@@ -16,52 +16,32 @@ interface Props {
 const { texto, as: Tag = 'p', id } = Astro.props;
 ---
 
-<Tag id={id} class="t-display frase" data-frase>{texto}</Tag>
-
-<script>
-  import { lectura } from '../scripts/motion/lectura';
-  import { enCadaPagina } from '../scripts/pagina';
-
-  enCadaPagina(() => {
-    document.querySelectorAll<HTMLElement>('[data-frase]').forEach(lectura);
-  });
-</script>
+<Tag id={id} class="t-display frase" data-noise-text>{texto}</Tag>
 
 <style>
   .frase {
+    position: relative;
     margin: 0;
     color: var(--color-text-primary);
     text-wrap: balance;
   }
 
-  /* Antes de partirse en palabras: atenuada (sin parpadeo de completa a atenuada). Respaldo: si el
-     script no llega, a los --reveal-idle vuelve a 1. Reducido: --reveal-dim vale 1. */
-  :global(html[data-js]) .frase:not([data-lectura]) {
+  /* 4.5 · capa fantasma: el mismo texto, debajo, a baja opacidad; no se selecciona dos veces. */
+  .frase :global(.texto-fantasma) {
+    position: absolute;
+    inset: 0;
     opacity: var(--reveal-dim);
-    animation: frase-respaldo 0s var(--reveal-idle) forwards;
-  }
-
-  @keyframes frase-respaldo {
-    to {
-      opacity: 1;
-    }
-  }
-
-  /* Cada palabra: el scroll fija su opacidad y la transición la suaviza (200 · out). */
-  .frase :global(.lectura__palabra) {
-    transition: opacity var(--duration-fast) var(--ease-out);
-  }
-
-  /* Al seleccionar y copiar, el texto sale una sola vez (el de la copia para lectores). */
-  .frase :global([aria-hidden='true']) {
     user-select: none;
+    pointer-events: none;
   }
 
-  /* Alto contraste (colores forzados): nada atenuado. */
+  .frase :global(.texto-real) {
+    position: relative;
+  }
+
   @media (forced-colors: active) {
-    .frase,
-    .frase :global(.lectura__palabra) {
-      opacity: 1 !important;
+    .frase :global(.texto-fantasma) {
+      display: none;
     }
   }
 

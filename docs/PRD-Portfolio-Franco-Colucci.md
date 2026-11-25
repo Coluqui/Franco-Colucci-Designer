@@ -152,7 +152,7 @@ Un carrusel se diseña, se publica y se evalúa como una unidad: en el sitio se 
 | Dónde | Cómo se comporta |
 | --- | --- |
 | Conteos | Un carrusel suma 1 en el contador del visor, los filtros y "piezas por caso" |
-| Tile | Portada (slide 1) en 4:5, ícono ⧉ y etiqueta `cliente · Carrusel · 7 slides`. En hover, "Ver pieza ↗". Tile estático: no se cargan slides extra |
+| Tile | Portada (slide 1) en 4:5, ícono ⧉ y etiqueta `Carrusel · 7 slides` (sin el cliente: el tile siempre va bajo el nombre de la empresa). En hover, "Ver pieza ↗". Tile estático: no se cargan slides extra |
 | Visor | Slide en 4:5 (en desktop dentro de un marco de teléfono; en mobile a ancho completo, sin marco), indicador segmentado, contador doble `Pieza 03 / 12 · Slide 4 / 7` |
 | Teclado | ← → recorren los slides y siguen a la pieza siguiente al terminar; Re Pág / Av Pág saltan de pieza; ESC cierra |
 | Táctil | Swipe horizontal = slides; después del último, panel "Siguiente pieza →"; botones de pieza anterior / siguiente de 44 px |

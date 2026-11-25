@@ -112,7 +112,8 @@ const Titulo = nivel;
   .fila__media :global(img) {
     inline-size: 100%;
     block-size: 100%;
-    object-fit: cover;
+    /* La pieza entera sobre el escenario, nunca recortada (Franco, 24 nov; auditoría 25 nov). */
+    object-fit: contain;
     transition: transform var(--spring-soft-duration) var(--spring-soft);
   }
 

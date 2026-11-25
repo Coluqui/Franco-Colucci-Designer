@@ -31,6 +31,15 @@ export const mov = {
   subidaCorta: 20,
   /** Contenido de la sección con máscara (4.6). */
   blur: 8,
+  /** 4.5 · texto que se define: grano del filtro SVG, desfase entre palabras y fin del scrub. */
+  ruidoFrecuencia: 0.9,
+  ruidoEscala: 30,
+  escalonRuido: 0.1,
+  finRuido: 'top 55%', // termina antes de la zona de lectura (contraste 1.4.3, auditoría 25 nov)
+  /** 4.13 · el interior del footer arranca corrido hacia arriba (yPercent) y se destapa. */
+  footerDesde: -40,
+  /** Links del menú al entrar (4.10). */
+  blurMenu: 6,
   /** Escala final del wordmark al scrollear (4.3). */
   escalaHero: 0.85,
   /** La imagen de una media se asienta desde esta escala dentro de su máscara (4.8). */

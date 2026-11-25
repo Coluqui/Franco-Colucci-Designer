@@ -19,7 +19,7 @@ const { lang } = Astro.props;
   <div class="skills">
     {
       gruposHerramientas.map((g) => (
-        <section class="skills__grupo" data-reveal-item aria-labelledby={`skills-${g.grupo}`}>
+        <section class={`skills__grupo skills__grupo--${g.grupo}`} data-reveal-item aria-labelledby={`skills-${g.grupo}`}>
           <h3 id={`skills-${g.grupo}`} class="t-dato skills__titulo">
             {t(lang, `skills.groups.${g.grupo}`)}
           </h3>
@@ -62,10 +62,21 @@ const { lang } = Astro.props;
     }
   }
 
+  /* Ancho: 3 columnas; Web (una sola herramienta) va debajo de Video y motion, así ninguna columna
+     queda casi vacía (auditoría 25 nov). */
   @container skills (min-width: 72rem) {
     .skills {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-areas:
+        "design video ai"
+        "design web ai";
+      grid-template-rows: auto 1fr;
     }
+
+    .skills__grupo--design { grid-area: design; }
+    .skills__grupo--video { grid-area: video; }
+    .skills__grupo--web { grid-area: web; }
+    .skills__grupo--ai { grid-area: ai; }
   }
 
   .skills__grupo {

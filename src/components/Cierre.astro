@@ -3,6 +3,7 @@
  * Cierre de la home · PRD §3 y §5 · design system §3 (sección invertida).
  * La frase-problema vuelve como cierre + "▣ Hablemos" (abre el panel; sin JS, /[lang]/hablemos/).
  * El enorme vive en el Footer, que viene justo después.
+ * El botón va en versión grande (--text-h3): junto al titular display, el de 44 px se perdía (auditoría 25 nov).
  */
 import Boton from './Boton.astro';
 import FraseProblema from './FraseProblema.astro';
@@ -33,5 +34,11 @@ const { lang } = Astro.props;
     display: grid;
     justify-items: start;
     gap: var(--space-8);
+  }
+
+  .cierre__caja :global(.boton) {
+    min-block-size: calc(var(--control-height) + var(--space-4));
+    padding-inline: var(--space-6);
+    font-size: var(--text-h3);
   }
 </style>

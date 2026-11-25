@@ -29,9 +29,14 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     test('M26 · el subrayado del link pasa de 1 a 2 px con scaleY', async ({ page }) => {
       test.skip(!ancho(page), 'hover solo con puntero fino');
       await page.goto('/es/trabajos/iscamen/');
-      const link = page.locator('a.link').first();
+      // Los links sueltos (link--suelto) no llevan subrayado: se prueba uno de texto/contacto.
+      const link = page.locator('a.link:not(.link--suelto)').first();
       const linea = () => link.evaluate((a) => getComputedStyle(a, '::after').transform);
       expect(await linea()).toBe('matrix(1, 0, 0, 0.5, 0, 0)');
+      // Ese link está en el footer: con 4.13 el interior llega a su lugar recién al final de la página
+      // (antes queda recortado), y con ScrollSmoother hay que esperar a que el contenido se asiente.
+      await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+      await page.waitForTimeout(1500);
       await link.hover();
       await expect.poll(linea).toBe('none');
     });
@@ -77,7 +82,7 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       await page.goto('/es/dev/componentes/');
       // En la página de componentes el panel tiene un mail de prueba si lo hay; si no, se prueba el roll directo.
       const roll = await page.evaluate(async () => {
-        const { rodarTexto } = await import('/src/scripts/motion/base.ts');
+        const { rodarTexto } = await import('/src/motion/micro.ts');
         const el = document.createElement('span');
         el.style.display = 'inline-block';
         el.textContent = 'Copiar mail';

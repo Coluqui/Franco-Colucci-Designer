@@ -17,6 +17,7 @@ import ResumenSobreMi from '../../components/ResumenSobreMi.astro';
 import Skills from '../../components/Skills.astro';
 import Cierre from '../../components/Cierre.astro';
 import Link from '../../components/Link.astro';
+import Icono from '../../components/Icono.astro';
 import { locales, t, localizePath, type Lang } from '../../i18n';
 import { getCasos, getPiezasDeCaso, piezasDeFila, piezaVista, hrefCaso } from '../../lib/casos';
 import { ordenServicios, ratioServicio, piezaServicio } from '../../config/servicios';
@@ -76,7 +77,7 @@ const servicios = ordenServicios.map((slug) => {
   </Seccion>
 
   <Seccion id="trabajos" titulo={t(lang, 'home.featured')}>
-    <Link slot="accion" class="t-ui link--suelto" href={localizePath(lang, 'trabajos/')} lang={lang}>{t(lang, 'home.allWork')}</Link>
+    <Link slot="accion" class="t-ui link--suelto" href={localizePath(lang, 'trabajos/')} lang={lang}>{t(lang, 'home.allWork')}<Icono nombre="flecha-der" /></Link>
     <ul class="filas" role="list">
       {
         proyectos.map((p) => (

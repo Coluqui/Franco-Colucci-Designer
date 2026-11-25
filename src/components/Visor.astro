@@ -102,9 +102,7 @@ const { lang, piezas } = Astro.props;
 
 <script>
   import { alSalir, enCadaPagina } from '../scripts/pagina';
-  import { animar, curva, detener, ms, numero, reducido, resorte } from '../scripts/motion/base';
-  import { cajaContenida } from '../scripts/motion/flip';
-  import { enPantalla } from '../scripts/motion/observer';
+  import { animar, cajaContenida, curva, detener, enPantalla, ms, numero, reducido, resorte } from '../motion/micro';
 
   /** Arrastre vertical que cierra el visor (M09): fracción del alto de la pantalla. */
   const UMBRAL_CIERRE = 0.2;

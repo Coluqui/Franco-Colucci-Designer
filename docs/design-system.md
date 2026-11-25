@@ -12,7 +12,7 @@ Reglas que nunca se rompen:
 
 1. **El trabajo es el único color fuerte.** La interfaz es papel y tinta. El cobalto aparece solo en: el marco 4:5 del glifo, las cajas de métrica, los links, el focus y el estado activo de un filtro. Si hay más de 5 apariciones por pantalla, sobra.
 2. **Las piezas nunca se tiñen.** Ni duotono, ni grano encima, ni filtros: se ven con sus colores reales. El duotono es solo para fotos propias (retrato, proceso, escritorio).
-3. **Expandido = jerarquía.** Lo importante (wordmark, títulos de caso, el servicio activo) va en Archivo con `wdth` 125; lo que espera (servicios inactivos, links del menú) en 112 y respira a 125 al activarse. El texto de lectura, en `wdth` 100. No hay una segunda familia sans.
+3. **Expandido = jerarquía.** Lo importante (wordmark, títulos de caso, el servicio activo) va en Archivo con `wdth` 125; los servicios y los links del menú también van en 125, y el activo se distingue por el color (la respiración 112 ↔ 125 de v2.0 se quitó el 25 nov). El texto de lectura, en `wdth` 100. No hay una segunda familia sans.
 4. **Rectos y chicos.** Radios de 2 px (controles) y 4 px (paneles y media). Botones compactos. Nada de píldoras ni sombras flotantes en la interfaz.
 5. **Grano en todo el fondo**, nunca sobre las piezas ni sobre el texto chico.
 
@@ -67,7 +67,7 @@ Usá siempre los tokens semánticos (`--color-*`). La paleta base (`--cloud-*`, 
 | --- | --- | --- | --- | --- | --- | --- |
 | wordmark | `--text-wordmark` (64 → 246) | 125 | 850 | 0.86 | −0.045em | Hero. Ajustar para que "COLUCCI" ocupe el ancho del contenedor |
 | display | `--text-display` (40 → 84) | 112 | 800 | 1 | −0.035em | Frase-problema, cierre |
-| services | `min(--text-services, 7.6cqi)` (36 → 85, acotado a su columna) | 112 en reposo · 125 activo | 800 | 1 | −0.035em | Lista "Qué hago" y links del menú. El ancho respira (motion M13–M14) |
+| services | `min(--text-services, 7.6cqi)` (36 → 85, acotado a su columna) | 125 | 800 | 1 | −0.035em | Lista "Qué hago" y links del menú. El activo cambia de color, no de ancho (motion v3.0, 4.7) |
 | h1 | `--text-h1` (36 → 76) | 125 | 800 | 1.05 | −0.035em | Título de caso, títulos de página |
 | h2 | `--text-h2` (28 → 46) | 112 | 750 | 1.05 | −0.025em | Títulos de sección |
 | h3 | `--text-h3` (20 → 26) | 100 | 700 | 1.15 | −0.02em | Nombre de caso en filas, preguntas |
@@ -103,7 +103,7 @@ El grano vive **detrás del contenido**, sobre el fondo de la página (`--z-grai
 
 ## 6. Espaciado, grilla y radios
 
-- Escala base 4 px: `--space-1` (4) a `--space-10` (128). Entre secciones: `--space-section` (80 → 160).
+- Escala base 4 px: `--space-1` (4) a `--space-10` (128). Entre secciones: `--space-section` (64 → 128; era 80 → 160 hasta el 25 nov, el ritmo se sentía flojo).
 - Grilla: 4 / 8 / 12 columnas; márgenes de 20 / 32 / 48 / 64 px; gutters de 16 / 20 / 24 px. Contenedor de texto y grillas: 1312 px. El wordmark y la lista de servicios pueden usar todo el ancho menos los márgenes.
 - Radios: `--radius-xs` 2 px (botones, chips, inputs), `--radius-sm` 4 px (paneles, tarjetas, imágenes), `--radius-full` solo para el pulgar del toggle y puntos de estado.
 - Sin sombras en la interfaz. Solo `--shadow-mockup` en marcos de dispositivo.
@@ -115,19 +115,20 @@ Todo interactivo tiene: default, hover (solo con `@media (hover: hover) and (poi
 | Componente | Default | Hover · active | Otros estados |
 | --- | --- | --- | --- |
 | **Header** | Glifo a la izquierda; a la derecha "▣ Hablemos" (primario) + "Menú" (secundario). Fondo transparente sobre el hero; al scrollear, `--color-bg` con `--border-hairline` abajo | — | Sobre secciones invertidas, los colores se invierten |
-| **Botón primario** | Fondo `--color-text-primary`, texto `--color-bg`, `--text-ui` 600, alto 36 px (área táctil 44), padding 0 14 px, `--radius-xs`, glifo opcional | Fondo `--color-accent`, texto `--color-on-accent`; el glifo desencastra (M02) · `scale(0.98)` y vuelve con `--spring-press` | Loading: texto "Enviando" + barra indeterminada en la base; disabled: `--color-surface` + `--color-text-disabled` |
+| **Botón primario** | Fondo `--color-text-primary`, texto `--color-bg`, `--text-ui` 600, alto 36 px (área táctil 44), padding 0 14 px, `--radius-xs`, glifo opcional. En el cierre de la home, versión grande: `--text-h3`, alto `--control-height` + `--space-4` | Fondo `--color-accent`, texto `--color-on-accent`; el glifo desencastra (M02) · `scale(0.98)` y vuelve con `--spring-press` | Loading: texto "Enviando" + barra indeterminada en la base; disabled: `--color-surface` + `--color-text-disabled` |
 | **Botón secundario** | Borde `--border-control`, texto primario, fondo transparente | Fondo `--color-surface` · `scale(0.98)` | Disabled: borde y texto `--color-text-disabled` |
-| **Link** | `--color-accent`, subrayado 1 px separado 4 px | `--color-accent-hover`, subrayado 2 px | — |
-| **Menú (pantalla completa)** | Crece desde el botón "Menú" hasta cubrir la pantalla (M20), con `--color-raised`; links en `--text-services` con `wdth` 112; a la derecha mail, LinkedIn, WhatsApp, CV y toggles ES/EN y modo | Link en hover: color primario y `wdth` 125 (M14); activo: color primario | Foco atrapado; ESC cierra y devuelve el foco a "Menú" |
+| **Link** | `--color-accent`, subrayado 1 px separado 4 px (dentro del texto y en contacto) | `--color-accent-hover`, subrayado 2 px | — |
+| **Link suelto** (fuera de un párrafo: "Ver todos los trabajos", "Más sobre mí", volver, navegación del footer) | `--color-text-primary`, `--weight-ui`, sin subrayado; flecha cobalto opcional; alto 44 px | La flecha se corre `--shift-xs` | Focus: igual que hover. Así el cobalto no pasa de 5 apariciones por pantalla (§3) |
+| **Menú (pantalla completa)** | Se abre con un wipe de `clip-path` desde arriba (4.10; reducido: fundido), con `--color-raised`; links en `--text-services` con `wdth` 125, en `--color-text-secondary`; a la derecha mail, LinkedIn, WhatsApp, CV y toggles ES/EN y modo | Link en hover: color primario; activo: color primario | Foco atrapado; ESC cierra y devuelve el foco a "Menú" |
 | **Panel Hablemos** | Panel lateral derecho, ancho `--drawer-width`, fondo `--color-raised`, velo `--color-scrim`; formulario (nombre, email, mensaje) + links directos | — | Estados de envío: enviando, éxito (mensaje en `--color-success-bg`), error (con "Reintentar" y el mail como alternativa); sin JS, el botón lleva a `/[lang]/hablemos` |
 | **Chip de métrica** | Caja `--color-accent` con el número (`--text-ui` 700, `--color-on-accent`) + etiqueta sobre `--color-surface`, `--radius-xs` | — | En secciones invertidas: `--color-inverse-accent` |
 | **Card de proyecto (home y Trabajos)** | Panel `--color-surface`, `--radius-sm`: media 16:10 a la izquierda (7 col), a la derecha empresa (h3), rol, descripción corta y cantidad de piezas por tipo (v4.0: sin chips de métrica) | Hover: la media escala `--scale-media-hover` dentro de su caja con `--spring-soft` y aparece "Ver caso →" (M27) | Focus: anillo en todo el panel y "Ver caso →" visible. Clic: la media se convierte en el hero del caso (M06) |
-| **Lista de servicios** | Items con alto fijo; activo en `--color-text-primary` y `wdth` 125, inactivos en `--color-text-secondary` y `wdth` 112; vista previa fija a la derecha (caja `--color-stage`) | Hover (con intención de 80 ms) o focus: el activo respira (M13) y el marco de la vista previa cambia al formato de la pieza de ese servicio (M05) | Mobile: acordeón con `+` / `−`; la vista previa va dentro del ítem abierto |
+| **Lista de servicios** | Items con alto fijo; todos en `wdth` 125; activo en `--color-text-primary`, inactivos en `--color-text-secondary`; vista previa fija a la derecha (caja `--color-stage`) | Hover (con intención de 80 ms) o focus: el activo cambia de color y la vista previa cambia con un fundido cruzado (4.7) | Mobile: acordeón (4.12) con un `+` que rota 45°; la vista previa va dentro del ítem abierto |
 | **Grilla de clientes** | En sección invertida: celdas con borde `--color-inverse-border`, logos SVG monocromos en `--color-inverse-text` | Logo a opacidad 1 (resto 0,7) | — |
 | **Testimonios** | Cita en `--text-h2` (wdth 100, 600), autor en `--text-small`, contador `01/03` en label, flechas ← → | — | Arrastrable con inercia y resorte (M28); `aria-live="polite"` en el contador |
 | **Skills** (v4.0, reemplaza a la FAQ) | Grupos (Diseño, Video y motion, Web, IA) con logo del software en un solo color (`currentColor`, 32 px), nombre en h3 y para qué lo usa en `--text-body` | Hover: el logo pasa a opacidad 1 (resto 0,7) | Los logos son `aria-hidden`; el nombre es texto real |
 | **Filtro (Trabajos y caso)** | Chips de texto: inactivo con `--border-control`; activo con fondo `--color-text-primary` y un punto cobalto | Fondo `--color-surface` | Muestra la cantidad: "Ads · 4" (un carrusel cuenta 1) |
-| **Tile de pieza** | Pieza en su `aspect-ratio` sobre `--color-stage`, `--radius-sm`; debajo `cliente · formato` en label; carrusel: ícono ⧉ + "7 slides" | Aparece "Ver pieza ↗" | Táctil: metadatos siempre visibles |
+| **Tile de pieza** | Pieza en su `aspect-ratio` sobre `--color-stage`, `--radius-sm`; debajo el formato en label (sin el cliente, que ya encabeza la fila); carrusel: ícono ⧉ + "7 slides" | Aparece "Ver pieza ↗" | Táctil: metadatos siempre visibles |
 | **Visor** | Fondo `--color-inverse-bg`; pieza en su ratio; contador doble `Pieza 03 / 12 · Slide 4 / 7` | — | Reglas de navegación del PRD (sección "Carruseles") |
 | **Campo de formulario** | Etiqueta arriba (`--text-small` 600), input `--color-raised` con `--border-control`, alto 48, `--radius-xs` | Borde `--color-text-secondary` | Error: borde y texto `--color-danger` + ícono; éxito al enviar |
 | **Toggles (ES/EN, modo)** | Segmentado de 2 opciones dentro del menú y el footer | — | Mantiene página y posición |
@@ -153,7 +154,7 @@ Reglas: `100dvh` en vez de `100vh`; `env(safe-area-inset-*)` en header, barra y 
 
 Especificación completa en `docs/motion.md` **v3.0 ("Desglose", GSAP, 24 nov)**: efectos 4.1–4.13, versión reducida y criterios de aceptación. Reemplaza a v2.0 ("Formato vivo") y a v1.1, que quedan obsoletos. **Los IDs M01–M32 que aparecen en las tablas de componentes de este documento son de v2.0**: el comportamiento de motion de cada componente lo define ahora `docs/motion.md` v3.0 (cards 4.8, botones 4.9, menú 4.10, servicios 4.7, acordeón 4.12).
 
-Resumen: **los marcos cambian de formato** (encastre, con `--spring-snap`), **la letra respira** en su eje de ancho (112 ↔ 125, con `--spring-soft`) y **el texto aparece al ritmo de lectura**. Todo lo que responde a un gesto usa resortes (`--spring-*`); lo que solo informa usa curvas cortas. Nada del primer viewport arranca escondido salvo el encastre del glifo.
+Resumen: **los marcos cambian de formato** (encastre, con `--spring-snap`), **el texto aparece al ritmo de lectura**. Todo lo que responde a un gesto usa resortes (`--spring-*`); lo que solo informa usa curvas cortas. Nada del primer viewport arranca escondido salvo el encastre del glifo.
 
 Motion: `docs/motion.md` v3.0 "Desglose" (GSAP). Fuera: marquee, cursor custom, preloader, grano animado, contadores que suben, "fade-up" en todos los elementos.
 

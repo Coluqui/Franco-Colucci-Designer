@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-/** M05 · vista previa de servicios: el marco encastra al formato del servicio (docs/motion.md §5). */
+/** Vista previa de servicios: el marco toma el formato del servicio y las piezas se cruzan con un fundido (4.7). */
 
 const estado = (page: Page, i: number) =>
   page.evaluate((i) => {
@@ -26,7 +26,6 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
 
       // Mail (3:1): el recorte es más bajo que ancho.
       await page.locator('[data-servicios] summary').nth(3).click();
-      if (ancho && reducedMotion === 'no-preference') expect((await estado(page, 3)).animando).toBe(true);
       // El evento toggle es asíncrono: se espera a que el recorte esté puesto y quieto.
       await expect.poll(async () => {
         const e = await estado(page, 3);
@@ -39,28 +38,20 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       await expect(page.locator('[data-servicio-salida]')).toHaveCount(0);
     });
 
-    test('un segundo cambio interrumpe sin saltos', async ({ page }) => {
+    test('dos cambios seguidos dejan un solo ítem abierto y ninguna copia colgada', async ({ page }) => {
       const ancho = await page.locator('[data-servicios]').evaluate((l) => getComputedStyle(l).getPropertyValue('--servicios-fijo').trim() === '1');
-      test.skip(!ancho || reducedMotion === 'reduce', 'solo en el modo ancho con movimiento');
-      const r = await page.evaluate(async () => {
+      test.skip(!ancho, 'solo en el modo ancho');
+      await page.evaluate(async () => {
         const ds = [...document.querySelectorAll<HTMLDetailsElement>('[data-servicios] details')];
-        const capa = (i: number) => ds[i]!.querySelector<HTMLElement>('[data-servicio-capa]')!;
-        const espera = (n: number) => new Promise((r) => setTimeout(r, n));
-        ds[2]!.open = true; // Reels 9:16
+        ds[2]!.open = true;
         await new Promise((r) => ds[2]!.addEventListener('toggle', r, { once: true }));
-        await espera(120);
-        const enCamino = getComputedStyle(capa(2)).clipPath;
-        ds[3]!.open = true; // Mail 3:1 antes de terminar
+        ds[3]!.open = true;
         await new Promise((r) => ds[3]!.addEventListener('toggle', r, { once: true }));
-        const arranque = getComputedStyle(capa(3)).clipPath;
-        return { enCamino, arranque, abiertos: ds.filter((d) => d.open).length };
       });
-      const px = (s: string) => s.match(/[\d.]+px/g)!.slice(0, 2).map(parseFloat);
-      const [y1, x1] = px(r.enCamino);
-      const [y2, x2] = px(r.arranque);
-      // Arranca donde iba el anterior (tolerancia: los pocos ms entre las dos lecturas).
-      expect(Math.abs(y2! - y1!) + Math.abs(x2! - x1!)).toBeLessThan(25);
-      expect(r.abiertos).toBe(1);
+      await expect.poll(() => page.locator('[data-servicios] details[open]').count()).toBe(1);
+      await expect(page.locator('[data-servicio-salida]')).toHaveCount(0);
+      const pieza = page.locator('[data-servicios] details[open] [data-servicio-marco] > *').first();
+      await expect.poll(() => pieza.evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
     });
   });
 }

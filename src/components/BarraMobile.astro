@@ -33,7 +33,8 @@ const cv = cvHref(lang);
     inset-block-end: 0;
     z-index: var(--z-bottom-bar);
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    /* La tercera columna es el lugar del botón "Volver arriba" (BotonArriba): así no tapa contenido. */
+    grid-template-columns: 1fr 1fr var(--control-height);
     gap: var(--space-3);
     align-items: center;
     min-block-size: calc(var(--bottom-bar-height) + var(--safe-bottom));

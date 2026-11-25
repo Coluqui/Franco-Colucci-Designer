@@ -3,6 +3,7 @@
  * Footer · design system §7 · PRD §3.
  * Monograma "FC" grande, mail, LinkedIn, WhatsApp, CV y la firma "Franco Colucci, 2026".
  * Idioma y modo viven en el header (24 nov).
+ * Motion 4.13: el footer se descubre al llegar al final y el "FC" entra letra por letra (src/motion/footer.ts).
  * Los datos de contacto salen de src/config/site.ts (PENDIENTE hasta que Franco los complete).
  */
 import Glifo from './Glifo.astro';
@@ -25,9 +26,9 @@ const paginas = [
 ];
 ---
 
-<footer class="footer">
-  <div class="footer__interior container">
-    <div class="footer__glifo">
+<footer class="footer" data-footer>
+  <div class="footer__interior container" data-footer-interior>
+    <div class="footer__glifo" data-footer-nombre>
       <Glifo size="100cqi" />
     </div>
 
@@ -37,7 +38,7 @@ const paginas = [
           {
             paginas.map((p) => (
               <li>
-                <a class="link" href={p.href} aria-current={actual === p.href ? 'page' : undefined}>
+                <a class="link link--suelto" href={p.href} aria-current={actual === p.href ? 'page' : undefined}>
                   {p.texto}
                 </a>
               </li>
@@ -59,9 +60,11 @@ const paginas = [
 </footer>
 
 <style>
+  /* 4.13: el footer recorta a su interior mientras se destapa. */
   .footer {
     padding-block: var(--space-section) var(--space-7);
     border-block-start: var(--border-hairline);
+    overflow: clip;
   }
 
   .footer__interior {

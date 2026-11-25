@@ -87,7 +87,7 @@ const primerError = (['nombre', 'email', 'mensaje'] as const).find((c) => errore
 <script>
   import { actions, isInputError } from 'astro:actions';
   import { enCadaPagina } from '../scripts/pagina';
-  import { animar, curva } from '../scripts/motion/base';
+  import { animar, curva } from '../motion/micro';
 
   type Control = HTMLInputElement | HTMLTextAreaElement;
   type Clave = 'required' | 'invalidEmail' | 'tooLong';

@@ -1,9 +1,11 @@
 ---
 /**
  * Sobre mí (resumen) en la home · PRD §5.
- * Bio corta + link a /[lang]/sobre-mi/. Sin retrato hasta que Franco elija una foto (docs/pendientes.md).
+ * Bio corta + link a /[lang]/sobre-mi/ y, a la derecha desde 80rem, los datos de la página Sobre mí
+ * (base, idiomas, modalidad). Sin retrato hasta que Franco elija una foto (docs/pendientes.md).
  */
 import Link from './Link.astro';
+import Icono from './Icono.astro';
 import { t, localizePath, type Lang } from '../i18n';
 
 interface Props {
@@ -11,15 +13,31 @@ interface Props {
 }
 
 const { lang } = Astro.props;
+
+const datos = [
+  { etiqueta: t(lang, 'about.base'), valor: t(lang, 'about.baseValue') },
+  { etiqueta: t(lang, 'about.languages'), valor: t(lang, 'about.languagesValue') },
+  { etiqueta: t(lang, 'about.workMode'), valor: t(lang, 'about.workModeValue') },
+];
 ---
 
 <div class="resumen" data-reveal>
   <div class="resumen__texto">
     <p class="t-lead" data-split="lines">{t(lang, 'home.aboutText')}</p>
     <p class="t-ui">
-      <Link href={localizePath(lang, 'sobre-mi/')} lang={lang} class="link--suelto">{t(lang, 'home.aboutLink')}</Link>
+      <Link href={localizePath(lang, 'sobre-mi/')} lang={lang} class="link--suelto">{t(lang, 'home.aboutLink')}<Icono nombre="flecha-der" /></Link>
     </p>
   </div>
+  <dl class="resumen__datos">
+    {
+      datos.map((d) => (
+        <div>
+          <dt class="t-dato">{d.etiqueta}</dt>
+          <dd class="t-body">{d.valor}</dd>
+        </div>
+      ))
+    }
+  </dl>
 </div>
 
 <style>
@@ -37,5 +55,36 @@ const { lang } = Astro.props;
 
   .resumen__texto p {
     margin: 0;
+  }
+
+  .resumen__datos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--space-5) var(--grid-gutter);
+    align-content: start;
+    margin: 0;
+  }
+
+  .resumen__datos div {
+    display: grid;
+    gap: var(--space-1);
+    padding-block-start: var(--space-3);
+    border-block-start: var(--border-hairline);
+  }
+
+  .resumen__datos dd {
+    margin: 0;
+  }
+
+  /* ≥ 1280: bio en 7 columnas, datos apilados en 5 (como Clientes y el caso). */
+  @media (min-width: 80rem) {
+    .resumen {
+      grid-template-columns: 7fr 5fr;
+      column-gap: calc(var(--grid-gutter) * 2 + (100% - 11 * var(--grid-gutter)) / 12);
+    }
+
+    .resumen__datos {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
