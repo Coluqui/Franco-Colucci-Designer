@@ -35,7 +35,7 @@ export const mov = {
   ruidoFrecuencia: 0.9,
   ruidoEscala: 30,
   escalonRuido: 0.1,
-  finRuido: 'top 30%',
+  finRuido: 'top 55%', // termina antes de la zona de lectura (contraste 1.4.3, auditoría 25 nov)
   /** 4.13 · el interior del footer arranca corrido hacia arriba (yPercent) y se destapa. */
   footerDesde: -40,
   /** Links del menú al entrar (4.10). */

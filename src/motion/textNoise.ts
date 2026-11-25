@@ -4,7 +4,9 @@
  * (feTurbulence + feDisplacementMap) baja su `scale` a 0 y las palabras pasan de opacity/blur a nítidas,
  * escalonadas, con scrub. Debajo queda una capa fantasma del mismo texto (baja opacidad, aria-hidden):
  * la frase nunca está vacía. El texto real sigue siendo seleccionable y SplitText conserva el aria-label.
- * Al terminar se quita el filtro (no queda pintando). Reducido: sin grano ni scrub, un fundido corto.
+ * Al terminar se quita el filtro (no queda pintando). Reducido o colores forzados (ahí la capa fantasma
+ * se oculta): sin grano ni scrub, un fundido corto. El <p>/<h2> no lleva aria-label (ARIA no permite
+ * nombrar párrafos): el texto real sigue en el DOM y las palabras usan aria:'none'.
  */
 import { gsap, SplitText } from './gsap';
 import { dur, mov } from './tokens';
@@ -30,7 +32,7 @@ function crearFiltro() {
 
 export function definirTextos(reducido: boolean) {
   const textos = [...document.querySelectorAll<HTMLElement>('[data-noise-text]')];
-  if (reducido) {
+  if (reducido || matchMedia('(forced-colors: active)').matches) {
     textos.forEach((el) => gsap.fromTo(el, { opacity: 0 }, { opacity: 1, duration: dur.reducido, ease: 'none', scrollTrigger: { trigger: el, start: mov.inicio, once: true } }));
     return;
   }
@@ -49,8 +51,7 @@ export function definirTextos(reducido: boolean) {
     el.dataset['noiseListo'] = '';
 
     const filtro = crearFiltro();
-    const split = SplitText.create(real, { type: 'words', aria: 'none' });
-    el.setAttribute('aria-label', fantasma.textContent ?? '');
+    const split = SplitText.create(real, { type: 'words', aria: 'none', tag: 'span' });
     gsap.set(real, { filter: `url(#${filtro.id})` });
 
     const tl = gsap.timeline({
@@ -74,7 +75,6 @@ export function definirTextos(reducido: boolean) {
       tl.kill();
       split.revert();
       el.replaceChildren(...real.childNodes);
-      el.removeAttribute('aria-label');
       delete el.dataset['noiseListo'];
       filtro.svg.remove();
     });
