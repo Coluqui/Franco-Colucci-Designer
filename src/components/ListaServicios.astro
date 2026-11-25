@@ -170,17 +170,21 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
 
       /** 4.12 · acordeón (modo angosto): el alto se anima con GSAP; primero se pliega el abierto. */
       const panelDe = (d: HTMLDetailsElement) => d.querySelector<HTMLElement>('.servicio__panel')!;
-      const plegar = (d: HTMLDetailsElement) =>
-        gsap.to(panelDe(d), {
+      // data-plegando: el "+" vuelve al empezar a plegar, no cuando el panel ya se cerró.
+      const plegar = (d: HTMLDetailsElement) => {
+        d.toggleAttribute('data-plegando', true);
+        return gsap.to(panelDe(d), {
           height: 0,
           overflow: 'hidden',
           duration: dur.fast,
           ease: ease.inOut,
           onComplete: () => {
             d.open = false;
+            d.removeAttribute('data-plegando');
             gsap.set(panelDe(d), { clearProps: 'height,overflow' });
           },
         });
+      };
       const desplegar = (d: HTMLDetailsElement) => {
         d.open = true;
         gsap.fromTo(panelDe(d), { height: 0, overflow: 'hidden' }, { height: 'auto', duration: dur.base, ease: ease.inOut, clearProps: 'height,overflow' });
@@ -316,7 +320,7 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
     transition: transform var(--duration-base) var(--ease-in-out);
   }
 
-  details[open] > .servicio__nombre :global(.servicio__signo path) {
+  details[open]:not([data-plegando]) > .servicio__nombre :global(.servicio__signo path) {
     transform: rotate(45deg);
   }
 

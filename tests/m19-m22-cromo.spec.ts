@@ -31,14 +31,15 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       expect(await page.locator('[data-header]').evaluate((h) => getComputedStyle(h).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
     });
 
-    test('M20 · el menú se abre con un wipe desde arriba; el foco vuelve a "Menú"', async ({ page }) => {
+    test('M20 · el menú se abre con un wipe desde arriba (reducido: fundido); el foco vuelve a "Menú"', async ({ page }) => {
       await page.goto('/es/');
       const boton = page.locator('[data-header] [data-abre-menu]');
       await boton.click();
       const menu = page.locator('[data-menu]');
       await expect(menu).toHaveAttribute('open', '');
-      const frames = await menu.evaluate((m) => (m.getAnimations()[0]?.effect as KeyframeEffect | undefined)?.getKeyframes().map((k) => String(k['clipPath'])));
-      expect(frames?.[0]).toMatch(/^inset\(0px 0px 100%( 0px)?\)$/);
+      const frames = await menu.evaluate((m) => (m.getAnimations()[0]?.effect as KeyframeEffect | undefined)?.getKeyframes().map((k) => String(k['clipPath'] ?? k['opacity'])));
+      if (reducido) expect(frames?.[0]).toBe('0');
+      else expect(frames?.[0]).toMatch(/^inset\(0px 0px 100%( 0px)?\)$/);
       // Los links entran con GSAP (4.10) y terminan visibles y sin estilos en línea.
       await expect.poll(() => page.locator('.menu__link').evaluateAll((els) => els.every((e) => getComputedStyle(e).opacity === '1' && !(e as HTMLElement).style.cssText))).toBe(true);
       await quieto(page, '[data-menu]');

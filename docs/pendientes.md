@@ -103,7 +103,7 @@ El design system §4 pide estos valores, pero no tienen token. Hoy están escrit
   | ID | Pide `docs/motion.md` | Hoy, con los tokens |
   | --- | --- | --- |
   | M19 | Instantáneo | Fundido de 120 ms |
-  | M20 | Fundido de 120 ms | El recorte crece desde el botón en 120 ms |
+  | M20 | Fundido de 120 ms | Resuelto el 25 nov (4.10): en reducido el menú hace un fundido de 120 ms |
   | M21 | Fundido de 120 ms | El panel se desliza en 120 ms |
   | M22 | Instantáneo | La barra baja en 120 ms |
 

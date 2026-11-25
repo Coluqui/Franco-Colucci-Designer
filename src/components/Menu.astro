@@ -5,8 +5,8 @@
  * Links en --text-services; el actual, en hover y con foco, en --color-text-primary.
  * A la derecha: mail, LinkedIn, WhatsApp, CV y toggles ES/EN y modo.
  * 4.10: al abrir, los links suben y pasan de desenfocados a nítidos, escalonados (GSAP); en hover y
- * en la página actual, el link pasa a --color-text-primary (sin la respiración de ancho de v2.0). El menú crece desde el botón "Menú" y los links
- * entran cuando llega al 60 %.
+ * en la página actual, el link pasa a --color-text-primary (sin la respiración de ancho de v2.0). El menú se abre
+ * con un wipe desde arriba y los links entran cuando llega al 60 %. Reducido: el menú solo aparece (fundido).
  */
 import Boton from './Boton.astro';
 import Glifo from './Glifo.astro';
@@ -73,7 +73,7 @@ const links: Array<{ clave: UiKey; href: string }> = [
   import { enCadaPagina } from '../scripts/pagina';
   import { gsap } from '../motion/gsap';
   import { dur, ease, mov, stagger } from '../motion/tokens';
-  import { animar, curva, detener, numero, resorte } from '../motion/micro';
+  import { animar, curva, detener, numero, reducido, resorte } from '../motion/micro';
 
   /**
    * 4.10 · el menú se abre con un wipe de clip-path desde arriba (--spring-snap) y al 60 % entran los
@@ -127,7 +127,8 @@ const links: Array<{ clave: UiKey; href: string }> = [
       if (!menu.open) menu.showModal();
       marcar(true);
       const snap = resorte('snap');
-      animar(menu, { clipPath: completo }, { ...snap, desde: { clipPath: arriba }, soltar: true });
+      if (reducido()) animar(menu, { opacity: '1' }, { ...snap, desde: { opacity: '0' }, soltar: true });
+      else animar(menu, { clipPath: completo }, { ...snap, desde: { clipPath: arriba }, soltar: true });
       rollar(etiquetaCerrar, true);
       entrarLinks(snap.duration * 0.6);
     };
@@ -136,7 +137,7 @@ const links: Array<{ clave: UiKey; href: string }> = [
       if (!menu.open || cerrando) return;
       cerrando = true;
       rollar(etiquetaCerrar, false);
-      const a = animar(menu, { clipPath: arriba }, curva('in', 'base'));
+      const a = reducido() ? animar(menu, { opacity: '0' }, curva('in', 'base')) : animar(menu, { clipPath: arriba }, curva('in', 'base'));
       await a.finished.catch(() => {});
       if (cerrando && menu.open) menu.close();
     };
