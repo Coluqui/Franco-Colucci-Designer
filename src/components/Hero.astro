@@ -3,7 +3,8 @@
  * Hero de la home · PRD v4.0 §5 · design system §2, §4 y §8.
  * Wordmark "FRANCO / COLUCCI" a todo el ancho (H1 real: "Franco Colucci") + bajada. Sin piezas:
  * Franco prefiere que el trabajo aparezca al scrollear (24 nov).
- * Ocupa la primera pantalla; el resto de la home se descubre al bajar (motion v3.0).
+ * Ocupa la primera pantalla desde 48rem; en angosto, 60 % del alto (Franco, 25 nov: en el celular el
+ * nombre quedaba abajo con media pantalla vacía arriba). El resto se descubre al bajar (motion v3.0).
  * Motion: 4.2 (entra "FC" y se despliega en "FRANCO / COLUCCI", como el logo del header; Franco, 24 nov)
  * y 4.3 (al scrollear se achica y se va). Sin JS o con movimiento reducido: el nombre completo.
  * Hooks: data-hero, data-hero-linea, data-hero-resto, data-hero-bajada (src/motion/hero.ts).
@@ -40,6 +41,12 @@ const { lang } = Astro.props;
     align-items: end;
     min-block-size: calc(100dvh - var(--header-height, 0px));
     padding-block: var(--space-6) var(--space-section);
+  }
+
+  @media (max-width: 47.999rem) {
+    .hero {
+      min-block-size: 60svh;
+    }
   }
 
   /* El wordmark se mide contra este contenedor (t-wordmark usa cqi). */
