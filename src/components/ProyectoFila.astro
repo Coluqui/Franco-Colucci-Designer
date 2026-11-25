@@ -33,8 +33,10 @@ const { lang, slug, href, titulo, rol, total, piezas } = Astro.props;
     </div>
     <a class="t-ui proyecto__ver" href={href}>
       <span>{t(lang, 'case.viewFull')}<span class="visually-hidden">: {titulo}</span></span>
-      <span class="t-label proyecto__cantidad">{tf(lang, 'case.piecesInCase', { n: total })}</span>
-      <Icono nombre="flecha-der" />
+      <span class="proyecto__cola">
+        <span class="t-label proyecto__cantidad">{tf(lang, 'case.piecesInCase', { n: total })}</span>
+        <Icono nombre="flecha-der" />
+      </span>
     </a>
   </header>
   <div class="proyecto__piezas">
@@ -79,10 +81,18 @@ const { lang, slug, href, titulo, rol, total, piezas } = Astro.props;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2) var(--space-3);
-    min-block-size: var(--control-height-sm);
+    min-block-size: var(--control-height);
     color: var(--color-text-primary);
     font-weight: var(--weight-ui);
     text-decoration: none;
+  }
+
+  /* La flecha nunca queda sola en otra línea: viaja con la cantidad. */
+  .proyecto__cola {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    white-space: nowrap;
   }
 
   .proyecto__cantidad {

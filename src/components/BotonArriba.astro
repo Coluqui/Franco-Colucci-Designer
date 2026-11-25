@@ -1,6 +1,7 @@
 ---
 /**
- * Botón flotante "Volver arriba" (Franco, 24 nov). Abajo a la derecha, encima de la barra mobile.
+ * Botón flotante "Volver arriba" (Franco, 24 nov). Abajo a la derecha; en mobile se ubica dentro de la
+ * barra inferior, en su tercera columna (auditoría 25 nov: flotando encima tapaba piezas).
  * Aparece pasada una pantalla de scroll. Es un link a #contenido: sin JS también funciona.
  * Con JS sube suave (con el smoother si está activo; directo con movimiento reducido) y el foco
  * va al principio del contenido.
@@ -51,8 +52,8 @@ const { lang } = Astro.props;
   .arriba {
     position: fixed;
     inset-inline-end: var(--grid-margin);
-    inset-block-end: calc(var(--bottom-bar-height) + var(--safe-bottom) + var(--space-4));
-    z-index: var(--z-bottom-bar);
+    inset-block-end: calc(var(--safe-bottom) + (var(--bottom-bar-height) - var(--control-height)) / 2);
+    z-index: calc(var(--z-bottom-bar) + 1);
     display: grid;
     place-items: center;
     inline-size: var(--control-height);
