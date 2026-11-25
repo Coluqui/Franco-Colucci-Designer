@@ -5,6 +5,7 @@
  * - Alto visual 36 px (--control-height-sm) en `size="sm"` (header) con área táctil de 44 px; 44 px por defecto.
  * - Primario: tinta → cobalto en hover (M25: el desencastre del glifo llega en la Fase 6).
  * - Press: scale(--scale-press) y vuelve con --spring-press.
+ * - 4.9 (puntero fino, sin movimiento reducido): en hover el texto sale hacia arriba y entra desde abajo.
  * - Loading: texto de carga + barra en la base (M32). Usa aria-disabled y no disabled, para que el
  *   foco no se pierda al enviar. Con `textoCarga`, la barra ya está en el DOM y la muestra aria-busy
  *   (así el formulario la prende desde JS).
@@ -49,7 +50,7 @@ const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
   pendiente ? (
     /* Dato pendiente: no es un link (un <a> sin href no anuncia aria-disabled). Igual que Link. */
     <span class:list={[...clases, 'boton--pendiente']}>
-      <span class="boton__texto"><slot /></span>
+      <span class="boton__mascara"><span class="boton__texto"><slot /></span></span>
       {icono && <Icono nombre={icono} class="boton__icono" />}
       <span class="visually-hidden">{t(lang, 'a11y.pending')}</span>
     </span>
@@ -62,7 +63,7 @@ const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
       aria-busy={loading ? 'true' : undefined}
       {...rest}
     >
-      <span class="boton__texto">{loading && textoCarga ? textoCarga : <slot />}</span>
+      <span class="boton__mascara"><span class="boton__texto">{loading && textoCarga ? textoCarga : <slot />}</span></span>
       {icono && <Icono nombre={icono} class="boton__icono" />}
       {(loading || textoCarga) && <span class="boton__carga" aria-hidden="true" />}
     </a>
@@ -75,7 +76,7 @@ const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
       aria-busy={loading ? 'true' : undefined}
       {...rest}
     >
-      <span class="boton__texto">{loading && textoCarga ? textoCarga : <slot />}</span>
+      <span class="boton__mascara"><span class="boton__texto">{loading && textoCarga ? textoCarga : <slot />}</span></span>
       {icono && <Icono nombre={icono} class="boton__icono" />}
       {(loading || textoCarga) && <span class="boton__carga" aria-hidden="true" />}
     </button>
@@ -239,6 +240,12 @@ const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
   /* La barra está en el DOM si el botón puede cargar; se ve solo mientras carga (aria-busy). */
   .boton:not([aria-busy="true"]) .boton__carga {
     display: none;
+  }
+
+  /* 4.9 · la máscara recorta el texto cuando sale hacia arriba y vuelve desde abajo (src/motion/botones.ts). */
+  .boton__mascara {
+    display: inline-flex;
+    overflow: clip;
   }
 
   .boton__texto {

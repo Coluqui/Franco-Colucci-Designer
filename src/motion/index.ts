@@ -9,6 +9,9 @@ import { iniciarSmooth } from './smooth';
 import { revelar, alFocoRevelar } from './reveals';
 import { animarHero } from './hero';
 import { animarLogo } from './logo';
+import { definirTextos } from './textNoise';
+import { descubrirFooter } from './footer';
+import { cambiarTextoBotones } from './botones';
 
 const html = document.documentElement;
 let mm: gsap.MatchMedia | null = null;
@@ -28,7 +31,12 @@ export function initMotion() {
     animarHero(reducido);
     if (ancho) animarLogo(reducido);
     revelar(reducido);
+    const soltarTextos = definirTextos(reducido);
+    descubrirFooter(reducido);
+    const soltarBotones = fino && !reducido ? cambiarTextoBotones() : null;
     return () => {
+      soltarBotones?.();
+      soltarTextos?.();
       quitarSmooth?.();
       html.removeAttribute('data-smooth');
     };

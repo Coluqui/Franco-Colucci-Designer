@@ -2,8 +2,8 @@
 /**
  * Frase-problema (y cierre) · PRD §3 · design system §4 y §8.
  * --text-display; ≥ 1280 hasta 10 columnas.
- * Motion v3.0 · 4.4: las palabras suben dentro de su máscara al entrar (data-split, src/motion/reveals.ts).
- * Reemplaza a la lectura ligada al scroll de v2.0 (M15). Pendiente (paso C): 4.5, texto que se define.
+ * Motion v3.0 · 4.5 (efecto firma): el texto se define con el scroll, de granulado a sólido, sobre una
+ * capa fantasma (data-noise-text, src/motion/textNoise.ts).
  * Sin JS, completa y visible.
  */
 interface Props {
@@ -16,13 +16,33 @@ interface Props {
 const { texto, as: Tag = 'p', id } = Astro.props;
 ---
 
-<Tag id={id} class="t-display frase" data-split>{texto}</Tag>
+<Tag id={id} class="t-display frase" data-noise-text>{texto}</Tag>
 
 <style>
   .frase {
+    position: relative;
     margin: 0;
     color: var(--color-text-primary);
     text-wrap: balance;
+  }
+
+  /* 4.5 · capa fantasma: el mismo texto, debajo, a baja opacidad; no se selecciona dos veces. */
+  .frase :global(.texto-fantasma) {
+    position: absolute;
+    inset: 0;
+    opacity: var(--reveal-dim);
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .frase :global(.texto-real) {
+    position: relative;
+  }
+
+  @media (forced-colors: active) {
+    .frase :global(.texto-fantasma) {
+      display: none;
+    }
   }
 
   @media (min-width: 80rem) {
