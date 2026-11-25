@@ -1,30 +1,28 @@
 import { test, expect, type Page } from '@playwright/test';
 
-/** Servicio activo (M13) y entrada de los links del menú (4.10). La lectura (M15) se quitó con motion v3.0. */
+/** Servicio activo (4.7) y entrada de los links del menú (4.10). La respiración (M13) y la lectura (M15) se quitaron con motion v3.0. */
 
 const stretch = (page: Page, sel: string) =>
   page.locator(sel).first().evaluate((el) => parseFloat(getComputedStyle(el).fontStretch));
 
 for (const reducedMotion of ['no-preference', 'reduce'] as const) {
-  const reducido = reducedMotion === 'reduce';
 
   test.describe(`reducido: ${reducedMotion}`, () => {
     test.beforeEach(async ({ page }) => {
       await page.emulateMedia({ reducedMotion });
     });
 
-    test('M13 · el servicio activo respira de 112 a 125 y el resto queda en reposo', async ({ page }) => {
+    test('4.7 · todos los servicios al mismo ancho: el activo cambia solo de color', async ({ page }) => {
       await page.goto('/es/');
       const summaries = page.locator('[data-servicios] summary');
       await summaries.nth(1).scrollIntoViewIfNeeded();
       // Con ScrollSmoother el contenido llega con retraso: se espera a que quede quieto.
       await page.waitForTimeout(1500);
       await summaries.nth(1).click();
-      await expect.poll(() => stretch(page, '[data-servicios] details[open] summary')).toBe(125);
-      // Los inactivos: 112 con movimiento; 125 en reducido (solo cambia el color).
-      // (se espera a que el que se cerró termine de volver: el resorte rebota un poco).
-      await expect.poll(() => stretch(page, '[data-servicios] details:not([open]) summary')).toBe(reducido ? 125 : 112);
-      // Alto fijo: respirar no mueve nada alrededor.
+      await expect(page.locator('[data-servicios] details').nth(1)).toHaveAttribute('open', '');
+      // Sin respiración: abierto y cerrados comparten ancho (el contraste AA de los inactivos se mantiene).
+      expect(await stretch(page, '[data-servicios] details[open] summary')).toBe(await stretch(page, '[data-servicios] details:not([open]) summary'));
+      // Alto fijo: abrir no mueve los nombres.
       const alto = await summaries.nth(1).evaluate((el) => el.getBoundingClientRect().height);
       const altos = await summaries.evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
       expect(altos.every((h) => Math.abs(h - alto) < 1)).toBe(true);
@@ -48,7 +46,9 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
       if (vista.width >= 1024) {
         const otro = links.filter({ hasNot: page.locator('[aria-current]') }).first();
         await otro.hover();
-        await expect.poll(() => otro.evaluate((e) => parseFloat(getComputedStyle(e).fontStretch))).toBe(125);
+        const antes = await otro.evaluate((e) => getComputedStyle(e).fontStretch);
+        await expect.poll(() => otro.evaluate((e) => getComputedStyle(e).color)).not.toBe(await links.filter({ hasNot: page.locator('[aria-current]') }).nth(1).evaluate((e) => getComputedStyle(e).color));
+        expect(await otro.evaluate((e) => getComputedStyle(e).fontStretch)).toBe(antes);
       }
     });
   });
