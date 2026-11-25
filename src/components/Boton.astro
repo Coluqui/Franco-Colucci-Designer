@@ -166,8 +166,9 @@ const clases = ['boton', `boton--${variante}`, `boton--${size}`, className];
   .boton--sm::before {
     content: "";
     position: absolute;
-    inset-block: calc((var(--control-height-sm) - var(--control-height)) / 2);
-    inset-inline: 0;
+    /* 100 % es la caja interior (sin el borde de 1 px): así el área llega a 44 × 44. */
+    inset-block: calc((100% - var(--control-height)) / 2);
+    inset-inline: min(0px, calc((100% - var(--control-height)) / 2));
   }
 
   /* ---- Primario ---- */

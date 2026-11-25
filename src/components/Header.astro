@@ -61,13 +61,17 @@ const { lang } = Astro.props;
   import { enCadaPagina } from '../scripts/pagina';
   import { ScrollTrigger } from '../motion/gsap';
 
+  /** Las secciones invertidas se buscan una vez por página, no en cada cuadro del scroll. */
+  let invertidas: Element[] = [];
+  const buscarInvertidas = () => (invertidas = [...document.querySelectorAll('.seccion-invertida')]);
+
   /** data-scrolled (scroll > 8 px) y data-invertido (la franja del header está sobre una sección invertida). */
   const actualizar = () => {
     const header = document.querySelector<HTMLElement>('[data-header]');
     if (!header) return;
     header.toggleAttribute('data-scrolled', scrollY > 8);
     const y = header.offsetHeight / 2;
-    const sobreInvertida = [...document.querySelectorAll('.seccion-invertida')].some((s) => {
+    const sobreInvertida = invertidas.some((s) => {
       const r = s.getBoundingClientRect();
       return r.top <= y && r.bottom >= y;
     });
@@ -76,11 +80,15 @@ const { lang } = Astro.props;
 
   // El header persiste entre páginas (transition:persist): se pone al día apenas cambia el contenido,
   // antes de que la View Transition tome la vista nueva.
-  document.addEventListener('astro:after-swap', actualizar);
+  document.addEventListener('astro:after-swap', () => {
+    buscarInvertidas();
+    actualizar();
+  });
 
   // Con ScrollSmoother el contenido sigue moviéndose después del último evento `scroll`: ScrollTrigger
   // se actualiza con el desplazamiento suavizado, así el color del header sigue a lo que se ve.
   enCadaPagina(() => {
+    buscarInvertidas();
     const seguimiento = ScrollTrigger.create({ start: 0, end: 'max', onUpdate: actualizar, onRefresh: actualizar });
     actualizar();
     return () => seguimiento.kill();
@@ -127,6 +135,7 @@ const { lang } = Astro.props;
      El puesto cuelga debajo del nombre (absoluto): no mueve el header. */
   .logo {
     display: inline-flex;
+    min-inline-size: var(--control-height);
     align-items: center;
     min-block-size: var(--control-height);
     color: var(--color-text-primary);
@@ -197,12 +206,13 @@ const { lang } = Astro.props;
     content: "";
     position: absolute;
     inset-block: min(0px, calc((100% - var(--control-height)) / 2));
-    inset-inline: 0;
+    inset-inline: min(0px, calc((100% - var(--control-height)) / 2));
   }
 
+  /* ES y EN están pegados: cada opción mide 44 de ancho (no pueden crecer hacia el costado). */
   .header__acciones :global(.segmentado__opcion) {
     min-block-size: calc(var(--alto-control) - 2px);
-    min-inline-size: calc(var(--alto-control) - 2px);
+    min-inline-size: var(--control-height);
   }
 
   .header__acciones :global(.tema-switch),
