@@ -12,6 +12,7 @@ import TilePieza from '../../../components/TilePieza.astro';
 import Visor from '../../../components/Visor.astro';
 import SiguienteCaso from '../../../components/SiguienteCaso.astro';
 import Link from '../../../components/Link.astro';
+import Icono from '../../../components/Icono.astro';
 import { locales, t, localizePath, type Lang } from '../../../i18n';
 import { getCasos, getPiezasDeCaso, siguienteCaso, nombreTipo, hrefCaso, piezaVista, type Caso } from '../../../lib/casos';
 
@@ -45,7 +46,7 @@ const piezas = grupos.flatMap((g) => g.piezas);
   <article class="caso">
     <header class="container caso__cabecera">
       <p class="t-ui caso__volver" data-entra>
-        <Link href={localizePath(lang, 'trabajos/')} lang={lang} class="link--suelto">{t(lang, 'caseDetail.back')}</Link>
+        <Link href={localizePath(lang, 'trabajos/')} lang={lang} class="link--suelto"><Icono nombre="flecha-izq" class="icono--atras" />{t(lang, 'caseDetail.back')}</Link>
       </p>
       <div class="caso__intro">
         <h1><span class="caso__nombre" transition:name={`caso-${caso.slug}-titulo`} transition:animate="initial">{caso.cliente}</span></h1>

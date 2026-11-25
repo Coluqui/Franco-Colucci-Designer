@@ -29,9 +29,13 @@ for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     test('M26 · el subrayado del link pasa de 1 a 2 px con scaleY', async ({ page }) => {
       test.skip(!ancho(page), 'hover solo con puntero fino');
       await page.goto('/es/trabajos/iscamen/');
-      const link = page.locator('a.link').first();
+      // Los links sueltos (link--suelto) no llevan subrayado: se prueba uno de texto/contacto.
+      const link = page.locator('a.link:not(.link--suelto)').first();
       const linea = () => link.evaluate((a) => getComputedStyle(a, '::after').transform);
       expect(await linea()).toBe('matrix(1, 0, 0, 0.5, 0, 0)');
+      // Ese link está más abajo: con ScrollSmoother hay que esperar a que el contenido se asiente.
+      await link.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(1500);
       await link.hover();
       await expect.poll(linea).toBe('none');
     });

@@ -4,6 +4,7 @@
  * Bio corta + link a /[lang]/sobre-mi/. Sin retrato hasta que Franco elija una foto (docs/pendientes.md).
  */
 import Link from './Link.astro';
+import Icono from './Icono.astro';
 import { t, localizePath, type Lang } from '../i18n';
 
 interface Props {
@@ -17,7 +18,7 @@ const { lang } = Astro.props;
   <div class="resumen__texto">
     <p class="t-lead" data-split="lines">{t(lang, 'home.aboutText')}</p>
     <p class="t-ui">
-      <Link href={localizePath(lang, 'sobre-mi/')} lang={lang} class="link--suelto">{t(lang, 'home.aboutLink')}</Link>
+      <Link href={localizePath(lang, 'sobre-mi/')} lang={lang} class="link--suelto">{t(lang, 'home.aboutLink')}<Icono nombre="flecha-der" /></Link>
     </p>
   </div>
 </div>

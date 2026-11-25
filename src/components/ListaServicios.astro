@@ -68,7 +68,7 @@ const { lang, servicios, grupo = 'servicios' } = Astro.props;
                 </div>
               </div>
               <p class="t-body servicio__descripcion">{s.descripcion}</p>
-              <a class="link t-ui servicio__link" href={localizePath(lang, tipoDeServicio[s.slug as ServicioSlug] ? `trabajos/?tipo=${tipoDeServicio[s.slug as ServicioSlug]}` : 'trabajos/')}>
+              <a class="link link--suelto t-ui servicio__link" href={localizePath(lang, tipoDeServicio[s.slug as ServicioSlug] ? `trabajos/?tipo=${tipoDeServicio[s.slug as ServicioSlug]}` : 'trabajos/')}>
                 {tf(lang, 'services.seeWork', { servicio: s.nombre })}
                 <Icono nombre="flecha-der" />
               </a>
